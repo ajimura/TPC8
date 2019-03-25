@@ -1,0 +1,124 @@
+<?xml version="1.0"?>
+<!-- DON'T REMOVE THE ABOVE LINE.                                     -->
+<!-- DON'T PUT ANY LINES ABOVE THE 1ST LINE.                          -->
+<!-- Sample config.xml to run TinySource and TinySink.                -->
+<!-- Please rewrite execPath (2 places), confFile (2 places) suitable -->
+<!-- for your directory structure.                                    -->
+<!-- run.py will create rtc.conf in /tmp/daqmw/rtc.conf               -->
+<!-- If you use run.py, set confFile as /tmp/daqmw/rtc.conf           -->
+<!-- a2gx2: 172.16.204.253 -->
+<configInfo>
+    <daqOperator>
+        <hostAddr>127.0.0.1</hostAddr>
+    </daqOperator>
+    <daqGroups>
+        <daqGroup gid="group0">
+            <components>
+                <component cid="TPCreaderA0">
+                    <hostAddr>127.0.0.1</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>TPCreaderA0.rtc</instName>
+                    <execPath>/home/online/TPC8/TPCreaderA/TPCreaderAComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>3</startOrd>
+                    <inPorts>
+                    </inPorts>
+                    <outPorts>
+                        <outPort>tpcreadera_out</outPort>
+                    </outPorts>
+                    <params>
+		      <param pid="NumFADC0">1</param>
+		      <param pid="NumFADC1">1</param>
+		      <param pid="NumFADC2">0</param>
+		      <param pid="NumFADC3">0</param>
+		      <param pid="SetPedestal">no</param>
+		      <param pid="PedestalFile">/home/online/TPC8/work/pedestal.txt</param>
+		      <param pid="ThresMargin">10</param>
+		      <param pid="SetTrigIO">yes</param>
+		      <param pid="TrigIOFile">/home/online/TPC8/work/trigio.txt</param>
+		      <param pid="SetRdyChk">SEL</param>
+		      <param pid="RdyChkFile">/home/online/TPC8/work/readychk.txt</param>
+		      <param pid="CompressionType">Simple</param>
+		      <param pid="TrigType">Ext</param>
+		      <param pid="ExtReset">no</param>
+		      <param pid="TrigIOIP">172.16.207.238</param>
+		      <param pid="TrigIOPort">4660</param>
+		      <param pid="TrigIO_Done">yes</param>
+		      <param pid="TrigIO_WaitTime">10</param>
+		      <param pid="ComponentID">400</param>
+                    </params>
+                </component>
+                <component cid="TPCreaderB0">
+                    <hostAddr>127.0.0.1</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>TPCreaderB0.rtc</instName>
+                    <execPath>/home/online/TPC8/TPCreaderB/TPCreaderBComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>4</startOrd>
+                    <inPorts>
+                    </inPorts>
+                    <outPorts>
+                        <outPort>tpcreaderb_out</outPort>
+                    </outPorts>
+                    <params>
+		      <param pid="NumFADC0">0</param>
+		      <param pid="NumFADC1">0</param>
+		      <param pid="NumFADC2">1</param>
+		      <param pid="NumFADC3">1</param>
+		      <param pid="SetPedestal">no</param>
+		      <param pid="PedestalFile">/home/online/TPC8/work/pedestal.txt</param>
+		      <param pid="ThresMargin">10</param>
+		      <param pid="SetTrigIO">yes</param>
+		      <param pid="TrigIOFile">/home/online/TPC8/work/trigio.txt</param>
+		      <param pid="SetRdyChk">SEL</param>
+		      <param pid="RdyChkFile">/home/online/TPC8/work/readychk.txt</param>
+		      <param pid="CompressionType">Simple</param>
+		      <param pid="TrigType">Ext</param>
+		      <param pid="ExtReset">no</param>
+		      <param pid="TrigIOIP">172.16.207.238</param>
+		      <param pid="TrigIOPort">4660</param>
+		      <param pid="ComponentID">401</param>
+                    </params>
+                </component>
+                <component cid="Merger2to10">
+                    <hostAddr>127.0.0.1</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>Merger2to10.rtc</instName>
+                    <execPath>/home/online/TPC8/Merger2to1/Merger2to1Comp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>2</startOrd>
+                    <inPorts>
+                        <inPort from="TPCreaderA0:tpcreadera_out">merger2to1_in1</inPort>
+                        <inPort from="TPCreaderB0:tpcreaderb_out">merger2to1_in2</inPort>
+                    </inPorts>
+                    <outPorts>
+                        <outPort>merger2to1_out</outPort>
+                    </outPorts>
+                    <params>
+                       <param pid="dirName">/tmp/daqmw</param>
+                       <param pid="ComponentID">450</param>
+                    </params>
+                </component>
+                <component cid="TPClogger0">
+                    <hostAddr>127.0.0.1</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>TPClogger0.rtc</instName>
+                    <execPath>/home/online/TPC8/TPClogger/TPCloggerComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>1</startOrd>
+                    <inPorts>
+                        <inPort from="Merger2to10:merger2to1_out">tpclogger_in</inPort>
+                    </inPorts>
+                    <outPorts>
+                    </outPorts>
+                    <params>
+                       <param pid="dirName">/tmp/daqmw</param>
+                       <param pid="isLogging">yes</param>
+                       <param pid="maxFileSizeInMegaByte">1024</param>
+                       <param pid="ComponentID">499</param>
+                    </params>
+                </component>
+            </components>
+        </daqGroup>
+    </daqGroups>
+</configInfo>

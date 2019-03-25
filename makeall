@@ -1,0 +1,37 @@
+#!/bin/bash
+cd lib
+make
+cd ..
+cd Merger2to1
+make
+cd ..
+cd Merger2to1A
+make
+cd ..
+cd Merger2to1B
+make
+cd ..
+cd Merger4to1
+make
+cd ..
+cd TPClogger
+make
+cd ..
+cd TPCreader
+make
+cd ..
+cd TPCreaderA
+make
+cd ..
+cd TPCreaderB
+make
+cd ..
+cd TPCreaderC
+make
+cd ..
+cd TPCreaderD
+make
+cd ..
+cd utils
+make
+cd ..

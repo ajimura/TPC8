@@ -1,0 +1,22 @@
+#!/bin/bash
+cd lib
+make -f Makefile.linux
+cd ..
+cd Merger2to1
+make
+cd ..
+cd Merger2to1A
+make
+cd ..
+cd Merger2to1B
+make
+cd ..
+cd Merger4to1
+make
+cd ..
+cd TPClogger
+make
+cd ..
+cd utils
+make -f Makefile.linux aps
+cd ..

@@ -1,0 +1,21 @@
+# Makefile for sw
+
+LDFLAGS = 
+LOADLIBS =
+LDLIBS = 
+APS = 
+
+libs: tpcmath.o trigio_lib.o daqmwlib.o
+
+tpcmath.o: tpcmath.c tpcmath.h
+	cc -g -c tpcmath.c
+
+trigio_lib.o: trigio_lib.c
+	cc -g -c trigio_lib.c
+
+daqmwlib.o: daqmwlib.c
+	cc -g -c daqmwlib.c
+
+clean:
+	rm -f *.o *~
+

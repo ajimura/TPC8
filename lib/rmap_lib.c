@@ -32,15 +32,8 @@ struct rmap_node_info {
 unsigned char rmap_calc_crc(void *,unsigned int );
 int rmap_create_buffer(unsigned int, unsigned int, struct rmap_node_info *, unsigned int, unsigned int);
 
-struct rbuffer {
-  unsigned short tid;
-  unsigned int length;
-  unsigned char buffer[X_BUFFER_SIZE+1024];
-};
-
+unsigned char rx_buffer[X_BUFFER_SIZE+1024];
 unsigned char tx_buffer[X_BUFFER_SIZE+1024];
-
-struct rbuffer rbufs = {.length=0};
 
 unsigned char RM_CRCTbl [] = {
   0x00,0x91,0xe3,0x72,0x07,0x96,0xe4,0x75,  0x0e,0x9f,0xed,0x7c,0x09,0x98,0xea,0x7b,
@@ -77,9 +70,6 @@ int rmap_get_data0(int sw_fd, int port,
   int packet_size;
   int ret_tid, ret_status;
 
-  if (rbufs.length!=0)
-    return RM_BUF_OVERFLOW;
-
   //  if (rx_size>2048) n_data=2048;
   if (rx_size>X_BUFFER_SIZE) n_data=X_BUFFER_SIZE;
   else n_data=rx_size;
@@ -95,15 +85,15 @@ int rmap_get_data0(int sw_fd, int port,
     printf("Timeout in rmap_get_data\n"); return -1;
   }
 
-  retval = sw_get_data(sw_fd, port, (unsigned int *)rbufs.buffer,X_BUFFER_SIZE);
+  retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
 
   if (retval==0){
     sw_print_status(sw_fd,port);
     return RM_LINK_ERROR;
   }
   
-  if ( (rbufs.buffer[3]&0xff) != 0x00){ // NOT SUCCESS
-    printf("--- %08x %08x\n",rbufs.buffer[3],rbufs.buffer[3]&0xff);
+  if ( (rx_buffer[3]&0xff) != 0x00){ // NOT SUCCESS
+    printf("--- %08x %08x\n",rx_buffer[3],rx_buffer[3]&0xff);
     printf("tx buffer ---\n");
     for(i=0;i<packet_size;i++){
       printf("%02x ",tx_buffer[i]);
@@ -111,12 +101,12 @@ int rmap_get_data0(int sw_fd, int port,
     }printf("\n");
     printf("rx buffer ---\n");
     for(i=0;i<retval;i++){
-      printf("%02x ",rbufs.buffer[i]);
+      printf("%02x ",rx_buffer[i]);
       if ((i+1)%8==0) printf("\n");
     }printf("\n");
     return RM_DATA_ERROR;
   }
-  memcpy(rx_data,&(rbufs.buffer[12]),n_data);
+  memcpy(rx_data,&(rx_buffer[12]),n_data);
 
   return 0;
 }
@@ -136,9 +126,6 @@ int rmap_get_data(int sw_fd, int port,
   unsigned int remain;
   int packet_size;
   int ret_tid, ret_status;
-
-  if (rbufs.length!=0)
-    return RM_BUF_OVERFLOW;
 
   if (rx_size>X_BUFFER_SIZE) n_data=X_BUFFER_SIZE;
   else n_data=rx_size;
@@ -182,9 +169,6 @@ int rmap_get_data_verbose(int sw_fd, int port,
   unsigned int remain;
   int packet_size;
 
-  if (rbufs.length!=0)
-    return RM_BUF_OVERFLOW;
-
   //  if (rx_size>2048) n_data=2048;
   if (rx_size>X_BUFFER_SIZE) n_data=X_BUFFER_SIZE;
   else n_data=rx_size;
@@ -206,11 +190,11 @@ int rmap_get_data_verbose(int sw_fd, int port,
     printf("Timeout in rmap_get_data\n"); return -1;
   }
 
-  retval = sw_get_data(sw_fd, port, (unsigned int *)rbufs.buffer,X_BUFFER_SIZE);
+  retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
 
     printf("rx buffer ---\n");
     for(i=0;i<retval;i++){
-      printf("%02x ",rbufs.buffer[i]);
+      printf("%02x ",rx_buffer[i]);
       if ((i+1)%8==0) printf("\n");
     }printf("\n");
 
@@ -219,8 +203,8 @@ int rmap_get_data_verbose(int sw_fd, int port,
     return RM_LINK_ERROR;
   }
   
-  if ( (rbufs.buffer[3]&0xff) != 0x00){ // NOT SUCCESS
-    printf("--- %08x %08x\n",rbufs.buffer[3],rbufs.buffer[3]&0xff);
+  if ( (rx_buffer[3]&0xff) != 0x00){ // NOT SUCCESS
+    printf("--- %08x %08x\n",rx_buffer[3],rx_buffer[3]&0xff);
     printf("tx buffer ---\n");
     for(i=0;i<packet_size;i++){
       printf("%02x ",tx_buffer[i]);
@@ -228,12 +212,12 @@ int rmap_get_data_verbose(int sw_fd, int port,
     }printf("\n");
     printf("rx buffer ---\n");
     for(i=0;i<retval;i++){
-      printf("%02x ",rbufs.buffer[i]);
+      printf("%02x ",rx_buffer[i]);
       if ((i+1)%8==0) printf("\n");
     }printf("\n");
     return RM_DATA_ERROR;
   }
-  memcpy(rx_data,&(rbufs.buffer[12]),n_data);
+  memcpy(rx_data,&(rx_buffer[12]),n_data);
 
   return 0;
 }
@@ -253,9 +237,6 @@ int rmap_get_data_W(int sw_fd, int port,
   unsigned int remain;
   unsigned int *curpos;
   int packet_size;
-
-  if (rbufs.length!=0)
-    return RM_BUF_OVERFLOW;
 
   //  if (rx_size>2048) n_data=2048;
   //  if (rx_size>4096) n_data=4096;
@@ -280,13 +261,13 @@ int rmap_get_data_W(int sw_fd, int port,
       printf("Timeout in rmap_get_data\n"); return -1;
     }
 
-    retval = sw_get_data(sw_fd, port, (unsigned int *)rbufs.buffer,X_BUFFER_SIZE+100);
+    retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE+100);
     if (retval==0) return RM_LINK_ERROR;
   
-    if ( (rbufs.buffer[3]&0xff) != 0x00) // NOT SUCCESS
+    if ( (rx_buffer[3]&0xff) != 0x00) // NOT SUCCESS
       return RM_DATA_ERROR;
 
-    memcpy(curpos,&(rbufs.buffer[12]),n_data);
+    memcpy(curpos,&(rx_buffer[12]),n_data);
     curpos+=(n_data/4);
 
     remain-=n_data;
@@ -347,10 +328,10 @@ int rmap_rcv_all(int sw_fd, int port, unsigned int tid, unsigned int *rx_size, u
   unsigned int status;
   int i,j;
   
-  for(i=0;i<8000;i++) {
+  for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
   }
-  if (i==8000){
+  if (i==WaitLoop){
     printf("Timeout in rmap_rcv_header\n"); return -1;
   }
   retval=sw_rcv(sw_fd, port, rx_data, &status, tid, X_BUFFER_SIZE+100);
@@ -362,59 +343,7 @@ int rmap_rcv_all(int sw_fd, int port, unsigned int tid, unsigned int *rx_size, u
   }
 }
 
-int rmap_rcv_header(int sw_fd, int port, unsigned int *tid, unsigned int *length)
-{
-  unsigned int retval;
-  int i,j;
-  
-  for(i=0;i<8000;i++) {
-    if ((j=sw_rx_status(sw_fd,port))>0) break;
-  }
-  if (i==8000){
-    printf("Timeout in rmap_rcv_header\n"); return -1;
-  }
-
-  if (rbufs.length!=0)
-    return RM_BUF_OVERFLOW;
-
-  retval = sw_get_data(sw_fd, port, (unsigned int *)rbufs.buffer,X_BUFFER_SIZE+100);
-
-  if (retval==0) return RM_LINK_ERROR;
-  if ( rbufs.buffer[3]&0xff != 0x00) // NOT SUCCESS
-    return RM_DATA_ERROR;
-
-  rbufs.tid=rbufs.buffer[5]*0x100+
-    		rbufs.buffer[6];
-  rbufs.length=rbufs.buffer[8]*0x10000+
-		    rbufs.buffer[9]*0x100+
-		    rbufs.buffer[10];
-
-  *tid=(unsigned int)rbufs.tid;
-  *length=rbufs.length;
-
-  return 0;
-}
-
-int rmap_rcv_data(unsigned int tid, unsigned int *rx_data)
-{
-  if (rbufs.tid!=(tid&0xffff) || rbufs.length==0)
-    return RM_BUF_NONE;
-
-  memcpy(rx_data,&(rbufs.buffer[12]),rbufs.length);
-  rbufs.length=0;
-  return 0;
-}
-
-int rmap_clr_data()
-{
-  if (rbufs.length==0)
-    return RM_BUF_NONE;
-
-  rbufs.length=0;
-  return 0;
-}
-
-int rmap_put_word(int sw_fd, int port,
+int rmap_put_word0(int sw_fd, int port,
 			   struct rmap_node_info *n, 
 			   unsigned int tx_address, 
 			   unsigned int tx_data)
@@ -427,8 +356,6 @@ int rmap_put_word(int sw_fd, int port,
   int in_length;
   int packet_size;
   
-  if (rbufs.length!=0)
-    return RM_BUF_OVERFLOW;
   packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_WRT|RM_PCKT_ACK,0x0000,n,tx_address,tx_data);
   retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer,
 		       packet_size);
@@ -449,12 +376,12 @@ int rmap_put_word(int sw_fd, int port,
     printf("Timeout in rmap_put_word\n"); return -1;
   }
 
-  retval = sw_get_data(sw_fd, port, (unsigned int *)rbufs.buffer,X_BUFFER_SIZE);
+  retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
   //  sw_print_status(sw_fd,port);
 
   /*
   for(i=0;i<retval;i++){
-    printf("%02x ",rbufs.buffer[i]);
+    printf("%02x ",rx_buffer[i]);
     if ((i+1)%8==0) printf("\n");
   }printf("\n");
   */
@@ -462,7 +389,42 @@ int rmap_put_word(int sw_fd, int port,
   if (retval==0) return RM_LINK_ERROR;
   
   // GET STATUS
-  if ( rbufs.buffer[3]&0xff != 0x00) // NOT SUCCESS
+  if ( rx_buffer[3]&0xff != 0x00) // NOT SUCCESS
+    return RM_DATA_ERROR;
+
+  return 0;
+  
+}
+
+int rmap_put_word(int sw_fd, int port,
+			   struct rmap_node_info *n, 
+			   unsigned int tx_address, 
+			   unsigned int tx_data)
+{
+  unsigned char *ptr,*dptr,*crc_start;
+  int n_data,i,j;
+  unsigned int rxdata, retval;
+  unsigned int header_size;
+  unsigned int data_size;
+  int in_length;
+  int packet_size;
+  
+  retval=sw_req(sw_fd,port,RM_PCKT_CMD|RM_PCKT_WRT|RM_PCKT_ACK,
+		n->src_addr,n->dest_addr,n->key,0x1234,tx_address,tx_data);
+
+  for(i=0;i<WaitLoop;i++) {
+    if ((j=sw_rx_status(sw_fd,port))>0) break;
+  }
+  if (i==WaitLoop){
+    printf("Timeout in rmap_put_word\n"); return -1;
+  }
+
+  retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
+
+  if (retval==0) return RM_LINK_ERROR;
+  
+  // GET STATUS
+  if ( rx_buffer[3]&0xff != 0x00) // NOT SUCCESS
     return RM_DATA_ERROR;
 
   return 0;
@@ -482,8 +444,6 @@ int rmap_put_word_verbose(int sw_fd, int port,
   int in_length;
   int packet_size;
   
-  if (rbufs.length!=0)
-    return RM_BUF_OVERFLOW;
   packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_WRT|RM_PCKT_ACK,0x0000,n,tx_address,tx_data);
   retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer,
 		       packet_size);
@@ -501,18 +461,18 @@ int rmap_put_word_verbose(int sw_fd, int port,
     printf("Timeout in rmap_put_data\n"); return -1;
   }
 
-  retval = sw_get_data(sw_fd, port, (unsigned int *)rbufs.buffer,X_BUFFER_SIZE);
+  retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
 
   printf("rx buffer ---\n");
   for(i=0;i<retval;i++){
-    printf("%02x ",rbufs.buffer[i]);
+    printf("%02x ",rx_buffer[i]);
     if ((i+1)%8==0) printf("\n");
   }printf("\n");
 
   if (retval==0) return RM_LINK_ERROR;
   
   // GET STATUS
-  if ( rbufs.buffer[3]&0xff != 0x00) // NOT SUCCESS
+  if ( rx_buffer[3]&0xff != 0x00) // NOT SUCCESS
     return RM_DATA_ERROR;
 
   return 0;

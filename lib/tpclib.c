@@ -835,9 +835,11 @@ int fadc_get_totsize_each(struct fadc_info *adc){
   //  printf("[%02d-%02d]",adc->port,adc->nodeid);
   st=0;
   add=EBM_TotSize+BufBase*(adc->next);
-  st+=rmap_req_data(sw_fd[adc->port],adc->port,&(adc->node),adc->port*100+adc->nodeid,add,4);
-  st+=rmap_rcv_header(sw_fd[adc->port],adc->port,&tid,&size);
-  st+=rmap_rcv_data(tid,&(adc->totsize)); // <==== must check
+  tid=adc->port*100+adc->nodeid;
+  st+=rmap_req_data(sw_fd[adc->port],adc->port,&(adc->node),tid,add,4);
+  st+=rmap_rcv_all(sw_fd[adc->port],adc->port,tid,&size,&(adc->totsize)); // <==== must check
+  //  st+=rmap_rcv_header(sw_fd[adc->port],adc->port,&tid,&size);
+  //  st+=rmap_rcv_data(tid,&(adc->totsize)); // <==== must check
   //  printf("TotSize: %3d(%04x) %d\n",adc->totsize,adc->totsize,st);
   return st;
 }
@@ -862,8 +864,9 @@ int fadc_get_totsizeM(){
     }
     for(i=0;i<DevsNum;i++){
       if (fadc_num[i]>j){
-	st+=rmap_rcv_header(sw_fd[(fadcinfo[i]+j)->port],(fadcinfo[i]+j)->port,&(tid[i]),&size);
-	st+=rmap_rcv_data(tid[i],&((fadcinfo[i]+j)->totsize));
+	st+=rmap_rcv_all(sw_fd[(fadcinfo[i]+j)->port],(fadcinfo[i]+j)->port,tid[i],&size,&((fadcinfo[i]+j)->totsize));
+	//	st+=rmap_rcv_header(sw_fd[(fadcinfo[i]+j)->port],(fadcinfo[i]+j)->port,&(tid[i]),&size);
+	//	st+=rmap_rcv_data(tid[i],&((fadcinfo[i]+j)->totsize));
 	//	printf("TotSize(%d-%d): %3d(%04x) %d\n",i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize,st);
       }
     }
@@ -894,14 +897,16 @@ int fadc_get_totsizeM2(){
     }
     for(i=0;i<DevsNum;i++){
       if (j<fadc_num[i]){
-	st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
-	portid=tid/1000;
-	nodeid=tid%1000;
-	if (portid==i && nodeid<fadc_num[i]){
-	  st+=rmap_rcv_data(tid,&((fadcinfo[i]+j)->totsize));
-	  //	  printf("TotSize(%d-%d): %3d(%04x) %d\n",
-	  //		 i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize,st);
-	}else{
+	tid=i*1000+j;
+	if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
+	//	st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
+	//	portid=tid/1000;
+	//	nodeid=tid%1000;
+	//	if (portid==i && nodeid<fadc_num[i]){
+	//	  st+=rmap_rcv_data(tid,&((fadcinfo[i]+j)->totsize));
+	//	  //	  printf("TotSize(%d-%d): %3d(%04x) %d\n",
+	//	  //		 i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize,st);
+	//	}else{
 	  printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,j);
 	  return -1;
 	}
@@ -1109,19 +1114,14 @@ int fadc_get_event_dataM1(unsigned int *rdata, int check){
     if (count>0){
       for(i=0;i<DevsNum;i++){
 	if (nextnode[i]<fadc_num[i]){
-	  st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
-	  //	  printf("RCVH: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
-	  portid=tid/1000;
-	  nodeid=tid%1000;
-	  if (portid==i && nodeid<fadc_num[i]){
-	    st+=rmap_rcv_data(tid,(fadcinfo[i]+nodeid)->tgcreg);
-	    //	    printf("RCVD: %d-%d\n",i,nextnode[i]);
-	    //	    printf("TrigID(%d-%d): %3d %x %x\n",
-	    //		   portid,nodeid,
-	    //		   (fadcinfo[i]+nodeid)->tgcreg[0],
-	    //		   (fadcinfo[i]+nodeid)->tgcreg[1],
-	    //		   (fadcinfo[i]+nodeid)->tgcreg[2]);
-	  }else{
+	  tid=i*1000+j;
+	  if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,(fadcinfo[i]+nodeid)->tgcreg))<0){
+	  //	  st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
+	  //	  portid=tid/1000;
+	  //	  nodeid=tid%1000;
+	  //	  if (portid==i && nodeid<fadc_num[i]){
+	  //	    st+=rmap_rcv_data(tid,(fadcinfo[i]+nodeid)->tgcreg);
+	  //	  }else{
 	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,j);
 	    return -1;
 	  }
@@ -1151,25 +1151,27 @@ int fadc_get_event_dataM1(unsigned int *rdata, int check){
 	add=EBM+BufBase*(adc+j)->next+0x80000000;
 	tid=i*1000+j;
 	st+=rmap_req_data(sw_fd[i],i,&((adc+j)->node),tid,add,((adc+j)->totsize+1)/2*4);
-	//	printf("REQ: %d-%d\n",i,j);
-	st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
-	//	printf("RCVH: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
-	portid=tid/1000;
-	nodeid=tid%1000;
-	if (portid==i && nodeid<fadc_num[i]){
-	  st+=rmap_rcv_data(tid,curpos);
-	  if (check>=0){
-	    if (*(curpos+1)!=check){
-	      printf("Event mismatch!\n");
-	      printf("%d-%d: %d should be %d\n",*(curpos)>>16,*(curpos)&0xffff,*(curpos+1),check+1);
-	      return -1;
-	    }
-	  }
-	  //	  printf("RCVD: %d-%d at %d(%x)\n",i,nextnode[i],curpos-rdata,curpos-rdata);
-	}else{
+	st+=rmap_rcv_all(sw_fd[i],i,tid,&size,);
+	if ((st=rmap_rcv_header(sw_fd[i],i,&tid,&size,curpos))<0){
 	  printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,j);
 	  return -1;
 	}
+	//	portid=tid/1000;
+	//	nodeid=tid%1000;
+	//	if (portid==i && nodeid<fadc_num[i]){
+	//	  st+=rmap_rcv_data(tid,curpos);
+	//	  if (check>=0){
+	if (*(curpos+1)!=check){
+	  printf("Event mismatch!\n");
+	  printf("%d-%d: %d should be %d\n",*(curpos)>>16,*(curpos)&0xffff,*(curpos+1),check+1);
+	  return -1;
+	}
+	//	  }
+	//	  //	  printf("RCVD: %d-%d at %d(%x)\n",i,nextnode[i],curpos-rdata,curpos-rdata);
+	//	}else{
+	//	  printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,j);
+	//	  return -1;
+	//	}
 	(adc+j)->nextptr=curpos+size/4;
 	curpos+=((adc+j)->totsize+1)/2; totsize+=(((adc+j)->totsize+1)/2*4);
 	(adc+j)->totsize-=size/2;
@@ -1184,18 +1186,19 @@ int fadc_get_event_dataM1(unsigned int *rdata, int check){
 	add=EBM+BufBase*(adc+j)->next+0x80000000;
 	tid=i*1000+j;
 	st+=rmap_req_data(sw_fd[i],i,&((adc+j)->node),tid,add,((adc+j)->totsize+1)/2*4);
-	//	printf("REQ: %d-%d\n",i,j);
-	st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
-	//	printf("RCVH: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
-	portid=tid/1000;
-	nodeid=tid%1000;
-	if (portid==i && nodeid<fadc_num[i]){
-	  st+=rmap_rcv_data(tid,(adc+j)->nextptr);
-	  //	  printf("RCVD: %d-%d at %d(%x)\n",i,nextnode[i],(adc+j)->nextptr-rdata,(adc+j)->nextptr-rdata);
-	}else{
+	if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,(adc+j)->nextptr))<0){
 	  printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,j);
 	  return -1;
 	}
+	//	st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
+	//	portid=tid/1000;
+	//	nodeid=tid%1000;
+	//	if (portid==i && nodeid<fadc_num[i]){
+	//	  st+=rmap_rcv_data(tid,(adc+j)->nextptr);
+	//	}else{
+	//	  printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,j);
+	//	  return -1;
+	//	}
       }
     }
   }
@@ -1241,30 +1244,35 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
     if (count>0){
       for(i=0;i<DevsNum;i++){
 	if (nextnode[i]<fadc_num[i]){
-	  st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
-	  //	  printf("RCVH: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
-	  portid=tid/1000;
-	  nodeid=tid%1000;
-	  if (portid==i && nodeid<fadc_num[i]){
-	    st+=rmap_rcv_data(tid,(fadcinfo[i]+nodeid)->tgcreg);
-	    //	    	    printf("RCVD: %d-%d\n",i,nextnode[i]);
-	    //	    	    printf("TrigID(%d-%d): %3d %x %x\n",
-	    //	    		   portid,nodeid,
-	    //	    		   (fadcinfo[i]+nodeid)->tgcreg[0],
-	    //	    		   (fadcinfo[i]+nodeid)->tgcreg[1],
-	    //	    		   (fadcinfo[i]+nodeid)->tgcreg[2]);
-	    if (check>=0){
-	      if ((fadcinfo[i]+nodeid)->tgcreg[0]!=check){
-		printf("Event mismatch!\n");
-		printf("%d-%d: %d should be %d\n",
-		       *(curpos)>>16,*(curpos)&0xffff,(fadcinfo[i]+nodeid)->tgcreg[0],check);
-		return -1;
-	      }
-	    }
-	  }else{
+	  tid=i*1000+j;
+	  if ((st=rmap_rcv_header(sw_fd[i],i,tid,&size,(fadcinfo[i]+nodeid)->tgcreg))<0){
 	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,j);
 	    return -1;
 	  }
+	    //	  st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
+	    //	  //	  printf("RCVH: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
+	    //	  portid=tid/1000;
+	    //	  nodeid=tid%1000;
+	    //	  if (portid==i && nodeid<fadc_num[i]){
+	    //	    st+=rmap_rcv_data(tid,(fadcinfo[i]+nodeid)->tgcreg);
+	    //	    //	    	    printf("RCVD: %d-%d\n",i,nextnode[i]);
+	    //	    //	    	    printf("TrigID(%d-%d): %3d %x %x\n",
+	    //	    //	    		   portid,nodeid,
+	    //	    //	    		   (fadcinfo[i]+nodeid)->tgcreg[0],
+	    //	    //	    		   (fadcinfo[i]+nodeid)->tgcreg[1],
+	    //	    //	    		   (fadcinfo[i]+nodeid)->tgcreg[2]);
+	  if (check>=0){
+	    if ((fadcinfo[i]+nodeid)->tgcreg[0]!=check){
+	      printf("Event mismatch!\n");
+	      printf("%d-%d: %d should be %d\n",
+		     *(curpos)>>16,*(curpos)&0xffff,(fadcinfo[i]+nodeid)->tgcreg[0],check);
+	      return -1;
+	    }
+	  }
+	  //	  }else{
+	  //	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,j);
+	  //	    return -1;
+	  //	  }
 	  curnode[i]=nextnode[i]+1;
 	}
       }
@@ -1314,18 +1322,23 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  //#ifdef DMA
 	  //	  st+=rmap_rcv_header_dma(sw_fd,i,&tid,&size);
 	  //#else
-	  st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
-	  //#endif
-	  //	  printf("RCVH: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
-	  portid=tid/1000;
-	  nodeid=tid%1000;
-	  if (portid==i && nodeid<fadc_num[i]){
-	    st+=rmap_rcv_data(tid,curpos);
-	    //	    printf("RCVD: %d-%d at %d(%x)\n",i,nextnode[i],curpos-rdata,curpos-rdata);
-	  }else{
+	  tid=i*1000+j;
+	  if ((st=rmap_rcv_header(sw_fd[i],i,tid,&size,curpos))<0){
 	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,nextnode[i]);
 	    return -1;
 	  }
+	  //	  st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
+	  //	  //#endif
+	  //	  //	  printf("RCVH: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
+	  //	  portid=tid/1000;
+	  //	  nodeid=tid%1000;
+	  //	  if (portid==i && nodeid<fadc_num[i]){
+	  //	    st+=rmap_rcv_data(tid,curpos);
+	  //	    //	    printf("RCVD: %d-%d at %d(%x)\n",i,nextnode[i],curpos-rdata,curpos-rdata);
+	  //	  }else{
+	  //	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,nextnode[i]);
+	  //	    return -1;
+	  //	  }
 	  curnode[i]=nextnode[i]+1;
 	  (adc)->nextptr=curpos+size/4;
 	  curpos+=((adc)->totsize+1)/2; totsize+=(((adc)->totsize+1)/2*4);
@@ -1361,18 +1374,23 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  //#ifdef DMA
 	  //	  st+=rmap_rcv_header_dma(sw_fd,i,&tid,&size);
 	  //#else
-	  st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
-	  //#endif
-	  //	  printf("RCVH: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
-	  portid=tid/1000;
-	  nodeid=tid%1000;
-	  if (portid==i && nodeid<fadc_num[i]){
-	    st+=rmap_rcv_data(tid,adc->nextptr);
-	    //	    printf("RCVD: %d-%d at %d(%x)\n",i,nextnode[i],adc->nextptr-rdata,adc->nextptr-rdata);
-	  }else{
+	  tid=i*1000+j;
+	  if ((st=rmap_rcv_header(sw_fd[i],i,tid,&size,adc->nextptr))<0){
 	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,nextnode[i]);
 	    return -1;
 	  }
+	  //	  st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
+	  //	  //#endif
+	  //	  //	  printf("RCVH: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
+	  //	  portid=tid/1000;
+	  //	  nodeid=tid%1000;
+	  //	  if (portid==i && nodeid<fadc_num[i]){
+	  //	    st+=rmap_rcv_data(tid,adc->nextptr);
+	  //	    //	    printf("RCVD: %d-%d at %d(%x)\n",i,nextnode[i],adc->nextptr-rdata,adc->nextptr-rdata);
+	  //	  }else{
+	  //	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,nextnode[i]);
+	  //	    return -1;
+	  //	  }
 	  curnode[i]=nextnode[i]+1;
 	}
       }

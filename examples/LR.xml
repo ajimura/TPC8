@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<!-- DON'T REMOVE THE ABOVE LINE.                                     -->
+<!-- DON'T PUT ANY LINES ABOVE THE 1ST LINE.                          -->
+<!-- Sample config.xml to run TinySource and TinySink.                -->
+<!-- Please rewrite execPath (2 places), confFile (2 places) suitable -->
+<!-- for your directory structure.                                    -->
+<!-- run.py will create rtc.conf in /tmp/daqmw/rtc.conf               -->
+<!-- If you use run.py, set confFile as /tmp/daqmw/rtc.conf           -->
+<configInfo>
+    <daqOperator>
+        <hostAddr>127.0.0.1</hostAddr>
+    </daqOperator>
+    <daqGroups>
+        <daqGroup gid="group0">
+            <components>
+                <component cid="TPCreader0">
+                    <hostAddr>127.0.0.1</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>TPCreader0.rtc</instName>
+                    <execPath>/home/online/TPC8/TPCreader/TPCreaderComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>2</startOrd>
+                    <inPorts>
+                    </inPorts>
+                    <outPorts>
+                        <outPort>tpcreader_out</outPort>
+                    </outPorts>
+                    <params>
+		      <param pid="NumFADC0">1</param>
+		      <param pid="NumFADC1">1</param>
+		      <param pid="NumFADC2">1</param>
+		      <param pid="NumFADC3">1</param>
+		      <param pid="NumFADC4">0</param>
+		      <param pid="NumFADC5">0</param>
+		      <param pid="NumFADC6">0</param>
+		      <param pid="NumFADC7">0</param>
+		      <param pid="SetPedestal">no</param>
+		      <param pid="PedestalFile">/home/online/TPC8/work/pedestal.txt</param>
+		      <param pid="ThresMargin">10</param>
+		      <param pid="SetTrigIO">yes</param>
+		      <param pid="TrigIOFile">/home/online/TPC8/work/trigio.txt</param>
+		      <param pid="SetRdyChk">SEL</param>
+		      <param pid="RdyChkFile">/home/online/TPC8/work/readychk.txt</param>
+		      <param pid="CompressionType">Simple</param>
+		      <param pid="TrigType">Ext</param>
+		      <param pid="ExtReset">no</param>
+		      <param pid="TrigIOIP">172.16.207.238</param>
+		      <param pid="TrigIOPort">4660</param>
+		      <param pid="TrigIO_Done">yes</param>
+		      <param pid="TrigIO_WaitTime">1</param>
+		      <param pid="ComponentID">400</param>
+                    </params>
+                </component>
+                <component cid="TPClogger0">
+                    <hostAddr>127.0.0.1</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>TPClogger0.rtc</instName>
+                    <execPath>/home/online/TPC8/TPClogger/TPCloggerComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>1</startOrd>
+                    <inPorts>
+                        <inPort from="TPCreader0:tpcreader_out">tpclogger_in</inPort>
+                    </inPorts>
+                    <outPorts>
+                    </outPorts>
+                    <params>
+                       <param pid="dirName">/tmp/daqmw</param>
+                       <param pid="isLogging">yes</param>
+                       <param pid="maxFileSizeInMegaByte">1024</param>
+		       <param pid="ComponentID">455</param>
+                    </params>
+                </component>
+            </components>
+        </daqGroup>
+    </daqGroups>
+</configInfo>

@@ -9,9 +9,6 @@
 #include <sys/ioctl.h>
 #include "swsoc_lib.h"
 
-char DevName[8][16]={"/dev/swsoc0","/dev/swsoc1","/dev/swsoc2","/dev/swsoc3",
-		     "/dev/swsoc4","/dev/swsoc5","/dev/swsoc6","/dev/swsoc7"};
-
 #define MAXSIZ 16384
 #define VERIFY 0
 
@@ -33,8 +30,8 @@ int main(int argc, char *argv[]) {
   printf("loop ? "); scanf("%d",&loop);
   printf("size ? "); scanf("%d",&size);
 
-  fd0=open(DevName[port0],O_RDWR);
-  fd1=open(DevName[port1],O_RDWR);
+  fd0=sw_open(port0);
+  fd1=sw_open(port1);
 
   ioctl(fd0,SW_TIME_MARK,&swio);
 

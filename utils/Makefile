@@ -18,6 +18,8 @@ APS += chk_def set_def chk_linkup
 APS += set_fullrange
 APS += getver
 APS += makeped
+APS += read32 write32 sw_speed
+
 .c.o:
 	$(CC) -Wall -c $*.c -o $@
 

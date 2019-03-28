@@ -29,6 +29,7 @@ utils/port0read
 utils/port2reset
 utils/port3read
 utils/port3reset
+utils/read32
 utils/regread
 utils/regwrite
 utils/reset
@@ -38,6 +39,9 @@ utils/set_fullrange
 utils/softreset
 utils/status
 utils/statusall
+utils/sw_speed
 utils/trigio_cntrst
 utils/trigio_rdone
 utils/trigio_read
+utils/write32
+work/

@@ -18,9 +18,6 @@ int port;
 
 struct rmap_node_info n;
 
-char DevName[8][16]={"/dev/swsoc0","/dev/swsoc1","/dev/swsoc2","/dev/swsoc3",
-		     "/dev/swsoc4","/dev/swsoc5","/dev/swsoc6","/dev/swsoc7"};
-
 int main(int argc, char *argv[]) {
 
   int sw_fd;
@@ -46,8 +43,7 @@ int main(int argc, char *argv[]) {
   n.key=key;
 
   // open
-  sw_fd=open(DevName[port],O_RDWR);
-  //  sw_fd=sw_open();
+  sw_fd=sw_open(port);
   if (sw_link_test(sw_fd,port)){
     printf("Link #%d is not ready\n",port); exit(0);
   }

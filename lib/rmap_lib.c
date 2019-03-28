@@ -27,7 +27,7 @@ struct rmap_node_info {
 
 #define RM_ProtoID 0x01
 
-#define WaitLoop 200
+#define WaitLoop 2000
 
 unsigned char rmap_calc_crc(void *,unsigned int );
 int rmap_create_buffer(unsigned int, unsigned int, struct rmap_node_info *, unsigned int, unsigned int);
@@ -82,7 +82,7 @@ int rmap_get_data0(int sw_fd, int port,
     if ((j=sw_rx_status(sw_fd,port))>0) break;
   }
   if (i==WaitLoop){
-    printf("Timeout in rmap_get_data\n"); return -1;
+    printf("Timeout in rmap_get_data %d\n",i); return -1;
   }
 
   retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
@@ -336,7 +336,7 @@ int rmap_rcv_all(int sw_fd, int port, unsigned int tid, unsigned int *rx_size, u
   }
   retval=sw_rcv(sw_fd, port, rx_data, &status, tid, X_BUFFER_SIZE+100);
   if (retval>0){
-    rx_size=retval;
+    *rx_size=retval;
     return 0;
   }else{
     return RM_DATA_ERROR;

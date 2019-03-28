@@ -1151,11 +1151,11 @@ int fadc_get_event_dataM1(unsigned int *rdata, int check){
 	add=EBM+BufBase*(adc+j)->next+0x80000000;
 	tid=i*1000+j;
 	st+=rmap_req_data(sw_fd[i],i,&((adc+j)->node),tid,add,((adc+j)->totsize+1)/2*4);
-	st+=rmap_rcv_all(sw_fd[i],i,tid,&size,);
-	if ((st=rmap_rcv_header(sw_fd[i],i,&tid,&size,curpos))<0){
+	if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,curpos))<0){
 	  printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,j);
 	  return -1;
 	}
+	//	st+=rmap_rcv_header(sw_fd[i],i,tid,&size,);
 	//	portid=tid/1000;
 	//	nodeid=tid%1000;
 	//	if (portid==i && nodeid<fadc_num[i]){
@@ -1245,7 +1245,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
       for(i=0;i<DevsNum;i++){
 	if (nextnode[i]<fadc_num[i]){
 	  tid=i*1000+j;
-	  if ((st=rmap_rcv_header(sw_fd[i],i,tid,&size,(fadcinfo[i]+nodeid)->tgcreg))<0){
+	  if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,(fadcinfo[i]+nodeid)->tgcreg))<0){
 	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,j);
 	    return -1;
 	  }
@@ -1323,7 +1323,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  //	  st+=rmap_rcv_header_dma(sw_fd,i,&tid,&size);
 	  //#else
 	  tid=i*1000+j;
-	  if ((st=rmap_rcv_header(sw_fd[i],i,tid,&size,curpos))<0){
+	  if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,curpos))<0){
 	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,nextnode[i]);
 	    return -1;
 	  }
@@ -1375,7 +1375,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  //	  st+=rmap_rcv_header_dma(sw_fd,i,&tid,&size);
 	  //#else
 	  tid=i*1000+j;
-	  if ((st=rmap_rcv_header(sw_fd[i],i,tid,&size,adc->nextptr))<0){
+	  if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,adc->nextptr))<0){
 	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,nextnode[i]);
 	    return -1;
 	  }
@@ -1487,7 +1487,6 @@ int fadc_get_temp_each(int port, int nodeid, int *temp){
   if (id0==-1) return -1;
   add=TMP_Tmp;
   st=rmap_get_data(sw_fd[(fadcinfo[id0]+id1)->port],(fadcinfo[id0]+id1)->port,&((fadcinfo[id0]+id1)->node),add,temp,4);
-  printf("TEMP: %d\n",st);
   return st;
 }
 

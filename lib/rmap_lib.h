@@ -15,12 +15,16 @@ struct rmap_node_info {
   unsigned char key;
 };
 
+int rmap_get_data0(int, int, struct rmap_node_info *, unsigned int, unsigned int *, unsigned int);
 int rmap_get_data(int, int, struct rmap_node_info *, unsigned int, unsigned int *, unsigned int);
 int rmap_get_data_verbose(int, int, struct rmap_node_info *, unsigned int, unsigned int *, unsigned int);
 int rmap_get_data_W(int, int, struct rmap_node_info *, unsigned int, unsigned int *, unsigned int);
 int rmap_put_word(int, int, struct rmap_node_info *, unsigned int, unsigned int);
+int rmap_put_word0(int, int, struct rmap_node_info *, unsigned int, unsigned int);
 int rmap_put_word_verbose(int, int, struct rmap_node_info *, unsigned int, unsigned int);
+int rmap_req_data0(int, int, struct rmap_node_info *, unsigned int, unsigned int, unsigned int);
 int rmap_req_data(int, int, struct rmap_node_info *, unsigned int, unsigned int, unsigned int);
+int rmap_rcv_all(int, int, unsigned int, unsigned int *, unsigned int *);
 int rmap_rcv_header(int, int, unsigned int *, unsigned int *);
 int rmap_rcv_data(unsigned int, unsigned int *);
 int rmap_clr_data();

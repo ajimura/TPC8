@@ -16,9 +16,6 @@ int port;
 
 struct rmap_node_info n;
 
-char DevName[8][16]={"/dev/swsoc0","/dev/swsoc1","/dev/swsoc2","/dev/swsoc3",
-		     "/dev/swsoc4","/dev/swsoc5","/dev/swsoc6","/dev/swsoc7"};
-
 int main(int argc, char *argv[]) {
 
   int sw_fd;
@@ -35,8 +32,7 @@ int main(int argc, char *argv[]) {
   logaddr=0xfe;
   
   // open
-  sw_fd=open(DevName[port],O_RDWR);
-  //  sw_fd=sw_open();
+  sw_fd=sw_open(port);
   if (sw_link_test(sw_fd,port)){
     printf("Link #%d is not ready\n",port); exit(0);
   }
@@ -50,8 +46,8 @@ int main(int argc, char *argv[]) {
     printf("[%3d(%02x)] ",i,i);
     for(j=0;j<8;j++){
       add=(i+j)*4;
-      //      st=rmap_get_data(sw_fd,port,&n,add,&data,4);
-      st=rmap_get_data_verbose(sw_fd,port,&n,add,&data,4);
+      st=rmap_get_data(sw_fd,port,&n,add,&data,4);
+      //      st=rmap_get_data_verbose(sw_fd,port,&n,add,&data,4);
       printf("%08X ",be32toh(data));
     }printf("\n");
   }

@@ -38,6 +38,7 @@ int main(int argc, char *argv[]) {
   fadc_set_adc_info();
 
   //Init TMP103
+  printf("fadc_init_temp ...\n");
   fadc_init_temp();
 
   //Get Temparature

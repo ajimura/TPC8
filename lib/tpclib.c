@@ -68,7 +68,6 @@ int fadc_show_buf_stat(int);
 int fadc_get_data_size_each(struct fadc_info *);
 int fadc_get_totsize_each(struct fadc_info *);
 int fadc_get_data_each(struct fadc_info *, unsigned int *);
-int fadc_get_data_eachM(struct fadc_info *, unsigned int *);
 int fadc_release_buffer_each(struct fadc_info *);
 void fadc_prepare_next_each(struct fadc_info *);
 int fadc_init_temp_each(struct fadc_info *);
@@ -93,19 +92,12 @@ int sw_open_check(int *NumFADC){
       NumFADC[4]>93 || NumFADC[5]>93 || NumFADC[6]>93 || NumFADC[7]>93) return -1;
   fadc_tot=NumFADC[0]+NumFADC[1]+NumFADC[2]+NumFADC[3]+NumFADC[4]+NumFADC[5]+NumFADC[6]+NumFADC[7];
   for(i=0;i<DevsNum;i++) fadc_num[i]=NumFADC[i];
-  //  printf("We have %d %d %d %d boards\n",fadc_num[0],fadc_num[1],fadc_num[2],fadc_num[3]);
   FadcNum4Header0=NumFADC[0]+256*(NumFADC[1]+256*(NumFADC[2]+256*NumFADC[3]));
   FadcNum4Header1=NumFADC[4]+256*(NumFADC[5]+256*(NumFADC[6]+256*NumFADC[7]));
 
   for(i=0;i<DevsNum;i++){
     if (NumFADC[i]>0){
-      //      printf("open %s ...\n",devname[i]);
       sw_fd[i]=open(devname[i],O_RDWR);
-      //      sw_link_reset(sw_fd[i],i); usleep(500);
-      //      sw_rx_flush(sw_fd[i],i); usleep(500);
-      //      sw_link_reset(sw_fd[i],i); usleep(500);
-      //      sw_rx_flush(sw_fd[i],i); usleep(500);
-      //      sw_print_status(sw_fd[i],i);
       if (sw_link_check(sw_fd[i],i)){
 	printf("Link #%d is not ready\n",i);
 	return -1;
@@ -117,11 +109,9 @@ int sw_open_check(int *NumFADC){
 
 void fadc_close(){
   int i;
-  for(i=0;i<DevsNum;i++){
-    if (fadc_num[i]>0){
+  for(i=0;i<DevsNum;i++)
+    if (fadc_num[i]>0)
       sw_close(sw_fd[i]);
-    }
-  }
 }
 
 void fadc_set_adc_info(){
@@ -216,29 +206,21 @@ int fadc_init_each_adc(struct fadc_info *adc){
 
   add=ASC+0x020; data=0x03;
   st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
-  //  sw_print_status(sw_fd[adc->port],adc->port);
   add=ASC+0x020; data=0x00;
   st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
-  //  sw_print_status(sw_fd[adc->port],adc->port);
   add=ASC+0x000; data=0x3c;
   st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
-  //  sw_print_status(sw_fd[adc->port],adc->port);
   add=ASC+0x050; data=0x40;
   st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
-  //  sw_print_status(sw_fd[adc->port],adc->port);
 
   add=ASC+0x02c; data=div;
   st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
-  //  sw_print_status(sw_fd[adc->port],adc->port);
   add=ASC+0x058; data=phase1+phase*16;
   st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
-  //  sw_print_status(sw_fd[adc->port],adc->port);
   add=ASC+0x424; data=0x03;
   st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
-  //  sw_print_status(sw_fd[adc->port],adc->port);
   add=ASC+0x808; data=0x01;
   st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
-  //  sw_print_status(sw_fd[adc->port],adc->port);
 
   return st;
 }
@@ -388,7 +370,6 @@ int fadc_setup_each(struct fadc_info *adc){
   //Get NextBuf ID -> next
   add=TGC_NextBuf;
   st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&(adc->next), 4);
-  //  printf("NextBuf: %d-%d %d\n",adc->port,adc->nodeid,adc->next);
   return st;
 }
 
@@ -424,9 +405,7 @@ int fadc_read_thres(const char *filename, int factor){
     for(i=0;i<DevsNum;i++){
       for(j=0;j<fadc_num[i];j++){
 	if ((fadcinfo[i]+j)->port==port && (fadcinfo[i]+j)->nodeid==node){
-	  //	  (fadcinfo[i]+j)->thres[ch]=(int)(thres+rms*10.);
 	  (fadcinfo[i]+j)->thres[ch]=(int)(thres+rms*factor);
-	  //	printf("%d %d %d %f %f\n",port,node,ch,thres,rms);
 	}
       }
     }
@@ -480,11 +459,9 @@ int fadc_set_comp_each(struct fadc_info *adc, int cmptype){
   st=0;
   for(j=0;j<16;j++){
     add=EBM_Thres+ChBase*j; data=adc->thres[j];
-    //    printf("add, data: %08x %08x\n",add,data);
     st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   }
   add=EBM_CmpType; data=cmptype;
-  //    printf("add, data: %08x %08x\n",add,data);
   st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   return st;
 }
@@ -544,6 +521,7 @@ int fadc_read_set_trigio(const char *filename){
   }
 
   if (fadc_enable_localtrig_all()<0){
+    fclose(infile);
     return -1;
   }
 
@@ -707,11 +685,10 @@ int fadc_wait_data_ready_sel(){
   while(1){
     st=0; count=0;
     for(i=0;i<readynum;i++){
-      st=rmap_get_data(sw_fd[readychk_port[i]],readychk_port[i],&((fadcinfo[readychk_port[i]]+readychk_node[i])->node),
+      st=rmap_get_data(sw_fd[readychk_port[i]],readychk_port[i],
+		       &((fadcinfo[readychk_port[i]]+readychk_node[i])->node),
 		       add,&(regready),4);
       //      printf("ROC#%d-%d: %08x\n",readychk_port[i],readychk_node[i],regready);
-      //    printf("ROC: %08x %08X\n",adc->roc,(adc+1)->roc);
-      //      printf("IOstat: %08x\n",regready);
       if ((regready&0x000000f0)>0) count++;
     }
 
@@ -732,7 +709,6 @@ int fadc_show_buf_stat(int t){
   int times;
   struct fadc_info *adc;
   unsigned int roc;
-
 
   add0=TGC_IOstat;
   add1=TGC_FreeBuf;
@@ -769,13 +745,11 @@ int fadc_get_data_size_each(struct fadc_info *adc){
   int i,j;
   int add,data,st;
 
-  //  printf("[%02d-%02d]",adc->port,adc->nodeid);
   st=0;
   for(j=0;j<16;j++){
     add=EBM_DataSize+ChBase*j+BufBase*(adc->next);
     st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&(adc->size[j]),4);
-    //    printf("%3d(%04x) ",adc->size[j],adc->size[j]);
-  } //printf("\n");
+  }
   return st;
 }
 
@@ -786,9 +760,8 @@ int fadc_get_totsize(){
   unsigned int tid,size;
   struct fadc_info *adc;
 
-  st=0;  count=4;  j=0;
+  st=0;  count=DevsNum;  j=0;
   while(count>0){
-    printf("(1)%d\n",j);
     count=0;
     for(i=0;i<DevsNum;i++){
       if (fadc_num[i]>j){
@@ -806,14 +779,11 @@ int fadc_get_totsize_each(struct fadc_info *adc){
   int add,data,st;
   unsigned int tid,size;
 
-  //  printf("[%02d-%02d]",adc->port,adc->nodeid);
   st=0;
   add=EBM_TotSize+BufBase*(adc->next);
   tid=adc->port*100+adc->nodeid;
   st+=rmap_req_data(sw_fd[adc->port],adc->port,&(adc->node),tid,add,4);
   st+=rmap_rcv_all(sw_fd[adc->port],adc->port,tid,&size,&(adc->totsize)); // <==== must check
-  //  st+=rmap_rcv_header(sw_fd[adc->port],adc->port,&tid,&size);
-  //  st+=rmap_rcv_data(tid,&(adc->totsize)); // <==== must check
   //  printf("TotSize: %3d(%04x) %d\n",adc->totsize,adc->totsize,st);
   return st;
 }
@@ -826,7 +796,7 @@ int fadc_get_totsizeM2(){
   int portid, nodeid;
   struct fadc_info *adc;
 
-  st=0; count=4; j=0;
+  st=0; count=DevsNum; j=0;
   while(count>0){
     count=0;
     for(i=0;i<DevsNum;i++){
@@ -841,22 +811,12 @@ int fadc_get_totsizeM2(){
     for(i=0;i<DevsNum;i++){
       if (j<fadc_num[i]){
 	tid=i*1000+j;
-	//	if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
-	if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,&data))<0){
-	//	st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
-	//	portid=tid/1000;
-	//	nodeid=tid%1000;
-	//	if (portid==i && nodeid<fadc_num[i]){
-	//	  st+=rmap_rcv_data(tid,&((fadcinfo[i]+j)->totsize));
-	//	  //	  printf("TotSize(%d-%d): %3d(%04x) %d\n",
-	//	  //		 i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize,st);
-	//	}else{
-	  printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,j);
+	if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
+	  printf("Wrong TID: %d %d\n",i,j);
 	  return -1;
 	}
-	(fadcinfo[i]+j)->totsize=data;
-		printf("TotSize(%d-%d): %3d(%04x) %d\n",
-		       i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize,st);
+	//	printf("TotSize(%d-%d): %3d(%04x) %d\n",
+	//	       i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize,st);
       }
     }
     j++;
@@ -870,14 +830,13 @@ int fadc_get_event_data(unsigned int *rdata, int check){
   struct fadc_info *adc;
   int totsize, eachsize;
 
-  //  printf("start read data\n");
-
   curpos=rdata;
 
-  curpos++; totsize=4;	// reserved for total size
-  *(curpos++)=FadcNum4Header0; totsize+=4;	// fadc num
-  *(curpos++)=FadcNum4Header1; totsize+=4;	// fadc num
-  //  curpos++; totsize+=4;	// reserved
+  //now these header obsoleted(20181004)
+  //  curpos++; totsize=4;	// reserved for total size
+  //  *(curpos++)=FadcNum4Header0; totsize+=4;	// fadc num
+  //  *(curpos++)=FadcNum4Header1; totsize+=4;	// fadc num
+  totsize=0;
 
   for(i=0;i<DevsNum;i++){
     adc=fadcinfo[i];
@@ -914,9 +873,7 @@ int fadc_get_data_each(struct fadc_info *adc, unsigned int *rdata){
   //TGC Count
   add=TGC_TrigID+BufBase*bufid;
   st=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&tcount,4);
-  //  printf("Get #%d Event ! port=%d node=%d bufid=%d\n",
-  //	   tcount,adc->port,adc->nodeid,bufid);
-  //Get TGC TimeStamp -> EBM TimeStamp
+  //  printf("Get #%d Event ! port=%d node=%d bufid=%d\n",tcount,adc->port,adc->nodeid,bufid);
   add=TGC_FClk+BufBase*bufid;
   st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&fclk,4);
   add=TGC_CClk+BufBase*bufid;
@@ -925,11 +882,12 @@ int fadc_get_data_each(struct fadc_info *adc, unsigned int *rdata){
 
   if (st<0) return -1;
 
+  //need check buffer structure (struc. has been changed for M2. is it ok, still?)
   *bufdata++ = (adc->port<<16)|adc->nodeid; retsize+=4;
   *bufdata++ = tcount; retsize+=4;
   *bufdata++ = fclk; retsize+=4;
   *bufdata++ = cclk; retsize+=4;
-  bufdata++; retsize+=4;	// reserved
+  *bufdata++ = (j<<16)|(adc->totsize*2); retsize+=4;
   bufdata++; retsize+=4;	// reserved
   st=0;
   for(j=0;j<16;j++){
@@ -937,7 +895,6 @@ int fadc_get_data_each(struct fadc_info *adc, unsigned int *rdata){
     //    bufdata++; retsize+=4;	// reserved
     add=MemBase + ChBase*j + BufBase*bufid;
     st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,bufdata,(adc->size[j]+1)/2*4);
-    //    st+=rmap_get_dma(sw_fd[adc->port],adc->port,&(adc->node),add,bufdata,(adc->size[j]+1)/2*4);
     bufdata+=((adc->size[j]+1)/2); retsize+=((adc->size[j]+1)/2*4);
   }
   *bufdata++ = 0xffff0000; retsize+=4;
@@ -958,7 +915,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
   st=0;
 
   /* get TGC registers */
-  count=4;
+  count=DevsNum;
   for(i=0;i<DevsNum;i++) curnode[i]=0;
   while(count>0){
     count=0;
@@ -971,7 +928,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  tid=i*1000+j;
 	  add=TGC_TrigID+BufBase*((fadcinfo[i]+j)->next);
 	  st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,12);
-	  	  printf("REQ: %d-%d\n",i,j);
+	  //	  printf("REQ: %d-%d\n",i,j);
 	  break;
 	}else{
 	  (fadcinfo[i]+j)->totsize=0;
@@ -980,22 +937,16 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
     }
     if (count>0){
       for(i=0;i<DevsNum;i++){
-	if (nextnode[i]<fadc_num[i]){
-	  nodeid=nextnode[i];
-	  tid=i*1000+j;
+	nodeid=nextnode[i];
+	if (nodeid<fadc_num[i]){
+	  tid=i*1000+nodeid;
 	  if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,(fadcinfo[i]+nodeid)->tgcreg))<0){
-	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,j);
+	    printf("Wrong TID: %d %d\n",i,nodeid);
 	    return -1;
 	  }
-	    //	  st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
-	  printf("RCVH: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
-	    //	  portid=tid/1000;
-	    //	  nodeid=tid%1000;
-	    //	  if (portid==i && nodeid<fadc_num[i]){
-	    //	    st+=rmap_rcv_data(tid,(fadcinfo[i]+nodeid)->tgcreg);
-	  printf("RCVD: %d-%d\n",i,nextnode[i]);
+	  printf("RCV: %d-%d size: %d(%x)\n",i,nodeid,size,size);
 	  printf("TrigID(%d-%d): %3d %x %x\n",
-		 i,nodeid, //portid,nodeid,
+		 i,nodeid,
 		 (fadcinfo[i]+nodeid)->tgcreg[0],
 		 (fadcinfo[i]+nodeid)->tgcreg[1],
 		 (fadcinfo[i]+nodeid)->tgcreg[2]);
@@ -1003,15 +954,11 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	    if ((fadcinfo[i]+nodeid)->tgcreg[0]!=check){
 	      printf("Event mismatch!\n");
 	      printf("%d-%d: %d should be %d\n",
-		     *(curpos)>>16,*(curpos)&0xffff,(fadcinfo[i]+nodeid)->tgcreg[0],check);
+		     i,nodeid,(fadcinfo[i]+nodeid)->tgcreg[0],check);
 	      return -1;
 	    }
 	  }
-	  //	  }else{
-	  //	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,j);
-	  //	    return -1;
-	  //	  }
-	  curnode[i]=nextnode[i]+1;
+	  curnode[i]=nodeid+1;
 	}
       }
     }
@@ -1025,19 +972,16 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
   //  *(curpos++)=FadcNum4Header1; totsize+=4;	// fadc num
   totsize=0;
 
-  //  printf("start read data\n");
-
   /* get event data */
   count=DevsNum;
   for(i=0;i<DevsNum;i++) curnode[i]=0;
-  //  for(i=0;i<4;i++) nextnode[i]=fadc_num[i];
   while(count>0){
     count=0;
     for(i=0;i<DevsNum;i++){
       nextnode[i]=fadc_num[i];
       for(j=curnode[i];j<fadc_num[i];j++){
-		printf("*TotSize(%d-%d): %3d(%04x) %d\n",
-		       i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize,st);
+	printf("*TotSize(%d-%d): %3d(%04x) %d\n",
+	       i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize,st);
 	if ((fadcinfo[i]+j)->totsize>0){
 	  count++;
 	  nextnode[i]=j;
@@ -1055,32 +999,20 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  adc=fadcinfo[i]+nextnode[i];
 	  *(curpos++)=(i<<16)|nextnode[i]; totsize+=4;
 	  memcpy(curpos,(adc)->tgcreg,12); curpos+=3; totsize+=12;
-	  //	  curpos++; totsize+=4; // <- here, the size info for each fadc should be placed?
 	  // put datasize for each fadc. notice ch header included (unit: byte)
 	  *(curpos++)=(adc)->totsize*2; totsize+=4;
 	  *(curpos++)=0; totsize+=4;
-	  //#ifdef DMA
-	  //	  st+=rmap_rcv_header_dma(sw_fd,i,&tid,&size);
-	  //#else
-	  tid=i*1000+j;
+	  tid=i*1000+nextnode[i];
 	  if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,curpos))<0){
-	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,nextnode[i]);
+	    printf("Wrong TID: %d %d\n",i,nextnode[i]);
 	    return -1;
 	  }
-	  //	  st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
-	  //	  //#endif
-	  printf("RCVH: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
-	  //	  portid=tid/1000;
-	  //	  nodeid=tid%1000;
-	  //	  if (portid==i && nodeid<fadc_num[i]){
-	  //	    st+=rmap_rcv_data(tid,curpos);
-	  printf("RCVD: %d-%d at %d(%x)\n",i,nextnode[i],curpos-rdata,curpos-rdata);
-	  //	  }else{
-	  //	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,nextnode[i]);
-	  //	    return -1;
-	  //	  }
+	  printf("RCV: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
+	  printf("RCV: %d-%d at %d(%x)\n",i,nextnode[i],curpos-rdata,curpos-rdata);
 	  curnode[i]=nextnode[i]+1;
-	  (adc)->nextptr=curpos+size/4;
+	  // if the request data size increases more than 0x3fff, need to separate read twice.
+	  // in the case, 2nd read should start at nextptr.
+	  //	  (adc)->nextptr=curpos+size/4;
 	  curpos+=((adc)->totsize+1)/2; totsize+=(((adc)->totsize+1)/2*4);
 	  (adc)->totsize-=size/2;
 	  *(curpos++)=0xffff0000; totsize+=4;
@@ -1088,11 +1020,12 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
       }
     }
   }
-  count=4;
+  // following part is for 2nd stage of read process.
+  /*
+  count=DevsNum;
   for(i=0;i<DevsNum;i++) curnode[i]=0;
   while(count>0){
     count=0;
-    //    printf("curnode: %d %d %d %d\n",curnode[0],curnode[1],curnode[2],curnode[3]);
     for(i=0;i<DevsNum;i++){
       nextnode[i]=fadc_num[i];
       for(j=curnode[i];j<fadc_num[i];j++){
@@ -1111,31 +1044,19 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
       for(i=0;i<DevsNum;i++){
 	if (nextnode[i]<fadc_num[i]){
 	  adc=fadcinfo[i]+nextnode[i];
-	  //#ifdef DMA
-	  //	  st+=rmap_rcv_header_dma(sw_fd,i,&tid,&size);
-	  //#else
-	  tid=i*1000+j;
+	  tid=i*1000+nextnode[i];
 	  if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,adc->nextptr))<0){
-	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,nextnode[i]);
+	    printf("Wrong TID: %d %d\n",nextnode[i]);
 	    return -1;
 	  }
-	  //	  st+=rmap_rcv_header(sw_fd[i],i,&tid,&size);
-	  //	  //#endif
 	  printf("RCVH: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
-	  //	  portid=tid/1000;
-	  //	  nodeid=tid%1000;
-	  //	  if (portid==i && nodeid<fadc_num[i]){
-	  //	    st+=rmap_rcv_data(tid,adc->nextptr);
 	  printf("RCVD: %d-%d at %d(%x)\n",i,nextnode[i],adc->nextptr-rdata,adc->nextptr-rdata);
-	  //	  }else{
-	  //	    printf("Wrong TID: %d %d (%d %d)\n",portid,nodeid,i,nextnode[i]);
-	  //	    return -1;
-	  //	  }
 	  curnode[i]=nextnode[i]+1;
 	}
       }
     }
   }
+  */
   // now this footer is obsolted
   //  *curpos=0xf0f0f0f0; totsize+=4;
   //  *rdata=totsize;
@@ -1161,8 +1082,6 @@ int fadc_release_buffer_each(struct fadc_info *adc){
   unsigned int add, data;
   add=ROC_Done; data=1<<(adc->next);
   st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
-  //  add=ROC_Done; data=0;
-  //  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   return st;
 }
 
@@ -1178,13 +1097,11 @@ void fadc_prepare_next(){
 }
 
 void fadc_prepare_next_each(struct fadc_info *adc){
-  //  printf("next: %d -> ",adc->next);
   if (adc->next==NumEvtBuffer-1){
     (adc->next)=0;
   }else{
     (adc->next)++;
   }
-  //  printf("%d\n",adc->next);
 }
 
 int fadc_init_temp(){
@@ -1242,7 +1159,7 @@ void fadc_check_roc_trig(){
     for(j=0;j<fadc_num[i];j++){
       st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&((adc+j)->roc),4);
       if ((adc+j)->roc>>(adc+j)->next&1) printf("%d ",j);
-      //    printf("ROC: %08x %08X\n",adc->roc,(adc+1)->roc);                                                                                                                                            
+      //    printf("ROC: %08x %08X\n",adc->roc,(adc+1)->roc);
     }printf("\n");
   }
   add=TGC_IOstat;
@@ -1253,7 +1170,7 @@ void fadc_check_roc_trig(){
     for(j=0;j<fadc_num[i];j++){
       st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&data,4);
       if ((data&0x000000f0)>0) printf("%d ",j);
-      //    printf("ROC: %08x %08X\n",adc->roc,(adc+1)->roc);                                                                                                                                            
+      //    printf("ROC: %08x %08X\n",adc->roc,(adc+1)->roc);
     }printf("\n");
   }
 }
@@ -1287,7 +1204,7 @@ void fadc_check_busy(){
     for(j=0;j<fadc_num[i];j++){
       st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&data,4);
       if ((data&0x00000f00)>0) printf("%d ",j);
-      //    printf("ROC: %08x %08X\n",adc->roc,(adc+1)->roc);                                                                                                                                            
+      //    printf("ROC: %08x %08X\n",adc->roc,(adc+1)->roc);
     }printf("\n");
   }
   add=TGC_IOstat;
@@ -1298,7 +1215,7 @@ void fadc_check_busy(){
     for(j=0;j<fadc_num[i];j++){
       st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&data,4);
       if ((data&0x0000f000)>0) printf("%d ",j);
-      //    printf("ROC: %08x %08X\n",adc->roc,(adc+1)->roc);                                                                                                                                            
+      //    printf("ROC: %08x %08X\n",adc->roc,(adc+1)->roc);
     }printf("\n");
   }
 }

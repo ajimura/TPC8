@@ -16,11 +16,9 @@ int main(int argc, char *argv[]) {
   int NumFADC[8];
   int fadc_totnum;
 
-  unsigned int add, data;
-  int st;
+  //  int st;
   int i,j;
-  int numfadc;
-  int port, nodeid, temp;
+  unsigned int temp;
 
   for(i=0;i<8;i++) NumFADC[i]=0;
 

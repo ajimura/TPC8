@@ -24,7 +24,6 @@ int main(int argc, char *argv[]) {
   unsigned int logaddr;
   unsigned int key;
   int st;
-  int i,j;
   int nodeid,offset;
 
   printf("Port#? ");
@@ -57,6 +56,7 @@ int main(int argc, char *argv[]) {
   n.key=key;
 
   st=rmap_put_word(sw_fd,port,&n,add,data);
+  if (st<0) printf("RMAP Error\n");
 
   sw_close(sw_fd);
   exit(0);

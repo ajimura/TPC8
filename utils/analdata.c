@@ -26,14 +26,14 @@ struct FadcDataInfo {
   struct hitDataInfo hitData[16][20];
 };
 
-struct HeaderInfo {
-  int ComponentType;
-  int ComponentID;
-  int totNumFADC;
-  int seq_num;
-  int year,mon,day,hour,min,sec;
-  int EventTag;
-};
+//struct HeaderInfo {
+//  int ComponentType;
+//  int ComponentID;
+//  int totNumFADC;
+//  int seq_num;
+//  int year,mon,day,hour,min,sec;
+//  int EventTag;
+//};
 
 int main(int argc, char *argv[]) {
 
@@ -41,7 +41,7 @@ int main(int argc, char *argv[]) {
 
   unsigned int *indata, *curptr;
   int i,j,k,l,m;
-  unsigned int totsize, tpcsize, eachsize;
+  unsigned int totsize, eachsize;
   int ch;
   int NumFADC[8];
   int numevent=0;
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
   int port, nodeid;
 
   struct FadcDataInfo *Data[8], *DataPtr;
-  struct HeaderInfo Header;
+  //  struct HeaderInfo Header;
 
   if ((infile=open(argv[1],O_RDONLY))<0){
     printf("Cannot open file...\n"); exit(-1);

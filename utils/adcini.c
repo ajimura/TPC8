@@ -9,8 +9,7 @@
 int main(int argc, char *argv[]) {
 
   int NumFADC[8];
-  int st;
-  int i,j;
+  int i;
 
   for(i=0;i<8;i++) NumFADC[i]=0;
   

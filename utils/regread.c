@@ -24,7 +24,6 @@ int main(int argc, char *argv[]) {
   unsigned int logaddr;
   unsigned int key;
   int st;
-  int i,j;
   int nodeid,offset;
 
   printf("Port#? ");
@@ -53,6 +52,10 @@ int main(int argc, char *argv[]) {
   n.key=key;
 
   st=rmap_get_data_verbose(sw_fd,port,&n,add,&data,4);
+  if (st<0){
+    printf("Error on RMAP\n");
+    exit(-1);
+  }
   if (offset==0)
     printf("[%04X] %08X\n",add,be32toh(data));
   else

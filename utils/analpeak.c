@@ -31,14 +31,14 @@ struct FadcDataInfo {
   struct hitDataInfo hitData[16][MaxHit];
 };
 
-struct HeaderInfo {
-  int ComponentType;
-  int ComponentID;
-  int totNumFADC;
-  int seq_num;
-  int year,mon,day,hour,min,sec;
-  int EventTag;
-};
+//struct HeaderInfo {
+//  int ComponentType;
+//  int ComponentID;
+//  int totNumFADC;
+//  int seq_num;
+//  int year,mon,day,hour,min,sec;
+//  int EventTag;
+//};
 
 struct PeakInfo {
   double mean[16];
@@ -52,8 +52,8 @@ int main(int argc, char *argv[]) {
   int infile;
 
   unsigned int *indata, *curptr;
-  int i,j,k,l,m;
-  unsigned int totsize, tpcsize, eachsize;
+  int i,j,k,l;
+  unsigned int totsize, eachsize;
   int ch;
   int NumFADC[8];
   int numevent=0;
@@ -70,7 +70,7 @@ int main(int argc, char *argv[]) {
   double coef[2];
 
   struct FadcDataInfo *Data[8], *DataPtr;
-  struct HeaderInfo Header;
+  //  struct HeaderInfo Header;
   struct PeakInfo *Peak[8], *PeakPtr;
 
   if ((infile=open(argv[1],O_RDONLY))<0){

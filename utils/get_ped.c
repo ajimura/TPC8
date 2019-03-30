@@ -20,16 +20,15 @@ unsigned int FadcNum4Header1;
 int main(int argc, char *argv[]) {
   int NumFADC[8];
   int fadc_totnum;
-  int st;
-  int i,j;
+  //  int st;
+  int i;
   //  unsigned int rdata[2+(257*16+5)*10];
   unsigned int *rdata;
   int totsize;
   int outfile;
   int input;
   int cmptype;
-  int trigenab, trigio;
-  int thres;
+  int trigenab;
   int maxloop;
   /* stat */
   int datanum=0;
@@ -63,7 +62,6 @@ int main(int argc, char *argv[]) {
   //  else trigenab=FADC_IntTrig;
 
   cmptype=0x1010;
-  thres=0;
 
   // set adc info
   fadc_set_adc_info();

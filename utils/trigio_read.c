@@ -12,15 +12,10 @@ int main(int argc, char* argv[]){
   char* sitcpIpAddr;
   unsigned int sitcpPort;
 
-  char line[100];
-  int loop,i,j;
   int st;
 
   unsigned char data[2048];
-  unsigned short *dataS;
   unsigned int addr;
-
-  dataS=(unsigned short *)data;
 
   if(argc != 3){
     sitcpIpAddr = DEFAULT_IP;
@@ -33,6 +28,7 @@ int main(int argc, char* argv[]){
   if (trigio_ini(sitcpIpAddr, sitcpPort)<0) exit(-1);
 
   addr=0x00000000; st=trigio_rd(addr,data,16);
+  if (st<0) printf("Error...\n");
   printf("Current Event Tag:\t0x%02X\n",data[11]);
   printf("Trig Count:\t\t0x%02X\n",data[12]);
   printf("Buf Write Pointer:\t0x%02X\n",data[13]);

@@ -11,7 +11,6 @@
 
 int main(int argc, char *argv[]) {
 
-  int port;
   int NumFADC[8];
   int st;
   int i,j;
@@ -31,7 +30,10 @@ int main(int argc, char *argv[]) {
   for(i=0;i<8;i++)
     if (NumFADC[i]>0)
       for(j=0;j<NumFADC[i];j++){
-	st=fadc_node_init(i, j);
+	if ((st=fadc_node_init(i,j))<0){
+	  printf("Errora at %d-%d\n",i,j);
+	  exit(-1);
+	}
       }
 
   fadc_close();

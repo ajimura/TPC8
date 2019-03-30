@@ -68,8 +68,8 @@ void fadc_solve_parabolaD(double *x, double *y, double *coef){
   double x1,x2,x3,y1,y2,y3;
   double a,b,c;
   double pos,height;
-  x1=*x;  x2=*(x+1);  x2=*(x+2);
-  y1=*y;  y2=*(y+1);  y2=*(y+2);
+  x1=*x;  x2=*(x+1);  x3=*(x+2);
+  y1=*y;  y2=*(y+1);  y3=*(y+2);
   denom=(x1-x2)*(x2-x3)*(x3-x1);
   a=( x1*(y2-y3) + x2*(y3-y1) +  x3*(y1-y2) ) / denom;
   b=-( x1*x1*(y2-y3) + x2*x2*(y3-y1) +  x3*x3*(y1-y2) ) / denom;

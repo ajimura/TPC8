@@ -16,8 +16,8 @@ int main(int argc, char *argv[]) {
   int i,j;
   int fd0;
   int fd1;
-  int data[4096];
-  int ret[4096];
+  unsigned int data[4096];
+  unsigned int ret[4096];
 
   int port0, port1;
   int loop;

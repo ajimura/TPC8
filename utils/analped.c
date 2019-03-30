@@ -32,15 +32,12 @@ int main(int argc, char *argv[]) {
   int infile;
 
   unsigned int *indata, *curptr;
-  int iloop,loop;
   int i,j,k;
-  unsigned int totsize, eachsize;
+  unsigned int totsize;
   int ch;
   int numfadc;
-  int numevent=0;
   int readsize;
   unsigned int footer;
-  double mean[16],sigma[16],sigma2[16],num[16];
   FILE *outfile;
 
   struct FadcData Data[MaxNumFADC];

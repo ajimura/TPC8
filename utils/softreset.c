@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
 
   int sw_fd;
 
-  unsigned int add, data;
+  unsigned int add, data=0;
   unsigned int nodeid;
   unsigned int logaddr;
   int st;
@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
 
   add=CMN_Reset;
   st=rmap_put_word(sw_fd,port,&n,add,data);
-
+  if (st<0) printf("RMAP Error\n");
   sw_close(sw_fd);
   exit(0);
 }

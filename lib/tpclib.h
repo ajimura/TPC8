@@ -61,7 +61,7 @@ int fadc_get_event_dataM2(unsigned int *, int);
 int fadc_release_buffer(void);
 void fadc_prepare_next(void);
 int fadc_init_temp(void);
-int fadc_get_temp_each(int, int, int *);
+int fadc_get_temp_each(int, int, unsigned int *);
 void fadc_check_roc_trig(void);
 void fadc_show_roc(void);
 void fadc_check_busy(void);

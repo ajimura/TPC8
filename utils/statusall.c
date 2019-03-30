@@ -10,8 +10,7 @@
 #include "swsoc_lib.h"
 
 int main(int argc, char *argv[]) {
-  int fd[8],ret;
-  int ch;
+  int fd[8];
   int i;
   unsigned int com[8],tx[8],rx[8];
 

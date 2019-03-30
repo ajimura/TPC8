@@ -10,7 +10,7 @@
 #include "swsoc_lib.h"
 
 int main(int argc, char *argv[]) {
-  int fd,ret;
+  int fd;
   int ch;
   if (argc>1){
     sscanf(argv[1],"%d",&ch);

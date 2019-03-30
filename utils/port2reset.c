@@ -26,7 +26,6 @@ int main(int argc, char *argv[]) {
   unsigned int nodeid;
   unsigned int logaddr;
   int st;
-  int i,j;
 
   printf("Port#? ");
   scanf("%d",&port);
@@ -50,10 +49,10 @@ int main(int argc, char *argv[]) {
 
   /* link reset port2 */
   add=0x2200; data=LinkDN;
-  st=rmap_put_word(sw_fd,port,&n,add,data);
+  st =rmap_put_word(sw_fd,port,&n,add,data);
   add=0x2200; data=LinkUP;
-  st=rmap_put_word(sw_fd,port,&n,add,data);
-
+  st+=rmap_put_word(sw_fd,port,&n,add,data);
+  if (st<0) printf("RMAP Error\n");
   sw_close(sw_fd);
   exit(0);
 }

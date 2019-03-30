@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
   int node;
   int NumFADC[8];
   int st;
-  int i,j;
+  int i;
 
   if (argc<2){
     printf("few argument...\n");
@@ -31,7 +31,8 @@ int main(int argc, char *argv[]) {
   // open
   if (sw_open_check(NumFADC)<0) exit(0);
 
-  st=fadc_node_init(port, node);
+  if ((st=fadc_node_init(port, node))<0)
+    printf("Error...\n");
 
   fadc_close();
   exit(0);

@@ -12,16 +12,6 @@ int main(int argc, char* argv[]){
   char* sitcpIpAddr;
   unsigned int sitcpPort;
 
-  char line[100];
-  int loop,i,j;
-  int st;
-
-  unsigned char data[2048];
-  unsigned short *dataS;
-  unsigned int addr;
-
-  dataS=(unsigned short *)data;
-
   if(argc != 3){
     sitcpIpAddr = DEFAULT_IP;
       sitcpPort   = DEFAULT_PORT;

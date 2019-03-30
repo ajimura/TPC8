@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
   int node;
   int NumFADC[8];
   int st;
-  int i,j;
+  int i;
 
   if (argc<2){
     printf("few argument...\n");
@@ -32,6 +32,7 @@ int main(int argc, char *argv[]) {
   if (sw_open_check(NumFADC)<0) exit(0);
 
   st=fadc_node_def(port, node);
+  if (st<0) printf("RMAP Error\n");
 
   fadc_close();
   exit(0);

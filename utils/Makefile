@@ -1,5 +1,6 @@
 # Makefile for sw
 
+CFLAGS += -Wall
 #LDFLAGS = -I/usr/share/swsoc8/include/ -I../lib/
 LDFLAGS = -I../../swsoc8/include/ -I../lib/
 LOADLIBS =

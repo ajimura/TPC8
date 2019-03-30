@@ -62,13 +62,8 @@ int rmap_get_data0(int sw_fd, int port,
 {
   int i,j;
   int retval;
-  unsigned int rxdata, n_data;
-  unsigned char *ptr, *crc_start;
-  unsigned int header_size;
-  int in_length;
-  unsigned int remain;
+  unsigned int n_data;
   int packet_size;
-  int ret_tid, ret_status;
 
   //  if (rx_size>2048) n_data=2048;
   if (rx_size>X_BUFFER_SIZE) n_data=X_BUFFER_SIZE;
@@ -119,13 +114,8 @@ int rmap_get_data(int sw_fd, int port,
 {
   int i,j;
   int retval;
-  unsigned int rxdata, n_data;
-  unsigned char *ptr, *crc_start;
-  unsigned int header_size;
-  int in_length;
-  unsigned int remain;
-  int packet_size;
-  int ret_tid, ret_status;
+  unsigned int n_data;
+  int ret_status;
 
   if (rx_size>X_BUFFER_SIZE) n_data=X_BUFFER_SIZE;
   else n_data=rx_size;
@@ -162,11 +152,7 @@ int rmap_get_data_verbose(int sw_fd, int port,
 {
   int i,j;
   int retval;
-  unsigned int rxdata, n_data;
-  unsigned char *ptr, *crc_start;
-  unsigned int header_size;
-  int in_length;
-  unsigned int remain;
+  unsigned int n_data;
   int packet_size;
 
   //  if (rx_size>2048) n_data=2048;
@@ -229,11 +215,8 @@ int rmap_get_data_W(int sw_fd, int port,
 			   unsigned int rx_size)
 {
   int i,j;
-  unsigned int rxdata, n_data;
-  unsigned char *ptr, *crc_start;
+  unsigned int n_data;
   unsigned int retval;
-  unsigned int header_size;
-  int in_length;
   unsigned int remain;
   unsigned int *curpos;
   int packet_size;
@@ -281,32 +264,20 @@ int rmap_req_data0(int sw_fd, int port, struct rmap_node_info *n,
 			   unsigned int rx_address,
 			   unsigned int rx_size)
 {
-  int i;
-  unsigned int rxdata, n_data;
-  unsigned char *ptr, *crc_start;
+  unsigned int n_data;
   unsigned int retval;
-  unsigned int header_size;
-  int in_length;
   int packet_size;
 
   //  printf("TID(req)=%X(%d)\n",tid,tid);
 
   //  if (rx_size>2048) n_data=2048;
   //  else n_data=rx_size;
-  //  if (rx_size>X_BUFFER_SIZE) n_data=X_BUFFER_SIZE; else n_data=rx_size;
+  if (rx_size>X_BUFFER_SIZE) n_data=X_BUFFER_SIZE; else n_data=rx_size;
 
   packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_ACK|RM_PCKT_INC,tid,n,rx_address,n_data);
   retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer,
   		       packet_size);
 
-  /*
-  for(i=0;i<header_size+n->out_size+1;i++){
-    printf("%02x ",tx_buffer[i]);
-    if ((i+1)%8==0) printf("\n");
-  }printf("\n");
-  */
-
-  
   return retval;
 }
 
@@ -325,7 +296,7 @@ int rmap_req_data(int sw_fd, int port, struct rmap_node_info *n,
 
 int rmap_rcv_all(int sw_fd, int port, unsigned int tid, unsigned int *rx_size, unsigned int *rx_data){
   unsigned int retval;
-  unsigned int status;
+  int status;
   int i,j;
   
   for(i=0;i<WaitLoop;i++) {
@@ -335,12 +306,10 @@ int rmap_rcv_all(int sw_fd, int port, unsigned int tid, unsigned int *rx_size, u
     printf("Timeout in rmap_rcv_header\n"); return -1;
   }
   retval=sw_rcv(sw_fd, port, rx_data, &status, tid, X_BUFFER_SIZE+100);
-  if (retval>0){
-    *rx_size=retval;
-    return 0;
-  }else{
-    return RM_DATA_ERROR;
-  }
+  if (status>0) return RM_LINK_ERROR;
+  if (retval==0) return RM_DATA_ERROR;
+  *rx_size=retval;
+  return 0;
 }
 
 int rmap_put_word0(int sw_fd, int port,
@@ -348,26 +317,12 @@ int rmap_put_word0(int sw_fd, int port,
 			   unsigned int tx_address, 
 			   unsigned int tx_data)
 {
-  unsigned char *ptr,*dptr,*crc_start;
-  int n_data,i,j;
-  unsigned int rxdata, retval;
-  unsigned int header_size;
-  unsigned int data_size;
-  int in_length;
+  int i,j;
+  unsigned int retval;
   int packet_size;
   
   packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_WRT|RM_PCKT_ACK,0x0000,n,tx_address,tx_data);
-  retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer,
-		       packet_size);
-  //  sw_print_status(sw_fd,port);
-
-  /*
-  for(i=0;i<header_size+n->out_size+data_size+2;i++){
-    printf("%02x ",tx_buffer[i]);
-    if ((i+1)%8==0) printf("\n");
-  }printf("\n");
-  */
-
+  retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer, packet_size);
 
   for(i=0;i<8000;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
@@ -389,7 +344,7 @@ int rmap_put_word0(int sw_fd, int port,
   if (retval==0) return RM_LINK_ERROR;
   
   // GET STATUS
-  if ( rx_buffer[3]&0xff != 0x00) // NOT SUCCESS
+  if ( (rx_buffer[3]&0xff) != 0x00) // NOT SUCCESS
     return RM_DATA_ERROR;
 
   return 0;
@@ -401,13 +356,8 @@ int rmap_put_word(int sw_fd, int port,
 			   unsigned int tx_address, 
 			   unsigned int tx_data)
 {
-  unsigned char *ptr,*dptr,*crc_start;
-  int n_data,i,j;
-  unsigned int rxdata, retval;
-  unsigned int header_size;
-  unsigned int data_size;
-  int in_length;
-  int packet_size;
+  int i,j;
+  unsigned int retval;
   
   retval=sw_req(sw_fd,port,RM_PCKT_CMD|RM_PCKT_WRT|RM_PCKT_ACK,
 		n->src_addr,n->dest_addr,n->key,0x1234,tx_address,tx_data);
@@ -424,7 +374,7 @@ int rmap_put_word(int sw_fd, int port,
   if (retval==0) return RM_LINK_ERROR;
   
   // GET STATUS
-  if ( rx_buffer[3]&0xff != 0x00) // NOT SUCCESS
+  if ( (rx_buffer[3]&0xff) != 0x00) // NOT SUCCESS
     return RM_DATA_ERROR;
 
   return 0;
@@ -436,17 +386,12 @@ int rmap_put_word_verbose(int sw_fd, int port,
 			   unsigned int tx_address, 
 			   unsigned int tx_data)
 {
-  unsigned char *ptr,*dptr,*crc_start;
-  int n_data,i,j;
-  unsigned int rxdata, retval;
-  unsigned int header_size;
-  unsigned int data_size;
-  int in_length;
+  int i,j;
+  unsigned int retval;
   int packet_size;
   
   packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_WRT|RM_PCKT_ACK,0x0000,n,tx_address,tx_data);
-  retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer,
-		       packet_size);
+  retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer, packet_size);
 
   printf("tx buffer ---\n");
   for(i=0;i<packet_size;i++){
@@ -472,7 +417,7 @@ int rmap_put_word_verbose(int sw_fd, int port,
   if (retval==0) return RM_LINK_ERROR;
   
   // GET STATUS
-  if ( rx_buffer[3]&0xff != 0x00) // NOT SUCCESS
+  if ( (rx_buffer[3]&0xff) != 0x00) // NOT SUCCESS
     return RM_DATA_ERROR;
 
   return 0;

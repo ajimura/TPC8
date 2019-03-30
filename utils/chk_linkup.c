@@ -22,9 +22,7 @@ int main(int argc, char *argv[]) {
   int sw_fd[8];
 
   unsigned int add, data;
-  unsigned int nodeid;
-  unsigned int logaddr;
-  int st;
+  int st=0;
   int i,j;
 
   for(i=0;i<8;i++) NumFADC[i]=0;
@@ -54,27 +52,29 @@ int main(int argc, char *argv[]) {
       printf("%d-%2d: ", i, j);
 
       add=0x2100;
-      st=rmap_get_data(sw_fd[i],port,&n,add,&data,4);
+      st+=rmap_get_data(sw_fd[i],port,&n,add,&data,4);
       printf("(%08X)",be32toh(data));
       add=0x2124;
-      st=rmap_get_data(sw_fd[i],port,&n,add,&data,4);
+      st+=rmap_get_data(sw_fd[i],port,&n,add,&data,4);
       printf("%08X ",be32toh(data));
 
       add=0x2200;
-      st=rmap_get_data(sw_fd[i],port,&n,add,&data,4);
+      st+=rmap_get_data(sw_fd[i],port,&n,add,&data,4);
       printf("(%08X)",be32toh(data));
       add=0x2224;
-      st=rmap_get_data(sw_fd[i],port,&n,add,&data,4);
+      st+=rmap_get_data(sw_fd[i],port,&n,add,&data,4);
       printf("%08X ",be32toh(data));
 
       add=0x2300;
-      st=rmap_get_data(sw_fd[i],port,&n,add,&data,4);
+      st+=rmap_get_data(sw_fd[i],port,&n,add,&data,4);
       printf("(%08X) ",be32toh(data));
       add=0x2324;
-      st=rmap_get_data(sw_fd[i],port,&n,add,&data,4);
+      st+=rmap_get_data(sw_fd[i],port,&n,add,&data,4);
       printf("%08X\n",be32toh(data));
     }
   }
+
+  if (st<0) printf("RMAP Error\n");
 
   for(i=0;i<8;i++) if (NumFADC[i]>0) sw_close(sw_fd[i]);
   exit(0);

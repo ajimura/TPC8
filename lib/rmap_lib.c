@@ -138,6 +138,7 @@ int rmap_get_data(int sw_fd, int port,
     return RM_LINK_ERROR;
   }
   if (ret_status<0){
+    printf("%d-%d %x %x\n",port,n->dest_addr-160,ret_status,rx_address);
     return RM_DATA_ERROR;
   }
 

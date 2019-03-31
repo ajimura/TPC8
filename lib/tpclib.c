@@ -37,8 +37,8 @@
 #define LinkUP 0x00000500
 #define LinkDN 0x00000800
 
-#define WaitLoop 1000
-#define WaitIntv 100
+#define WaitLoop 15000
+#define WaitIntv 200
 
 struct fadc_info {
   int port;

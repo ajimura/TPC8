@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
   unsigned int add, data, data1, data2;
   unsigned int nodeid;
   unsigned int logaddr;
-  int st=0;
+  int st;
   int i,j;
 
   printf("Port#? ");
@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
   //L1D
   printf("L1D-------------\n");
   add=L1D_Delay;
-  st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
+  st =rmap_get_data(sw_fd,port,&n,add,&data,4);
   printf("Delay : %02X  \n", data);
   printf("Prompt: ");
   for(i=0;i<16;i++){
@@ -155,7 +155,7 @@ int main(int argc, char *argv[]) {
   add=CMN_SpWStatus2;
   st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
   printf(" DN:%08X\n",data);
-  if (st<0) printf("RMAP Error\n");
+  if (st<0) printf("RMAP Error %d\n",st);
   sw_close(sw_fd);
   exit(0);
 }

@@ -952,12 +952,12 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	    printf("Wrong TID: %d %d\n",i,nodeid);
 	    return -1;
 	  }
-	  printf("RCV: %d-%d size: %d(%x)\n",i,nodeid,size,size);
-	  printf("TrigID(%d-%d): %3d %x %x\n",
-		 i,nodeid,
-		 (fadcinfo[i]+nodeid)->tgcreg[0],
-		 (fadcinfo[i]+nodeid)->tgcreg[1],
-		 (fadcinfo[i]+nodeid)->tgcreg[2]);
+	  //	  printf("RCV: %d-%d size: %d(%x)\n",i,nodeid,size,size);
+	  //	  printf("TrigID(%d-%d): %3d %x %x\n",
+	  //		 i,nodeid,
+	  //		 (fadcinfo[i]+nodeid)->tgcreg[0],
+	  //		 (fadcinfo[i]+nodeid)->tgcreg[1],
+	  //		 (fadcinfo[i]+nodeid)->tgcreg[2]);
 	  if (check>=0){
 	    if ((fadcinfo[i]+nodeid)->tgcreg[0]!=check){
 	      printf("Event mismatch!\n");
@@ -988,15 +988,15 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
     for(i=0;i<DevsNum;i++){
       nextnode[i]=fadc_num[i];
       for(j=curnode[i];j<fadc_num[i];j++){
-	printf("*TotSize(%d-%d): %3d(%04x) %d\n",
-	       i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize,st);
+	//	printf("*TotSize(%d-%d): %3d(%04x) %d\n",
+	//	       i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize,st);
 	if ((fadcinfo[i]+j)->totsize>0){
 	  count++;
 	  nextnode[i]=j;
 	  tid=i*1000+j;
 	  add=EBM+BufBase*((fadcinfo[i]+j)->next)+0x80000000;
 	  st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,(((fadcinfo[i]+j)->totsize)+1)/2*4);
-	  printf("REQ: %d-%d size=%d(%x)\n",i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize);
+	  //	  printf("REQ: %d-%d size=%d(%x)\n",i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize);
 	  break;
 	}
       }
@@ -1015,8 +1015,8 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	    printf("Wrong TID: %d %d\n",i,nextnode[i]);
 	    return -1;
 	  }
-	  printf("RCV: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
-	  printf("RCV: %d-%d at %d(%x)\n",i,nextnode[i],curpos-rdata,curpos-rdata);
+	  //	  printf("RCV: %d-%d size: %d(%x)\n",i,nextnode[i],size,size);
+	  //	  printf("RCV: %d-%d at %d(%x)\n",i,nextnode[i],curpos-rdata,curpos-rdata);
 	  curnode[i]=nextnode[i]+1;
 	  // if the request data size increases more than 0x3fff, need to separate read twice.
 	  // in the case, 2nd read should start at nextptr.

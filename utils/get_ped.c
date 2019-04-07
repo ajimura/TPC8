@@ -1,7 +1,7 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 #include <ctype.h>
 #include <errno.h>
 #include <math.h>
@@ -9,7 +9,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <time.h>
-#include "rmap_lib.h"
 #include "tpclib.h"
 #include "tpcmath.h"
 #include "address.h"

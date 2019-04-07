@@ -2,7 +2,11 @@
 
 #include <stdio.h>
 #include <string.h>
+#ifdef PCIE
+#include "swpci_lib.h"
+#else
 #include "swsoc_lib.h"
+#endif
 
 #define RM_LINK_ERROR -1
 #define RM_DATA_ERROR -2
@@ -70,7 +74,7 @@ int rmap_get_data0(int sw_fd, int port,
   else n_data=rx_size;
 
   packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_ACK|RM_PCKT_INC,0x0000,n,rx_address,n_data);
-  retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer,
+  retval = sw_put_data0(sw_fd, port, (unsigned int *)tx_buffer,
   		       packet_size);
 
   for(i=0;i<WaitLoop;i++) {
@@ -80,7 +84,7 @@ int rmap_get_data0(int sw_fd, int port,
     printf("Timeout in rmap_get_data %d\n",i); return -1;
   }
 
-  retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
+  retval = sw_get_data0(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
 
   if (retval==0){
     sw_print_status(sw_fd,port);

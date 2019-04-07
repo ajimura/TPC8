@@ -6,8 +6,6 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
-#include "swsoc_lib.h"
-#include "rmap_lib.h"
 #include "tpclib.h"
 #include "address.h"
 

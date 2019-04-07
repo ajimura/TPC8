@@ -8,7 +8,6 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <math.h>
-#include "tpclib.h"
 #include "tpcmath.h"
 
 #define MaxHit 20

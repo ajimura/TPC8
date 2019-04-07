@@ -25,4 +25,5 @@ int main(int argc, char* argv[]){
   trigio_reset_count();
 
   trigio_fin();
+  exit(0);
 }

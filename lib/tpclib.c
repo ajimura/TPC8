@@ -1,5 +1,4 @@
 /* by Shuhei Ajimura */
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -8,7 +7,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <math.h>
+#ifdef PCIE
+#include "swpci_lib.h"
+#else
 #include "swsoc_lib.h"
+#endif 
 #include "rmap_lib.h"
 #include "address.h"
 
@@ -84,22 +87,31 @@ unsigned int FadcNum4Header1;
 
 int sw_fd[DevsNum];
 
-char devname[DevsNum][16]={"/dev/swsoc0","/dev/swsoc1","/dev/swsoc2","/dev/swsoc3",
-		     "/dev/swsoc4","/dev/swsoc5","/dev/swsoc6","/dev/swsoc7"};
-
 int sw_open_check(int *NumFADC){
   int i;
+  int fd;
 
-  if (NumFADC[0]>93 || NumFADC[0]>93 || NumFADC[0]>93 || NumFADC[0]>93 ||
-      NumFADC[4]>93 || NumFADC[5]>93 || NumFADC[6]>93 || NumFADC[7]>93) return -1;
-  fadc_tot=NumFADC[0]+NumFADC[1]+NumFADC[2]+NumFADC[3]+NumFADC[4]+NumFADC[5]+NumFADC[6]+NumFADC[7];
-  for(i=0;i<DevsNum;i++) fadc_num[i]=NumFADC[i];
+  for(i=0;i<DevsNum;i++)
+    if (NumFADC[i]>93){ printf("Too much FADC's %d on %d\n",NumFADC[i],i); return -1; }
+  fadc_tot=0;
+  for(i=0;i<DevsNum;i++){
+    fadc_tot+=NumFADC[i];
+    fadc_num[i]=NumFADC[i];
+  }
   FadcNum4Header0=NumFADC[0]+256*(NumFADC[1]+256*(NumFADC[2]+256*NumFADC[3]));
   FadcNum4Header1=NumFADC[4]+256*(NumFADC[5]+256*(NumFADC[6]+256*NumFADC[7]));
+  if (fadc_tot==0){ printf("No FADC...\n"); return -1; }
 
+#ifdef PCIE
+  fd=sw_open();
+#endif
   for(i=0;i<DevsNum;i++){
     if (NumFADC[i]>0){
-      sw_fd[i]=open(devname[i],O_RDWR);
+#ifdef PCIE
+      sw_fd[i]=fd;
+#else
+      sw_fd[i]=sw_open(i);
+#endif
       if (sw_link_check(sw_fd[i],i)){
 	printf("Link #%d is not ready\n",i);
 	return -1;
@@ -112,8 +124,12 @@ int sw_open_check(int *NumFADC){
 void fadc_close(){
   int i;
   for(i=0;i<DevsNum;i++)
-    if (fadc_num[i]>0)
+    if (fadc_num[i]>0){
       sw_close(sw_fd[i]);
+#ifdef PCIE
+      return;
+#endif
+    }
 }
 
 void fadc_set_adc_info(){

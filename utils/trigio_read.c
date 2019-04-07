@@ -36,4 +36,5 @@ int main(int argc, char* argv[]){
   printf("Buf Full:\t\t0x%02X\n",data[15]);
 
   trigio_fin();
+  exit(0);
 }

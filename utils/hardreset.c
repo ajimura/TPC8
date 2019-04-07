@@ -6,7 +6,11 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#ifdef PCIE
+#include "swpci_lib.h"
+#else
 #include "swsoc_lib.h"
+#endif
 #include "rmap_lib.h"
 #include "address.h"
 

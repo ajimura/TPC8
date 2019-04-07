@@ -7,7 +7,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#ifdef PCIE
+#include "swpci_lib.h"
+#else
 #include "swsoc_lib.h"
+#endif
 
 #define MAXSIZ 16384
 #define VERIFY 0
@@ -31,7 +35,11 @@ int main(int argc, char *argv[]) {
   printf("size ? "); scanf("%d",&size);
 
   fd0=sw_open(port0);
+#ifdef PCIE
+  fd1=fd0;
+#else
   fd1=sw_open(port1);
+#endif
 
   ioctl(fd0,SW_TIME_MARK,&swio);
 
@@ -67,4 +75,5 @@ int main(int argc, char *argv[]) {
   ioctl(fd0,SW_TIME_MARK,&swio);
   close(fd0);
   close(fd1);
+  exit(0);
 }

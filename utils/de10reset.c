@@ -7,7 +7,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#ifdef PCIE
+#include "swpci_lib.h"
+#else
 #include "swsoc_lib.h"
+#endif
 
 int main(int argc, char *argv[]) {
   int fd;
@@ -18,8 +22,9 @@ int main(int argc, char *argv[]) {
 
   fd=sw_open(ch);
 
-  sw_w(fd,ch,0x8000003c,0);
+  sw_w(fd,ch,0x3c,0);
 
   close(fd);
+  exit(0);
 }
 

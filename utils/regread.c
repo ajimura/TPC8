@@ -1,16 +1,13 @@
 #include <stdio.h>
-#include <string.h>
 #include <stdlib.h>
-#include <ctype.h>
-#include <errno.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
 #include <endian.h>
+#ifdef PCIE
+#include "swpci_lib.h"
+#else
 #include "swsoc_lib.h"
+#endif
 #include "rmap_lib.h"
 
-//unsigned int key=0x02;
 unsigned int srcaddr=0x80;
 int port;
 
@@ -34,8 +31,8 @@ int main(int argc, char *argv[]) {
 
   printf("Router(0), FADC(1)? ");
   scanf("%d",&offset);
-  if (offset==0){ logaddr=nodeid+32; key=0x02; }
-  else { logaddr=nodeid+160; key=0xcc; }
+  if (offset==0){ logaddr=nodeid+ 32; key=0x02; }
+  else          { logaddr=nodeid+160; key=0xcc; }
 
   printf("address? 0x");
   scanf("%x",&add);

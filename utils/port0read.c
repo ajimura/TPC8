@@ -7,7 +7,11 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <endian.h>
+#ifdef PCIE
+#include "swpci_lib.h"
+#else
 #include "swsoc_lib.h"
+#endif
 #include "rmap_lib.h"
 
 unsigned int key=0x02;

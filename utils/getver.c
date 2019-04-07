@@ -7,7 +7,11 @@
 #include <fcntl.h>
 #include <unistd.h>
 #include <sys/ioctl.h>
+#ifdef PCIE
+#include "swpci_lib.h"
+#else
 #include "swsoc_lib.h"
+#endif
 
 int main(int argc, char *argv[]) {
   int fd;
@@ -27,4 +31,5 @@ int main(int argc, char *argv[]) {
 
   printf("Ver[%d] = %08X\n",ch,data);
 
+  exit(0);
 }

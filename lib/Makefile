@@ -1,27 +1,16 @@
 # Makefile for sw
 
-#LDFLAGS = -I/usr/share/swsoc8/include/
-LDFLAGS = -I/home/online/swsoc8/include/
-LOADLIBS =
-LDLIBS = 
-APS = 
+ifeq ($(shell uname -m),x86_64)
+CFLAGS += -Wall -I/usr/share/swpci/include/ -DPCIE -g
+endif
+ifeq ($(shell uname -m),armv7l)
+CFLAGS += -Wall -I/usr/share/swsoc8/include/ -g
+endif
 
 libs: rmap_lib.o tpclib.o trigio_lib.o daqmwlib.o tpcmath.o
 
-rmap_lib.o:  rmap_lib.c
-	$(CC) -Wall -c $(LDFLAGS) rmap_lib.c
-
-tpclib.o: tpclib.c address.h
-	cc -Wall -g -c $(LDFLAGS) tpclib.c
-
-tpcmath.o: tpcmath.c
-	cc -Wall -g -c tpcmath.c
-
-trigio_lib.o: trigio_lib.c
-	cc -Wall -g -c trigio_lib.c
-
-daqmwlib.o: daqmwlib.c
-	cc -Wall -g -c daqmwlib.c
+.c.o:
+	$(CC) $(CFLAGS) -c $*.c -o $@
 
 clean:
 	rm -f *.o *~

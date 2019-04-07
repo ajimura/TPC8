@@ -70,7 +70,6 @@ int trigio_read_done(){
 int trigio_wr(unsigned int address, unsigned char* data, unsigned char length){
 
   int cmdPckLen;
-  int numReTrans;
   char sndBuf[1024],rcvBuf[1024];
   struct timeval timeout;
   fd_set setSelect;
@@ -125,7 +124,6 @@ int trigio_wr(unsigned int address, unsigned char* data, unsigned char length){
 int trigio_rd(unsigned int address, unsigned char* data, unsigned char length){
 
   int cmdPckLen;
-  int numReTrans;
   char sndBuf[1024],rcvBuf[1024];
   struct timeval timeout;
   fd_set setSelect;

@@ -24,4 +24,5 @@ int main(int argc, char* argv[]){
   trigio_read_done();
 
   trigio_fin();
+  exit(0);
 }

@@ -2,6 +2,7 @@
 
 ifeq ($(shell uname -m),x86_64)
 CFLAGS += -Wall -I/usr/share/swpci/include/ -DPCIE -g
+CFLAGS += -DDMA
 endif
 ifeq ($(shell uname -m),armv7l)
 CFLAGS += -Wall -I/usr/share/swsoc8/include/ -g

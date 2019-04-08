@@ -103,7 +103,7 @@ int sw_open_check(int *NumFADC){
   if (fadc_tot==0){ printf("No FADC...\n"); return -1; }
 
 #ifdef PCIE
-  fd=sw_open();
+  fd=sw_open(0);
 #endif
   for(i=0;i<DevsNum;i++){
     if (NumFADC[i]>0){

@@ -310,7 +310,11 @@ int rmap_rcv_all(int sw_fd, int port, unsigned int tid, unsigned int *rx_size, u
   if (i==WaitLoop){
     printf("Timeout in rmap_rcv_header\n"); return -1;
   }
+#ifdef DMA
+  retval=sw_drcv(sw_fd, port, rx_data, &status, tid, X_BUFFER_SIZE+100);
+#else
   retval=sw_rcv(sw_fd, port, rx_data, &status, tid, X_BUFFER_SIZE+100);
+#endif
   if (status>0) return RM_LINK_ERROR;
   if (retval==0) return RM_DATA_ERROR;
   *rx_size=retval;

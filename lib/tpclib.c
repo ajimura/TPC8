@@ -89,8 +89,10 @@ int sw_fd[DevsNum];
 
 int sw_open_check(int *NumFADC){
   int i;
+#ifdef PCIE
   int fd;
-
+#endif
+  
   for(i=0;i<DevsNum;i++)
     if (NumFADC[i]>93){ printf("Too much FADC's %d on %d\n",NumFADC[i],i); return -1; }
   fadc_tot=0;

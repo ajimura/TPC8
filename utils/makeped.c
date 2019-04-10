@@ -24,7 +24,7 @@ int main(int argc, char *argv[]){
   }
 
   for(i=0;i<8;i++){
-    for(j=0;j<NumFADC[i];i++){
+    for(j=0;j<NumFADC[i];j++){
       for(k=0;k<16;k++){
 	fprintf(outfile,"%d %d %d %f 3.\n",i,j,k,thres);
       }

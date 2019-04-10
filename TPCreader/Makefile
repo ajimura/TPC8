@@ -9,8 +9,16 @@ SRCS += $(COMP_NAME)Comp.cpp
 OBJS += ../lib/daqmwlib.o
 
 # for space-wire/rmap
-OBJS += /usr/share/swsoc8/lib/swsoc_lib.o ../lib/rmap_lib.o
-CPPFLAGS += -I../lib/ -I/usr/share/swsoc8/include/ -g
+ifeq ($(shell uname -m),x86_64)
+OBJS += /usr/share/swpci/lib/swpci_lib.o
+CPPFLAGS += -I/usr/share/swpci/include/ -g
+endif
+ifeq ($(shell uname -m),armv7l)
+OBJS += /usr/share/swsoc8/lib/swsoc_lib.o
+CPPFLAGS += -I/usr/share/swsoc8/include/ -g
+endif
+OBJS += ../lib/rmap_lib.o
+CPPFLAGS += -I../lib/
 
 # for TPC readout
 OBJS += ../lib/tpclib.o ../lib/trigio_lib.o

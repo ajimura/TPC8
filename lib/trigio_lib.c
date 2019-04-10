@@ -24,46 +24,53 @@ int trigio_rd(unsigned int , unsigned char* , unsigned char);
 
 int trigio_ini(const char* ipaddr, unsigned int port){
 
-  TrigIO_sock = socket(AF_INET, SOCK_DGRAM, 0);
-  TrigIO_Addr.sin_family = AF_INET;
-  TrigIO_Addr.sin_port = htons(port);
   TrigIO_Addr.sin_addr.s_addr = inet_addr(ipaddr);
-
-  TrigIO_ID = 0;
+  if (TrigIO_Addr.sin_addr.s_addr){ // if not 0.0.0.0
+    TrigIO_sock = socket(AF_INET, SOCK_DGRAM, 0);
+    TrigIO_Addr.sin_family = AF_INET;
+    TrigIO_Addr.sin_port = htons(port);
+    TrigIO_ID = 0;
+  }
   return 0;
 }
 
 int trigio_fin(){
-  close(TrigIO_sock);
+  if (TrigIO_Addr.sin_addr.s_addr)
+    close(TrigIO_sock);
   return 0;
 }
 
 int trigio_reset_count(){
   unsigned int addr;
   unsigned char data;
-  int st;
+  int st=0;
 
-  addr=0x0000000c; data=0x00; st=trigio_wr(addr,&data,1);
-
+  if (TrigIO_Addr.sin_addr.s_addr){
+    addr=0x0000000c; data=0x00; st=trigio_wr(addr,&data,1);
+  }
   return st;
 }
 
 int trigio_read_eventtag(unsigned char *tag){
   unsigned int addr;
-  int st;
+  int st=0;
 
-  addr=0x0000000b; st=trigio_rd(addr,tag,1);
-
+  if (TrigIO_Addr.sin_addr.s_addr){
+    addr=0x0000000b; st=trigio_rd(addr,tag,1);
+  }else{
+    tag=0;
+  }
   return st;
 }
 
 int trigio_read_done(){
   unsigned int addr;
   unsigned char data;
-  int st;
+  int st=0;
 
-  addr=0x0000000b; data=0x00; st=trigio_wr(addr,&data,1);
-
+  if (TrigIO_Addr.sin_addr.s_addr){
+    addr=0x0000000b; data=0x00; st=trigio_wr(addr,&data,1);
+  }
   return st;
 }
 

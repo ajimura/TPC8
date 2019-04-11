@@ -39,6 +39,7 @@ utils/set_fullrange
 utils/softreset
 utils/status
 utils/statusall
+utils/sw_loopback_test
 utils/sw_speed
 utils/trigio_cntrst
 utils/trigio_rdone

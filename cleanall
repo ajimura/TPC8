@@ -1,4 +1,20 @@
 #!/bin/bash
+MACHINE=$(uname -m)
+HARDWARE=$(uname -i)
+if [ MACHINE="armv7l" ]; then
+    if [ HARDWARE="armv7l" ]; then
+        only_daqmw=no
+    fi
+fi
+if [ MACHINE="armv7l" ]; then
+     if [ HARDWARE="unknown" ]; then
+        only_daqmw=yes
+    fi
+fi
+if [ MACHINE="X86_64" ]; then
+    only_daqmw=no
+fi
+
 cd lib
 make clean
 cd ..
@@ -17,21 +33,23 @@ cd ..
 cd TPClogger
 make clean
 cd ..
-cd TPCreader
-make clean
-cd ..
-cd TPCreaderA
-make clean
-cd ..
-cd TPCreaderB
-make clean
-cd ..
-cd TPCreaderC
-make clean
-cd ..
-cd TPCreaderD
-make clean
-cd ..
-cd utils
-make clean
-cd ..
+if [ only_daqmw="no" ]; then
+    cd TPCreader
+    make clean
+    cd ..
+    cd TPCreaderA
+    make clean
+    cd ..
+    cd TPCreaderB
+    make clean
+    cd ..
+    cd TPCreaderC
+    make clean
+    cd ..
+    cd TPCreaderD
+    make clean
+    cd ..
+    cd utils
+    make clean
+    cd ..
+fi

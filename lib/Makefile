@@ -7,8 +7,14 @@ endif
 ifeq ($(shell uname -m),armv7l)
 CFLAGS += -Wall -I/usr/share/swsoc8/include/ -g
 endif
+ifeq ($(shell uname -i),unknown)
+LIBS=daqmwlib.o
+else
+LIBS=rmap_lib.o tpclib.o trigio_lib.o daqmwlib.o tpcmath.o
+endif
 
-libs: rmap_lib.o tpclib.o trigio_lib.o daqmwlib.o tpcmath.o
+#libs: rmap_lib.o tpclib.o trigio_lib.o daqmwlib.o tpcmath.o
+libs: $(LIBS)
 
 .c.o:
 	$(CC) $(CFLAGS) -c $*.c -o $@

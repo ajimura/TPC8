@@ -518,18 +518,17 @@ int Merger4to1::daq_run()
       if (m_inport4_recv_data_size==0)
         m_inport4_recv_data_size = read_InPort4();
 
-        if ((m_inport1_recv_data_size == 0) ||
-	    (m_inport2_recv_data_size == 0) ||
-	    (m_inport3_recv_data_size == 0) ||
-	    (m_inport4_recv_data_size == 0)    ){ // TIMEOUT
-            return 0;
-        }
-        else {
+      if ((m_inport1_recv_data_size == 0) ||
+	  (m_inport2_recv_data_size == 0) ||
+	  (m_inport3_recv_data_size == 0) ||
+	  (m_inport4_recv_data_size == 0)    ){ // TIMEOUT
+	return 0;
+      } else {
 	  //            check_header_footer(m_in1_data, m_inport1_recv_data_size);
 	  //            check_header_footer(m_in2_data, m_inport2_recv_data_size);
-	  set_data_OutPort(m_inport1_recv_data_size,m_inport2_recv_data_size,
-			   m_inport3_recv_data_size,m_inport4_recv_data_size);
-        }
+	set_data_OutPort(m_inport1_recv_data_size,m_inport2_recv_data_size,
+			 m_inport3_recv_data_size,m_inport4_recv_data_size);
+      }
     }
 
     if ((m_in1_status != BUF_TIMEOUT) && 

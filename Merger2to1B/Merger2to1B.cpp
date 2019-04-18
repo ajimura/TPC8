@@ -380,14 +380,13 @@ int Merger2to1B::daq_run()
       if (m_inport2_recv_data_size==0)
         m_inport2_recv_data_size = read_InPort2();
 
-        if ((m_inport1_recv_data_size == 0) || (m_inport2_recv_data_size == 0)){ // TIMEOUT
-            return 0;
-        }
-        else {
+      if ((m_inport1_recv_data_size == 0) || (m_inport2_recv_data_size == 0)){ // TIMEOUT
+	return 0;
+      } else {
 	  //            check_header_footer(m_in1_data, m_inport1_recv_data_size);
 	  //            check_header_footer(m_in2_data, m_inport2_recv_data_size);
-            set_data_OutPort(m_inport1_recv_data_size,m_inport2_recv_data_size);
-        }
+	set_data_OutPort(m_inport1_recv_data_size,m_inport2_recv_data_size);
+      }
     }
 
     if ((m_in1_status != BUF_TIMEOUT) && (m_in2_status != BUF_TIMEOUT) && (m_out_status != BUF_TIMEOUT)) {

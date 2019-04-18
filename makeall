@@ -1,18 +1,19 @@
 #!/bin/bash
 MACHINE=$(uname -m)
 HARDWARE=$(uname -i)
-if [ MACHINE="armv7l" ]; then
-    if [ HARDWARE="armv7l" ]; then
-        only_daqmw=no
+if [ MACHINE = "armv7l" ]; then
+    if [ HARDWARE = "armv7l" ]; then
+        only_daqmw=
     fi
 fi
-if [ MACHINE="armv7l" ]; then
-     if [ HARDWARE="unknown" ]; then
+if [ MACHINE = "armv7l" ]; then
+    if [ HARDWARE = "unknown" ]; then
+	echo "Only DAQ-MW"
         only_daqmw=yes
     fi
 fi
-if [ MACHINE="X86_64" ]; then
-    only_daqmw=no
+if [ MACHINE = "X86_64" ]; then
+    only_daqmw=
 fi
 
 cd lib
@@ -33,7 +34,7 @@ cd ..
 cd TPClogger
 make
 cd ..
-if [ only_daqmw="no" ]; then
+if [ "$only_daqmw" = yes ]; then
     cd TPCreader
     make
     cd ..

@@ -190,4 +190,6 @@ int trigio_rd(unsigned int address, unsigned char* data, unsigned char length){
     memcpy(data, &(rcvBuf[8]), retsiz-8);
     return retsiz-8;
   }
+
+  } //while
 }

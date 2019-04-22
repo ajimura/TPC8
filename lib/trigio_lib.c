@@ -14,6 +14,10 @@
 #define RBCP_CMD_WR 0x80
 #define RBCP_CMD_RD 0xC0
 
+#define TIMEOUT_SEC 0
+#define TIMEOUT_USEC 1000
+#define RETRY_NUM 5
+
 struct sockaddr_in TrigIO_Addr;
 int TrigIO_sock;
 
@@ -135,6 +139,7 @@ int trigio_rd(unsigned int address, unsigned char* data, unsigned char length){
   struct timeval timeout;
   fd_set setSelect;
   int retsiz;
+  int retry_count;
 
   /* fill header data */
   sndBuf[0]=0xff; //RBCP Version
@@ -147,17 +152,22 @@ int trigio_rd(unsigned int address, unsigned char* data, unsigned char length){
   sndBuf[7]=(0x000000ff&address);
   cmdPckLen=8;
 
+  retry_count=0;
+  while(1){
+
   /* send a packet*/
   sendto(TrigIO_sock, sndBuf, cmdPckLen, 0, (struct sockaddr *)&TrigIO_Addr, sizeof(TrigIO_Addr));
   /* Receive packets*/
   FD_ZERO(&setSelect);
   FD_SET(TrigIO_sock, &setSelect);
-  timeout.tv_sec  = 1;
-  timeout.tv_usec = 0;
+  timeout.tv_sec  = TIMEOUT_SEC;
+  timeout.tv_usec = TIMEOUT_USEC;
   if(select(TrigIO_sock+1, &setSelect, NULL, NULL,&timeout)==0){ //TimeOut
-    puts("\n***** Timeout ! *****");
-    TrigIO_ID++;
-    return -1;
+    if ((retry_count++)==RETRY_NUM){
+      puts("\n***** Timeout ! *****");
+      TrigIO_ID++;
+      return -1;
+    }
   }else{
     if(FD_ISSET(TrigIO_sock,&setSelect)){      /* receive packet */
       retsiz=recvfrom(TrigIO_sock, rcvBuf, 2048, 0, NULL, NULL);
@@ -178,6 +188,6 @@ int trigio_rd(unsigned int address, unsigned char* data, unsigned char length){
       }
     }
     memcpy(data, &(rcvBuf[8]), retsiz-8);
+    return retsiz-8;
   }
-  return retsiz-8;
 }

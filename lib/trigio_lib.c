@@ -15,7 +15,7 @@
 #define RBCP_CMD_RD 0xC0
 
 #define TIMEOUT_SEC 0
-#define TIMEOUT_USEC 1000
+#define TIMEOUT_USEC 3000
 #define RETRY_NUM 5
 
 struct sockaddr_in TrigIO_Addr;

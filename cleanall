@@ -1,20 +1,4 @@
 #!/bin/bash
-MACHINE=$(uname -m)
-HARDWARE=$(uname -i)
-if [ "$MACHINE" = armv7l ]; then
-    if [ "$HARDWARE" = armv7l ]; then
-        only_daqmw=no
-    fi
-fi
-if [ "$MACHINE" = armv7l ]; then
-    if [ "$HARDWARE" = unknown ]; then
-        only_daqmw=yes
-    fi
-fi
-if [ "$MACHINE" = x86_64 ]; then
-    only_daqmw=no
-fi
-
 cd lib
 make clean
 cd ..
@@ -33,7 +17,7 @@ cd ..
 cd TPClogger
 make clean
 cd ..
-if [ "$only_daqmw" = no ]; then
+if [ -e /usr/share/swsoc8 -o -e /usr/share/swpci ]; then
     cd TPCreader
     make clean
     cd ..

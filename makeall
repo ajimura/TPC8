@@ -1,6 +1,6 @@
 #!/bin/bash
 cd lib
-make
+make libs
 cd ..
 cd Merger2to1
 make
@@ -33,7 +33,7 @@ if [ -e /usr/share/swsoc8 -o -e /usr/share/swpci ]; then
     cd TPCreaderD
     make
     cd ..
-    cd utils
-    make
-    cd ..
 fi
+cd utils
+make aps
+cd ..

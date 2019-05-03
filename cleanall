@@ -17,6 +17,9 @@ cd ..
 cd TPClogger
 make clean
 cd ..
+cd DumGenA
+make clean
+cd ..
 if [ -e /usr/share/swsoc8 -o -e /usr/share/swpci ]; then
     cd TPCreader
     make clean

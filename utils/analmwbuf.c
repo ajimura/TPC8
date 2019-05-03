@@ -373,16 +373,11 @@ int analTPCreader(int infile, struct CompHeaderInfo *Header){
 }
 
 int analDumGen(int infile, struct CompHeaderInfo *Header){
-  int i,j;
   int bufsize;
   unsigned int footer;
-  unsigned int *curpos;
-  int remain_size;
+  //  unsigned int *curpos;
+  //  int remain_size;
 
-  int port,node,trigID,fclk,cclk,size;
-  int ch,eachsize;
-  struct FadcDataInfo *curFadcData;
-  
   bufsize=Header->size-80;
   if (bufsize>curbufsize){
     printf("bufsize=%d: allocating buffer...\n",bufsize);
@@ -391,8 +386,8 @@ int analDumGen(int infile, struct CompHeaderInfo *Header){
   }
 
   read(infile,bufdata,bufsize);
-  remain_size=bufsize;
-  curpos=bufdata;
+  //  remain_size=bufsize;
+  //  curpos=bufdata;
 
   //  while(remain_size>0){
   //    ;

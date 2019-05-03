@@ -20,6 +20,9 @@ cd ..
 cd DumGenA
 make clean
 cd ..
+cd DumGenB
+make clean
+cd ..
 if [ -e /usr/share/swsoc8 -o -e /usr/share/swpci ]; then
     cd TPCreader
     make clean

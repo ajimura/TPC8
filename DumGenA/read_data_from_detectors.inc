@@ -26,7 +26,8 @@
 			 eventnum,(unsigned int)eventtag,
 			 ComponentType, ComponentID,
 			 0, (unsigned int)seq_num,
-			 totNumFADCforHeader2,totNumFADCforHeader1);
+			 0,0);
+//			 totNumFADCforHeader2,totNumFADCforHeader1);
 
     //    std::cout << "start event data" << std::endl;
 

@@ -11,6 +11,7 @@
 #define CompTypeTPCreader 410
 #define CompTypeMerger2to1 420
 #define CompTypeMerger4to1 421
+#define CompTypeDumGen 430
 
 #define MaxHitNum 32
 
@@ -47,10 +48,12 @@ struct FadcDataInfo *FadcData;
 int numMerger2to1=0;
 int numMerger4to1=0;
 int numTPCreader=0;
+int numDumGen=0;
 struct CompHeaderInfo *TPCloggerHeader;
 struct CompHeaderInfo *Merger2Header;
 struct CompHeaderInfo *Merger4Header;
 struct CompHeaderInfo *TPCreaderHeader;
+struct CompHeaderInfo *DumGenHeader;
 
 int eventcount=0;
 
@@ -64,6 +67,7 @@ int analTPClogger(int, struct CompHeaderInfo *);
 int analMerger2to1(int, struct CompHeaderInfo *);
 int analMerger4to1(int, struct CompHeaderInfo *);
 int analTPCreader(int, struct CompHeaderInfo *);
+int analDumGen(int, struct CompHeaderInfo *);
 
 unsigned int *bufdata;
 int curbufsize;
@@ -98,6 +102,7 @@ int main(int argc, char *argv[]) {
   numMerger2to1=0;
   numMerger4to1=0;
   numTPCreader=0;
+  numDumGen=0;
 
   curbufsize=1024;
   bufdata=(unsigned int *)malloc(curbufsize);
@@ -147,6 +152,9 @@ int analTPClogger(int infile, struct CompHeaderInfo *Header){
   case CompTypeTPCreader:
     remain_size-=analTPCreader(infile,TPCreaderHeader+HeaderInfoID);
     break;
+  case CompTypeDumGen:
+    remain_size-=analDumGen(infile,DumGenHeader+HeaderInfoID);
+    break;
   default:
     printf("Unknown Component type... %d\n",next_header.comptype);
     exit(-1);
@@ -189,6 +197,9 @@ int analMerger2to1(int infile, struct CompHeaderInfo *Header){
       break;
     case CompTypeTPCreader:
       remain_size-=analTPCreader(infile,TPCreaderHeader+HeaderInfoID);
+      break;
+    case CompTypeDumGen:
+      remain_size-=analDumGen(infile,DumGenHeader+HeaderInfoID);
       break;
     default:
       printf("Unknown Component Type %d\n",next_header.comptype);
@@ -234,6 +245,9 @@ int analMerger4to1(int infile, struct CompHeaderInfo *Header){
       break;
     case CompTypeTPCreader:
       remain_size-=analTPCreader(infile,TPCreaderHeader+HeaderInfoID);
+      break;
+    case CompTypeDumGen:
+      remain_size-=analDumGen(infile,DumGenHeader+HeaderInfoID);
       break;
     default:
       printf("Unknown Component Type %d\n",next_header.comptype);
@@ -358,6 +372,42 @@ int analTPCreader(int infile, struct CompHeaderInfo *Header){
   return Header->size;
 }
 
+int analDumGen(int infile, struct CompHeaderInfo *Header){
+  int i,j;
+  int bufsize;
+  unsigned int footer;
+  unsigned int *curpos;
+  int remain_size;
+
+  int port,node,trigID,fclk,cclk,size;
+  int ch,eachsize;
+  struct FadcDataInfo *curFadcData;
+  
+  bufsize=Header->size-80;
+  if (bufsize>curbufsize){
+    printf("bufsize=%d: allocating buffer...\n",bufsize);
+    bufdata=(unsigned int *)realloc(bufdata,bufsize);
+    curbufsize=bufsize;
+  }
+
+  read(infile,bufdata,bufsize);
+  remain_size=bufsize;
+  curpos=bufdata;
+
+  //  while(remain_size>0){
+  //    ;
+  //  }
+  //  printf("\n");
+
+  read(infile,&footer,4);
+  if (footer!=0x00000011){
+    printf("Check footer failed: %08x\n",footer);
+    exit(-1);
+  }
+
+  return Header->size;
+}
+
 int store_headerInfo(struct CompHeaderInfo *Header){
   int HeaderInfoID;
   int i;
@@ -414,6 +464,23 @@ int store_headerInfo(struct CompHeaderInfo *Header){
       numTPCreader++;
     }
     memcpy(TPCreaderHeader+HeaderInfoID, Header,sizeof(struct CompHeaderInfo));
+    break;
+  case CompTypeDumGen:
+    for(i=0;i<numDumGen;i++){
+      if (Header->compid==(DumGenHeader+i)->compid){
+	HeaderInfoID=i;
+      }
+    }
+    if (HeaderInfoID<0){
+      if (numDumGen==0){
+	DumGenHeader=(struct CompHeaderInfo *)malloc(sizeof(struct CompHeaderInfo));
+      }else{
+	DumGenHeader=(struct CompHeaderInfo *)realloc(DumGenHeader,(numDumGen+1)*sizeof(struct CompHeaderInfo));
+      }
+      HeaderInfoID=numDumGen;
+      numDumGen++;
+    }
+    memcpy(DumGenHeader+HeaderInfoID, Header,sizeof(struct CompHeaderInfo));
     break;
   default:
     printf("Unknown Component Type %d\n",Header->comptype);

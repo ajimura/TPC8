@@ -11,7 +11,8 @@
 #define CompTypeTPCreader 410
 #define CompTypeMerger2to1 420
 #define CompTypeMerger4to1 421
-#define CompTypeDumGen 430
+#define CompTypeTPClogger 430
+#define CompTypeDumGen 440
 
 #define MaxHitNum 32
 

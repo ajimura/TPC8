@@ -9,7 +9,6 @@
 
 #include <iomanip>
 #include <ctime>
-#include <time>
 #include "DumGenA.h"
 #include "daqmwlib.h"
 

@@ -7,7 +7,7 @@ SRCS += $(COMP_NAME)Comp.cpp
 
 # LEPS2 DAQ common
 OBJS += ../lib/daqmwlib.o
-CPPFLAGS += -I../lib/ -g
+CPPFLAGS += -I../lib/ -I../DumGenA/ -g
 
 # sample install target
 #

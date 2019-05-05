@@ -13,7 +13,7 @@
     struct timespec ts;
     double t0;
 
-    clock_gettime(CLOCK_MONOTONIC,&ts0);
+    clock_gettime(CLOCK_MONOTONIC,&ts);
     t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
     std::cout << t0 << std::endl;
 

@@ -46,3 +46,4 @@ utils/trigio_rdone
 utils/trigio_read
 utils/write32
 work/
+work/.confFilePath

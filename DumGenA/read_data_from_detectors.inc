@@ -10,12 +10,12 @@
     unsigned char eventtag=0;
     unsigned int comp_footer;
 
-    struct timespec ts;
-    double t0;
-
-    clock_gettime(CLOCK_MONOTONIC,&ts);
-    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-    std::cout << t0 << std::endl;
+//    struct timespec ts;
+//    double t0;
+//
+//    clock_gettime(CLOCK_MONOTONIC,&ts);
+//    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+//    std::cout << std::fixed << std::setprecision(9) << t0 << std::endl;
 
     //    std::cout << "Wait next event !" << std::endl;
 

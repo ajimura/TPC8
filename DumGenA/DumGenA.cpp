@@ -221,6 +221,9 @@ int DumGenA::write_OutPort()
 
 int DumGenA::daq_run()
 {
+    struct timespec ts;
+    double t0,t1;
+
     if (m_debug) {
         std::cerr << "*** DumGenA::run" << std::endl;
     }
@@ -237,6 +240,10 @@ int DumGenA::daq_run()
         }
     }
 
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+    //    std::cout << "Pre:" << std::fixed << std::setprecision(9) << t0 << std::endl;
+
     if (write_OutPort() < 0) {
         ;     // Timeout. do nothing.
     }
@@ -244,6 +251,10 @@ int DumGenA::daq_run()
         inc_sequence_num();                     // increase sequence num.
         inc_total_data_size(m_recv_byte_size);  // increase total data byte size
     }
+
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+    std::cout << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
 
     return 0;
 }

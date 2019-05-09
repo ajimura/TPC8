@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<!-- DON'T REMOVE THE ABOVE LINE.                                     -->
+<!-- DON'T PUT ANY LINES ABOVE THE 1ST LINE.                          -->
+<!-- Sample config.xml to run TinySource and TinySink.                -->
+<!-- Please rewrite execPath (2 places), confFile (2 places) suitable -->
+<!-- for your directory structure.                                    -->
+<!-- run.py will create rtc.conf in /tmp/daqmw/rtc.conf               -->
+<!-- If you use run.py, set confFile as /tmp/daqmw/rtc.conf           -->
+<!-- a2gx2: 172.16.204.253 -->
+<configInfo>
+    <daqOperator>
+        <hostAddr>172.16.209.19</hostAddr>
+    </daqOperator>
+    <daqGroups>
+        <daqGroup gid="group0">
+            <components>
+                <component cid="DumGenA0">
+                    <hostAddr>172.16.204.253</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>DumGenA0.rtc</instName>
+                    <execPath>/home/online/TPC8/DumGenA/DumGenAComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>5</startOrd>
+                    <inPorts>
+                    </inPorts>
+                    <outPorts>
+                        <outPort>dumgena_out</outPort>
+                    </outPorts>
+                    <params>
+		      <param pid="GenSize">1024</param>
+		      <param pid="IntvTime">1000000</param>
+		      <param pid="ComponentID">400</param>
+                    </params>
+                </component>
+                <component cid="DumGenB0">
+                    <hostAddr>172.16.204.253</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>DumGenB0.rtc</instName>
+                    <execPath>/home/online/TPC8/DumGenB/DumGenBComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>6</startOrd>
+                    <inPorts>
+                    </inPorts>
+                    <outPorts>
+                        <outPort>dumgenb_out</outPort>
+                    </outPorts>
+                    <params>
+		      <param pid="GenSize">1024</param>
+		      <param pid="IntvTime">1000000</param>
+		      <param pid="ComponentID">401</param>
+                    </params>
+                </component>
+                <component cid="DumGenC0">
+                    <hostAddr>172.16.210.81</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>DumGenA0.rtc</instName>
+                    <execPath>/home/online/TPC8/DumGenA/DumGenAComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>3</startOrd>
+                    <inPorts>
+                    </inPorts>
+                    <outPorts>
+                        <outPort>dumgena_out</outPort>
+                    </outPorts>
+                    <params>
+		      <param pid="GenSize">1024</param>
+		      <param pid="IntvTime">1000000</param>
+		      <param pid="ComponentID">402</param>
+                    </params>
+                </component>
+                <component cid="DumGenD0">
+                    <hostAddr>172.16.210.81</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>DumGenB0.rtc</instName>
+                    <execPath>/home/online/TPC8/DumGenB/DumGenBComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>4</startOrd>
+                    <inPorts>
+                    </inPorts>
+                    <outPorts>
+                        <outPort>dumgenb_out</outPort>
+                    </outPorts>
+                    <params>
+		      <param pid="GenSize">1024</param>
+		      <param pid="IntvTime">1000000</param>
+		      <param pid="ComponentID">403</param>
+                    </params>
+                </component>
+                <component cid="Merger4to10">
+                    <hostAddr>172.16.207.223</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>Merger4to10.rtc</instName>
+                    <execPath>/home/online/TPC8/Merger4to1/Merger4to1Comp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>2</startOrd>
+                    <inPorts>
+                        <inPort from="DumGenA0:dumgena_out">merger4to1_in1</inPort>
+                        <inPort from="DumGenB0:dumgenb_out">merger4to1_in2</inPort>
+                        <inPort from="DumGenC0:dumgena_out">merger4to1_in3</inPort>
+                        <inPort from="DumGenD0:dumgenb_out">merger4to1_in4</inPort>
+                    </inPorts>
+                    <outPorts>
+                        <outPort>merger4to1_out</outPort>
+                    </outPorts>
+                    <params>
+                       <param pid="ComponentID">450</param>
+                    </params>
+                </component>
+                <component cid="TPClogger0">
+                    <hostAddr>172.16.209.19</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>TPClogger0.rtc</instName>
+                    <execPath>/home/online/TPC8/TPClogger/TPCloggerComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>1</startOrd>
+                    <inPorts>
+                        <inPort from="Merger4to10:merger4to1_out">tpclogger_in</inPort>
+                    </inPorts>
+                    <outPorts>
+                    </outPorts>
+                    <params>
+                       <param pid="dirName">/tmp/daqmw</param>
+                       <param pid="isLogging">yes</param>
+                       <param pid="maxFileSizeInMegaByte">1024</param>
+                       <param pid="ComponentID">499</param>
+                    </params>
+                </component>
+            </components>
+        </daqGroup>
+    </daqGroups>
+</configInfo>

@@ -214,10 +214,20 @@ int Merger2to1B::set_data_OutPort(unsigned int data1_byte_size, unsigned int dat
     }
     //get&check event tag
     //    std::cerr << "-----eventtag " << datapos1[4] << ":" << datapos2[4] << std::endl;
-    if ((eventtag=*(datapos1+4))!=*(datapos2+4)){
-      std::cerr << "Event mismatch(tag):" << eventtag << " " << *(datapos2+4) << std::endl;
-      fatal_error_report(USER_DEFINED_ERROR1,"Event mismatch(tag)!");
+    if ((*(datapos1+4))!=*(datapos2+4)){
+      if (*(datapos1+4)==255){
+	eventtag=*(datapos2+4);
+      }else if (*(datapos2+4)==255){
+	eventtag=*(datapos1+4);
+      }else{
+	std::cerr << "Event mismatch(tag):" << *(datapos2+4) << " " << *(datapos2+4) << std::endl;
+	fatal_error_report(USER_DEFINED_ERROR1,"Event mismatch(tag)!");
+      }
     }
+    //    if ((eventtag=*(datapos1+4))!=*(datapos2+4)){
+    //      std::cerr << "Event mismatch(tag):" << eventtag << " " << *(datapos2+4) << std::endl;
+    //      fatal_error_report(USER_DEFINED_ERROR1,"Event mismatch(tag)!");
+    //    }
 
 
     //get size info.

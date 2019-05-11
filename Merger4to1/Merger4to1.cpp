@@ -244,34 +244,41 @@ int Merger4to1::set_data_OutPort(unsigned int data1_byte_size, unsigned int data
     //    tm *ltime;
     unsigned int comp_header[19],comp_footer;
 
-    unsigned int *datapos1, *datapos2; // top pointer for the data from in ports (just after the DAQ-MW header)
-    unsigned int *datapos3, *datapos4; // top pointer for the data from in ports (just after the DAQ-MW header)
+    //    unsigned int *datapos1, *datapos2; // top pointer for the data from in ports (just after the DAQ-MW header)
+    //    unsigned int *datapos3, *datapos4; // top pointer for the data from in ports (just after the DAQ-MW header)
+    unsigned int *datapos[4]; // top pointer for the data from in ports (just after the DAQ-MW header)
 
-    datapos1=(unsigned int *)&(m_in1_data.data[HEADER_BYTE_SIZE]);
-    datapos2=(unsigned int *)&(m_in2_data.data[HEADER_BYTE_SIZE]);
-    datapos3=(unsigned int *)&(m_in3_data.data[HEADER_BYTE_SIZE]);
-    datapos4=(unsigned int *)&(m_in4_data.data[HEADER_BYTE_SIZE]);
+    datapos[0]=(unsigned int *)&(m_in1_data.data[HEADER_BYTE_SIZE]);
+    datapos[1]=(unsigned int *)&(m_in2_data.data[HEADER_BYTE_SIZE]);
+    datapos[2]=(unsigned int *)&(m_in3_data.data[HEADER_BYTE_SIZE]);
+    datapos[3]=(unsigned int *)&(m_in4_data.data[HEADER_BYTE_SIZE]);
 
     //get&check event num
-    if ((eventnum=*(datapos1+3))!=*(datapos2+3)){
-      if (eventnum!=*(datapos3+3)){
-	if (eventnum!=*(datapos4+3)){
-	  std::cerr << "Event mismatch(num):" << eventnum << " " << *(datapos2+3) <<
-	    " " << *(datapos3+3) <<
-	    " " << *(datapos4+3) << std::endl;
-	  fatal_error_report(USER_DEFINED_ERROR1,"Event mismatch(num) !");
-	}}}
+    eventnum=*(datapos[0]+3);
+    if ((eventnum!=*(datapos[1]+3))||
+	(eventnum!=*(datapos[2]+3))||
+	(eventnum!=*(datapos[3]+3))){
+      std::cerr << "Event mismatch(num):" << eventnum << " " << *(datapos[1]+3) <<
+	" " << *(datapos[2]+3) <<
+	" " << *(datapos[3]+3) << std::endl;
+      fatal_error_report(USER_DEFINED_ERROR1,"Event mismatch(num) !");
+    }
     //    std::cerr << "-----eventnum " << datapos1[3] << ":" << datapos2[3] << std::endl;
 
     //get&check event tag
-    if ((eventtag=*(datapos1+4))!=*(datapos2+4)){
-      if (eventnum!=*(datapos3+4)){
-	if (eventnum!=*(datapos4+4)){
-	  std::cerr << "Event mismatch(tag):" << eventtag << " " << *(datapos2+4) <<
-	    " " << *(datapos3+4) <<
-	    " " << *(datapos4+4) << std::endl;
-	  fatal_error_report(USER_DEFINED_ERROR1,"Event mismatch(tag) !");
-	}}}
+    eventtag=255;
+    for(i=0;i<4;i++){
+      if (*(datapos[i]+4)!=255){
+	if (eventtag==255) eventtag=*(datapos[i]+4);
+	else
+	  if (eventtag!=*(datapos[i]+4)){
+	    std::cerr << "Event mismatch(tag):" << *(datapos[0]+4) << " " << *(datapos[1]+4) <<
+	      " " << *(datapos[2]+4) <<
+	      " " << *(datapos[3]+4) << std::endl;
+	    fatal_error_report(USER_DEFINED_ERROR1,"Event mismatch(tag) !");
+	  }
+      }
+    }
     //    std::cerr << "-----eventtag " << datapos1[4] << ":" << datapos2[4] << std::endl;
 
 

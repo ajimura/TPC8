@@ -12,6 +12,7 @@
     TrigIO_done=false;
     TrigIO_waittime=10;
     ComponentID=0;
+    stock_num=1;
 
     int len = (*list).length();
     for (i = 0; i < len; i+=2) {
@@ -86,6 +87,9 @@
       }
       if (sname == "TrigIO_WaitTime"){
 	TrigIO_waittime=atoi(svalue.c_str());
+      }
+      if (sname == "StockNum"){
+	stock_num=atoi(svalue.c_str());
       }
 
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());

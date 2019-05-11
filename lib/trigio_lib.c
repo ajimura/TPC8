@@ -64,7 +64,7 @@ int trigio_read_eventtag(unsigned char *tag){
   if (TrigIO_Addr.sin_addr.s_addr){
     addr=0x0000000b; st=trigio_rd(addr,tag,1);
   }else{
-    tag=DEF_EVTAG;
+    *tag=DEF_EVTAG;
   }
   return st;
 }

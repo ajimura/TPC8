@@ -87,6 +87,9 @@
       if (sname == "TrigIO_WaitTime"){
 	TrigIO_waittime=atoi(svalue.c_str());
       }
+      if (sname == "StockNum"){
+	stock_num=atoi(svalue.c_str());
+      }
 
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
     }

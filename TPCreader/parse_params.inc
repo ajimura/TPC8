@@ -8,6 +8,7 @@
     trigio_exist=false;
     rdychk_exist=false;
     for(i=0;i<8;i++) NumFADC[i]=0;
+    TrigIOIP="0.0.0.0";
     TrigIO_done=false;
     TrigIO_waittime=10;
     ComponentID=0;

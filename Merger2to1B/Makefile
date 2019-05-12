@@ -7,7 +7,7 @@ SRCS += $(COMP_NAME)Comp.cpp
 
 # LEPS2 DAQ common
 OBJS += ../lib/daqmwlib.o
-CPPFLAGS += -I../lib/ -g
+CPPFLAGS += -I../lib/ -I../Merger2to1/ -g
 
 # sample install target
 #

@@ -201,27 +201,30 @@ int Merger2to1A::set_data_OutPort(unsigned int data1_byte_size, unsigned int dat
     //    tm *ltime;
     unsigned int comp_header[19],comp_footer;
 
-    unsigned int *datapos1, *datapos2; // top pointer for the data from in ports (just after the DAQ-MW header)
+    //    unsigned int *datapos1, *datapos2; // top pointer for the data from in ports (just after the DAQ-MW header)
+    unsigned int *datapos[2]; // top pointer for the data from in ports (just after the DAQ-MW header)
 
-    datapos1=(unsigned int *)&(m_in1_data.data[HEADER_BYTE_SIZE]);
-    datapos2=(unsigned int *)&(m_in2_data.data[HEADER_BYTE_SIZE]);
+    datapos[0]=(unsigned int *)&(m_in1_data.data[HEADER_BYTE_SIZE]);
+    datapos[1]=(unsigned int *)&(m_in2_data.data[HEADER_BYTE_SIZE]);
 
     //get&check event num
     //    std::cerr << "-----eventnum " << datapos1[3] << ":" << datapos2[3] << std::endl;
-    if ((eventnum=*(datapos1+3))!=*(datapos2+3)){
-      std::cerr << "Event mismatch(num):" << eventnum << " " << *(datapos2+3) << std::endl;
+    if ((eventnum=*(datapos[0]+3))!=*(datapos[1]+3)){
+      std::cerr << "Event mismatch(num):" << eventnum << " " << *(datapos[1]+3) << std::endl;
       fatal_error_report(USER_DEFINED_ERROR1,"Event mismatch(num)!");
     }
     //get&check event tag
     //    std::cerr << "-----eventtag " << datapos1[4] << ":" << datapos2[4] << std::endl;
-    if ((*(datapos1+4))!=*(datapos2+4)){
-      if (*(datapos1+4)==255){
-	eventtag=*(datapos2+4);
-      }else if (*(datapos2+4)==255){
-	eventtag=*(datapos1+4);
-      }else{
-	std::cerr << "Event mismatch(tag):" << *(datapos2+4) << " " << *(datapos2+4) << std::endl;
-	fatal_error_report(USER_DEFINED_ERROR1,"Event mismatch(tag)!");
+    eventtag=255;
+    for(i=0;i<2;i++0){
+      if (*(datapos[i]+4)!=255){
+	if (eventtag==255) eventtag=*(datapos[i]+4);
+	else
+	  if (eventtag!=*(datapos[i]+4)){
+	    std::cerr << "Event mismatch(tag):" << *(datapos[0]+4) << " " << *(datapos[1]+4) <<
+	      std::endl;
+	    fatal_error_report(USER_DEFINED_ERROR1,"Event mismatch(tag) !");
+	  }
       }
     }
     //    if ((eventtag=*(datapos1+4))!=*(datapos2+4)){

@@ -216,7 +216,7 @@ int Merger2to1::set_data_OutPort(unsigned int data1_byte_size, unsigned int data
     //get&check event tag
     //    std::cerr << "-----eventtag " << datapos1[4] << ":" << datapos2[4] << std::endl;
     eventtag=255;
-    for(i=0;i<2;i++0){
+    for(i=0;i<2;i++){
       if (*(datapos[i]+4)!=255){
 	if (eventtag==255) eventtag=*(datapos[i]+4);
 	else

@@ -87,6 +87,7 @@ private:
   bool TrigIO_done;
   int TrigIO_waittime;
   int ComponentID;
+  int stock_num;
 
   unsigned int eventnum;
 };

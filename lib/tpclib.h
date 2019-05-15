@@ -49,6 +49,8 @@ int fadc_trig_disable(void);
 int fadc_wait_data_ready(void);
 int fadc_wait_data_ready_all(void);
 int fadc_wait_data_ready_sel(void);
+int fadc_check_data_ready_all(void);
+int fadc_check_data_ready_sel(void);
 int fadc_show_buf_stat(int);
 int fadc_get_data_size(void);
 int fadc_get_totsize(void);

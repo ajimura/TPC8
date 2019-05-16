@@ -718,7 +718,7 @@ int fadc_wait_data_ready_sel(){
 
     //    printf("%d %d\n",count, readynum);
     if (count==readynum){
-      printf("%d %d\n",times, readynum);
+      //      printf("%d %d\n",times, readynum);
       return 0;
     }
     if (times++>WaitLoop) return -1;

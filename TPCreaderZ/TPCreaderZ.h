@@ -59,8 +59,10 @@ private:
   unsigned char *m_data1;
 
     unsigned int m_recv_byte_size;
+  unsigned int m_recv_timeout_counter;
 
     BufferStatus m_out_status;
+  unsigned int m_out_timeout_counter;
     bool m_debug;
 
   //size: unit in 4bytes
@@ -88,6 +90,7 @@ private:
   int TrigIO_waittime;
   int ComponentID;
   int stock_num;
+  int ReadTimeout;
 
   unsigned int eventnum;
 };

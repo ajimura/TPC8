@@ -41,8 +41,9 @@ TPCreaderZ::TPCreaderZ(RTC::Manager* manager)
     : DAQMW::DaqComponentBase(manager),
       m_OutPort("tpcreaderz_out", m_out_data),
       m_recv_byte_size(0),
+      m_recv_timeout_counter(0),
       m_out_status(BUF_SUCCESS),
-
+      m_out_timeout_counter(0),
       m_debug(false)
 {
     // Registration: InPort/OutPort/Service

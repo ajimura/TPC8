@@ -26,18 +26,21 @@
       ret=fadc_check_data_ready_sel();
     else
       ret=fadc_check_data_ready_all();
+
     if (ret<0){
       std::cerr << "Error in check data ready...(" << ret << ")" << std::endl;
       fatal_error_report(USER_DEFINED_ERROR2,"Error in check_data_ready");
     }else if (ret==0){
 //      usleep(10);
+      m_recv_timeout_counter++;
       return 0; // not ready
     }
 
     clock_gettime(CLOCK_MONOTONIC,&ts);
     t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-    std::cout << "<" << std::fixed << std::setprecision(9) << t0 << std::endl;
+    std::cout << "<" << std::fixed << std::setprecision(9) << t0 << ":" << m_recv_timeout_counter << std::endl;
 
+    m_recv_timeout_counter=0;
     seq_num=get_sequence_num();
 
     std::cout << "Get data ready (" << seq_num << ")" << std::endl;

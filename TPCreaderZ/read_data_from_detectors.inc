@@ -10,25 +10,37 @@
     unsigned char eventtag=0;
     unsigned int comp_footer;
 
+    int ret;
+    struct timespec ts;
+    double t0;
+
     //    std::cout << "Wait next event !" << std::endl;
+
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+    std::cout << ">" << std::fixed << std::setprecision(9) << t0 << std::endl;
 
     /// write your logic here
     // wait trigger
-    if (rdychk_exist){
-      if (fadc_wait_data_ready_sel()<0){
-	std::cerr << "Timeout..." << std::endl;
-	return received_data_size;
-      }
-    }else{
-      if (fadc_wait_data_ready_all()<0){
-	std::cerr << "Timeout..." << std::endl;
-	return received_data_size;
-      }
+    if (rdychk_exist)
+      ret=fadc_check_data_ready_sel();
+    else
+      ret=fadc_check_data_ready_all();
+    if (ret<0){
+      std::cerr << "Error in check data ready...(" << ret << ")" << std::endl;
+      fatal_error_report(USER_DEFINED_ERROR2,"Error in check_data_ready");
+    }else if (ret==0){
+//      usleep(10);
+      return 0; // not ready
     }
+
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+    std::cout << "<" << std::fixed << std::setprecision(9) << t0 << std::endl;
 
     seq_num=get_sequence_num();
 
-    //    std::cout << "Get data ready" << std::endl;
+    std::cout << "Get data ready (" << seq_num << ")" << std::endl;
 
     //get data size
     if (fadc_get_totsizeM2()<0){
@@ -40,41 +52,11 @@
     //    std::cout << "Get data size" << std::endl;
 
     // create component header
-    //    curpos=m_data4;
     curpos=Create_Header(m_data4,&comp_footer,
 			 eventnum,(unsigned int)eventtag,
 			 ComponentType, ComponentID,
 			 0, (unsigned int)seq_num,
 			 totNumFADCforHeader2,totNumFADCforHeader1);
-
-//
-// 20181004: SA: all these stuff put into the function which should be one of the common for LEPS2 DAQ.
-//
-//     //get current time
-//     curtime=time(0);
-//     ltime=localtime(&curtime);
-
-//     //    std::cout << "start header" << std::endl;
-
-//     //header start  -> should be modified to fit DAQ-system
-//     curpos++; //reserve for totalsize
-//     *(curpos++)=(ltime->tm_year+1900)*1000000
-//       +(ltime->tm_mon+1)*10000
-//       +(ltime->tm_mday)*100
-//       +ltime->tm_hour;
-//     *(curpos++)=(ltime->tm_min)*10000000 + (ltime->tm_sec)*100000;
-//     *(curpos++)=eventnum;
-//     *(curpos++)=(unsigned int)eventtag;
-// // originally hard-coded as 400 for bothe type and id
-// // they should be get from header file and parameter from DAQ operator
-//     //    *(curpos++)=400;
-//     //    *(curpos++)=400;
-//     *(curpos++)=ComponentType;
-//     *(curpos++)=ComponentID;;
-//     curpos = curpos+9;
-//     *(curpos++)=totNumFADCforHeader2;
-//     *(curpos++)=totNumFADCforHeader1;
-//     *(curpos++)=(unsigned int)seq_num;
 
     //    std::cout << "start event data" << std::endl;
 
@@ -89,7 +71,6 @@
     //    std::cout << "end event data" << std::endl;
 
     //footer start  -> should be modified to fit DAQ-system (20181004: SA)
-    //    *(curpos++)=0x00000011;
     *(curpos++)=comp_footer;
 
     //    std::cout << "Get event data " << totsize << std::endl;
@@ -131,12 +112,6 @@
         std::setw(2) << ltime->tm_sec << ": ";
       std::cout << "Seq Num(" << seq_num << ") EventTag(" << (int)eventtag << ")" << std::endl;
     }
-
-    //    usleep(500000);
-    //    for(i=0;i<16;i++){
-    //      m_data1[i]=i;
-    //    }
-    //    received_data_size=16;
 
     eventnum++;
 

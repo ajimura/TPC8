@@ -45,7 +45,7 @@ unsigned int *Create_Header(unsigned int *header,
   *(curptr++)=UserData0;  *(curptr++)=UserData1;
   *(curptr++)=seq_num;
 
-  *footer=0x00000011; // why the footer is fixed for all the kind of the components?
+  *footer=0x00000011; // why the footer has same value for all the kind of the components?
 
   return curptr;
 }

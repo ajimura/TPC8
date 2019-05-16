@@ -22,6 +22,8 @@ CPPFLAGS += -I../lib/
 
 # for TPC readout
 OBJS += ../lib/tpclib.o ../lib/trigio_lib.o
+INCS = daq_configure.inc daq_pause.inc daq_resume.inc daq_start.inc daq_stop.inc parse_params.inc read_data_from_detectors.inc
+TPCreaderZ.o : TPCreaderZ.cpp $(INCS)
 
 # sample install target
 #

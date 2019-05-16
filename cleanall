@@ -39,6 +39,9 @@ if [ -e /usr/share/swsoc8 -o -e /usr/share/swpci ]; then
     cd TPCreaderD
     make clean
     cd ..
+    cd TPCreaderZ
+    make clean
+    cd ..
 fi
 cd utils
 make clean

@@ -717,7 +717,10 @@ int fadc_wait_data_ready_sel(){
     }
 
     //    printf("%d %d\n",count, readynum);
-    if (count==readynum) return 0;
+    if (count==readynum){
+      printf("%d %d\n",times, readynum);
+      return 0;
+    }
     if (times++>WaitLoop) return -1;
     //    fadc_show_buf_stat(times);
     usleep(WaitIntv);

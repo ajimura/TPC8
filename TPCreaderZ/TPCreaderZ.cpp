@@ -186,7 +186,9 @@ int TPCreaderZ::daq_run()
         m_recv_byte_size = read_data_from_detectors();
         if (m_recv_byte_size > 0) {
             set_data(m_recv_byte_size); // set data to OutPort Buffer
-        }
+        }else{
+	  return 0; // data is not ready
+	}
     }
 
     if (write_OutPort() < 0) {

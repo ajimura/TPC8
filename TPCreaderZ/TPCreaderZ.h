@@ -89,8 +89,11 @@ private:
   bool TrigIO_done;
   int TrigIO_waittime;
   int ComponentID;
-  int stock_num;
-  int ReadTimeout;
+  unsigned int ReadTimeout;
+  int Stock_MaxNum;
+  int Stock_CurNum;
+  int Stock_TotSiz;
+  int Stock_Offset;
 
   unsigned int eventnum;
 };

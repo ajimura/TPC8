@@ -5,6 +5,7 @@
     time_t curtime;
     tm *ltime;
     int seq_num;
+    unsigned int *toppos;
     unsigned int *curpos;
     int totsize;
     unsigned char eventtag=0;
@@ -20,7 +21,6 @@
     t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
     std::cout << ">" << std::fixed << std::setprecision(9) << t0 << std::endl;
 
-    /// write your logic here
     // wait trigger
     if (rdychk_exist)
       ret=fadc_check_data_ready_sel();
@@ -55,7 +55,9 @@
     //    std::cout << "Get data size" << std::endl;
 
     // create component header
-    curpos=Create_Header(m_data4,&comp_footer,
+    toppos=(unsigned int *)(m_data1+Stock_Offset);
+//    curpos=Create_Header(m_data4,&comp_footer,
+    curpos=Create_Header(toppos,&comp_footer,
 			 eventnum,(unsigned int)eventtag,
 			 ComponentType, ComponentID,
 			 0, (unsigned int)seq_num,
@@ -94,12 +96,17 @@
       fatal_error_report(USER_DEFINED_ERROR2,"Error in trigio_read_eventtag");
     }
 
-    //modify header info (totsize, eventtag)
-    *m_data4=(int)(curpos-m_data4)*4;
-    *(m_data4+4)=eventtag;
-
     //set return value
     received_data_size=(int)(curpos-m_data4)*4;
+    Stock_TotSiz+=received_data_size;
+    Stock_Offset+=received_data_size;
+    Stock_CurNum++;
+
+    //modify header info (totsize, eventtag)
+//    *m_data4=(int)(curpos-m_data4)*4;
+//    *(m_data4+4)=eventtag;
+    *toppos=(int)(curpos-m_data4)*4;
+    *(toppos+4)=eventtag;
 
     //increment ring buffer read pointer for TrigIO
     if (TrigIO_done){

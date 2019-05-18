@@ -17,9 +17,9 @@
 
     //    std::cout << "Wait next event !" << std::endl;
 
-    clock_gettime(CLOCK_MONOTONIC,&ts);
-    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-    std::cout << ">" << std::fixed << std::setprecision(9) << t0 << std::endl;
+//    clock_gettime(CLOCK_MONOTONIC,&ts);
+//    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+//    std::cout << ">" << std::fixed << std::setprecision(9) << t0 << std::endl;
 
     // wait trigger
     if (rdychk_exist)
@@ -97,7 +97,8 @@
     }
 
     //set return value
-    received_data_size=(int)(curpos-m_data4)*4;
+//    received_data_size=(int)(curpos-m_data4)*4;
+    received_data_size=(int)(curpos-toppos)*4;
     Stock_TotSiz+=received_data_size;
     Stock_Offset+=received_data_size;
     Stock_CurNum++;
@@ -105,7 +106,7 @@
     //modify header info (totsize, eventtag)
 //    *m_data4=(int)(curpos-m_data4)*4;
 //    *(m_data4+4)=eventtag;
-    *toppos=(int)(curpos-m_data4)*4;
+    *toppos=(int)(curpos-toppos)*4;
     *(toppos+4)=eventtag;
 
     //increment ring buffer read pointer for TrigIO
@@ -123,6 +124,7 @@
       std::cout << "Seq Num(" << seq_num << ") EventTag(" << (int)eventtag << ")" << std::endl;
     }
 
+    inc_sequence_num();                     // increase sequence num.
     eventnum++;
 
     return received_data_size;

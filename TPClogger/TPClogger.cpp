@@ -20,6 +20,7 @@
 using DAQMW::FatalType::BAD_DIR;
 using DAQMW::FatalType::CANNOT_OPEN_FILE;
 using DAQMW::FatalType::CANNOT_WRITE_DATA;
+using DAQMW::FatalType::USER_DEFINED_ERROR1;
 
 // Module specification
 static const char* mylogger_spec[] = {
@@ -86,6 +87,10 @@ int TPClogger::daq_configure()
 
     ::NVList* list = m_daq_service0.getCompParams();
     parse_params(list);
+
+    In_TotSiz=0;
+    In_RemainSiz=0;
+    In_CurPos=NULL;
 
     return ret;
 }
@@ -274,6 +279,52 @@ void TPClogger::toLower(std::basic_string<char>& s)
     }
 }
 
+unsigned int TPClogger::read_InPort()
+{
+    unsigned int recv_byte_size = 0;
+    bool ret;
+    int GlobSiz;
+    int preSiz;
+
+    if (In_RemainSiz==0){
+      ret = m_InPort.read();
+      if (ret==false){ // false: TIMEOUT or FATAL
+	m_in_status=check_inPort_status(m_InPort);
+	if (m_in_status==BUF_TIMEOUT){ // Buffer empty
+	  m_in_timeout_counter++;
+	  if (check_trans_lock()) {     // Check if stop command has come.
+	    set_trans_unlock();       // Transit to CONFIGURE state.
+	  }
+        }else if (m_in_status==BUF_FATAL){
+	  fatal_error_report(INPORT_ERROR);
+	}
+      }else{
+        m_in_timeout_counter = 0;
+        m_in_status = BUF_SUCCESS;
+	GlobSiz=m_in_data.data.length();
+	In_TotSiz=GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
+	In_RemainSiz=In_TotSiz;
+	In_CurPos=&(m_in_data.data[HEADER_BYTE_SIZE]);
+        recv_byte_size=*In_CurPos;
+      }
+    }else{
+      preSiz=*In_CurPos;
+      if (In_RemainSiz<preSiz){
+	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");
+      }
+      In_RemainSiz-=preSiz;
+      In_CurPos+=(preSiz/4);
+      recv_byte_size=*In_CurPos;
+    }
+
+    if (m_debug) {
+        std::cerr << "m_in_data.data.length():" << recv_byte_size
+                  << std::endl;
+    }
+
+    return recv_byte_size;
+}
+
 int TPClogger::daq_run()
 {
 
@@ -283,43 +334,55 @@ int TPClogger::daq_run()
 
     int event_byte_size = 0;
 
-    bool ret = m_InPort.read();
+    event_byte_size=read_InPort();
 
-    if (ret == true) {
-        int block_byte_size = m_in_data.data.length();
-
-        event_byte_size =
-            block_byte_size - HEADER_BYTE_SIZE - FOOTER_BYTE_SIZE;
-        if (m_debug) {
-            std::cerr << "m_in_data.data.length:"
-                      << m_in_data.data.length() << std::endl;
-            std::cerr << "event_byte_size w/ header, fooger = "
-                      << event_byte_size << std::endl;
-        }
-
-        if (event_byte_size == 0) {
-            return 0;
-        }
-
-        if (check_header_footer(m_in_data, block_byte_size)) {
-            //data header and footer were valid, do nothing
-        }
+    if (event_byte_size==0){ // no input
+      if (check_trans_lock()) {
+	if (m_debug) {
+	  std::cerr << "**** trans unlock\n";
+	}
+	set_trans_unlock();
+      }
+      return 0;
+    }else{
     }
-    else {
-        if (check_trans_lock()) {
-            if (m_debug) {
-                std::cerr << "**** trans unlock\n";
-            }
-            set_trans_unlock();
-        }
-        return 0;
-    }
+
+//     bool ret = m_InPort.read();
+
+//     if (ret == true) {
+//         int block_byte_size = m_in_data.data.length();
+
+//         event_byte_size =
+//             block_byte_size - HEADER_BYTE_SIZE - FOOTER_BYTE_SIZE;
+//         if (m_debug) {
+//             std::cerr << "m_in_data.data.length:"
+//                       << m_in_data.data.length() << std::endl;
+//             std::cerr << "event_byte_size w/ header, fooger = "
+//                       << event_byte_size << std::endl;
+//         }
+
+//         if (event_byte_size == 0) {
+//             return 0;
+//         }
+
+//         if (check_header_footer(m_in_data, block_byte_size)) {
+//             //data header and footer were valid, do nothing
+//         }
+//     }
+//     else {
+//         if (check_trans_lock()) {
+//             if (m_debug) {
+//                 std::cerr << "**** trans unlock\n";
+//             }
+//             set_trans_unlock();
+//         }
+//         return 0;
+//     }
 
     if (m_isDataLogging) {
 
-      top_ptr=(unsigned int *)&m_in_data.data[HEADER_BYTE_SIZE];
-      eventnum=*(top_ptr+3);
-      eventtag=*(top_ptr+4);
+      eventnum=*(In_CurPos+3);
+      eventtag=*(In_CurPos+4);
       seq_num=get_sequence_num();
       // create component header
       Create_Header(comp_header, &comp_footer,
@@ -330,7 +393,7 @@ int TPClogger::daq_run()
 
         int ret0 = fileUtils->write_data((char *)comp_header,76);
 
-        int ret1 = fileUtils->write_data((char *)&m_in_data.data[HEADER_BYTE_SIZE],
+        int ret1 = fileUtils->write_data((char *)In_CurPos,
                                         event_byte_size);
         int ret2 = fileUtils->write_data((char *)&comp_footer,4);
 	

@@ -51,6 +51,7 @@ private:
 
     int parse_params(::NVList* list);
     int reset_InPort();
+    int read_InPort();
     void toLower(std::basic_string<char>& s);
 
     FileUtils* fileUtils;
@@ -64,6 +65,9 @@ private:
 
   static const unsigned int ComponentType = 430; // <- should be modified
   int ComponentID;
+  int In_TotSiz;
+  int In_RemainSiz;
+  unsigned int *In_CurPos;
 
 };
 

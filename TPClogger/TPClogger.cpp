@@ -316,7 +316,7 @@ unsigned int TPClogger::read_InPort()
     }else{
       preSiz=*In_CurPos;
       if (In_RemainSiz<preSiz){
-	std::cerr << "Data broken? Remain=" << In_RemainSiz << ", preSiz=" << ppreSiz << std::endl;
+	std::cerr << "Data broken? Remain=" << In_RemainSiz << ", preSiz=" << preSiz << std::endl;
 	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");
       }
       In_RemainSiz-=preSiz;

@@ -51,7 +51,7 @@ private:
 
     int parse_params(::NVList* list);
     int reset_InPort();
-    int read_InPort();
+    unsigned int read_InPort();
     void toLower(std::basic_string<char>& s);
 
     FileUtils* fileUtils;

@@ -18,6 +18,7 @@
 
 // Possible fatal errors for this component
 using DAQMW::FatalType::BAD_DIR;
+using DAQMW::FatalType::INPORT_ERROR;
 using DAQMW::FatalType::CANNOT_OPEN_FILE;
 using DAQMW::FatalType::CANNOT_WRITE_DATA;
 using DAQMW::FatalType::USER_DEFINED_ERROR1;
@@ -295,7 +296,7 @@ unsigned int TPClogger::read_InPort()
 	m_in_status=check_inPort_status(m_InPort);
 	std::cerr << " check_inPort_status(): ret=" << m_in_status << std::endl;
 	if (m_in_status==BUF_TIMEOUT){ // Buffer empty
-	  m_in_timeout_counter++;
+	  //	  m_in_timeout_counter++;
 	  if (check_trans_lock()) {     // Check if stop command has come.
 	    set_trans_unlock();       // Transit to CONFIGURE state.
 	  }
@@ -303,13 +304,13 @@ unsigned int TPClogger::read_InPort()
 	  fatal_error_report(INPORT_ERROR);
 	}
       }else{
-        m_in_timeout_counter = 0;
+	//        m_in_timeout_counter = 0;
         m_in_status = BUF_SUCCESS;
 	GlobSiz=m_in_data.data.length();
 	In_TotSiz=GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
-	In_RemainSiz=In_TotSiz;
-	In_CurPos=&(m_in_data.data[HEADER_BYTE_SIZE]);
+	In_CurPos=(unsigned int *)&(m_in_data.data[HEADER_BYTE_SIZE]);
         recv_byte_size=*In_CurPos;
+	In_RemainSiz=In_TotSiz-recv_byte_size;
 	std::cerr << " reading: Tot=" << In_TotSiz << ", Recv=" << recv_byte_size << std::endl;
       }
     }else{

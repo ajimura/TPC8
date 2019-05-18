@@ -286,10 +286,14 @@ unsigned int TPClogger::read_InPort()
     int GlobSiz;
     int preSiz;
 
+    std::cerr << "Entering read_InPort: Tot=" << In_TotSiz << ", Remain=" << In_RemainSiz << std::endl;
+
     if (In_RemainSiz==0){
       ret = m_InPort.read();
+      std::cerr << " m_InPort.read(): ret=" << ret << std::endl;
       if (ret==false){ // false: TIMEOUT or FATAL
 	m_in_status=check_inPort_status(m_InPort);
+	std::cerr << " check_inPort_status(): ret=" << m_in_status << std::endl;
 	if (m_in_status==BUF_TIMEOUT){ // Buffer empty
 	  m_in_timeout_counter++;
 	  if (check_trans_lock()) {     // Check if stop command has come.
@@ -306,6 +310,7 @@ unsigned int TPClogger::read_InPort()
 	In_RemainSiz=In_TotSiz;
 	In_CurPos=&(m_in_data.data[HEADER_BYTE_SIZE]);
         recv_byte_size=*In_CurPos;
+	std::cerr << " reading: Tot=" << In_TotSiz << ", Recv=" << recv_byte_size << std::endl;
       }
     }else{
       preSiz=*In_CurPos;
@@ -315,6 +320,7 @@ unsigned int TPClogger::read_InPort()
       In_RemainSiz-=preSiz;
       In_CurPos+=(preSiz/4);
       recv_byte_size=*In_CurPos;
+      std::cerr << " reading: Remain=" << In_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
     }
 
     if (m_debug) {

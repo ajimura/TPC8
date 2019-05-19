@@ -73,6 +73,14 @@ private:
     bool m_debug;
 
   int ComponentID;
+
+  int In1_TotSiz;
+  int In1_RemainSiz;
+  unsigned int *In1_CurPos;
+
+  int In2_TotSiz;
+  int In2_RemainSiz;
+  unsigned int *In2_CurPos;
 };
 
 

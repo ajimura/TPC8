@@ -95,6 +95,14 @@ int Merger2to1::daq_configure()
     paramList = m_daq_service0.getCompParams();
     parse_params(paramList);
 
+    In1_TotSiz=0;
+    In1_RemainSiz=0;
+    In1_CurPos=NULL;
+
+    In2_TotSiz=0;
+    In2_RemainSiz=0;
+    In2_CurPos=NULL;
+
     return 0;
 }
 
@@ -220,30 +228,51 @@ int Merger2to1::write_OutPort()
 
 unsigned int Merger2to1::read_InPort1()
 {
-    /////////////// read data from InPort Buffer ///////////////
     unsigned int recv_byte_size = 0;
-    bool ret = m_InPort1.read();
+    bool ret;
+    int GlobSiz;
+    int preSiz;
 
-    //////////////////// check read status /////////////////////
-    if (ret == false) { // false: TIMEOUT or FATAL
-        m_in1_status = check_inPort_status(m_InPort1);
-        if (m_in1_status == BUF_TIMEOUT) { // Buffer empty.
-            m_in1_timeout_counter++;
-            if (check_trans_lock()) {     // Check if stop command has come.
-                set_trans_unlock();       // Transit to CONFIGURE state.
-            }
-        }
-        else if (m_in1_status == BUF_FATAL) { // Fatal error
-            fatal_error_report(INPORT_ERROR);
-        }
-    }
-    else { // success
-        m_in1_timeout_counter = 0;
-        recv_byte_size = m_in1_data.data.length();
+    std::cerr << "Entering read_InPort1: Tot=" << In1_TotSiz << ", Remain=" << In1_RemainSiz << std::endl;
+
+    if (In1_RemainSiz==0){
+      ret = m_InPort1.read();
+      std::cerr << " m_InPort1.read(): ret=" << ret << std::endl;
+      if (ret==false){ // false: TIMEOUT or FATAL
+	m_in1_status=check_inPort_status(m_InPort1);
+	std::cerr << " check_inPort_status(1): ret=" << m_in1_status << std::endl;
+	if (m_in1_status==BUF_TIMEOUT){ // Buffer empty
+	  //	  m_in_timeout_counter++;
+	  if (check_trans_lock()) {     // Check if stop command has come.
+	    set_trans_unlock();       // Transit to CONFIGURE state.
+	  }
+        }else if (m_in1_status==BUF_FATAL){
+	  fatal_error_report(INPORT_ERROR);
+	}
+      }else{
+	//        m_in_timeout_counter = 0;
         m_in1_status = BUF_SUCCESS;
+	GlobSiz=m_in1_data.data.length();
+	In1_TotSiz=GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
+	In1_CurPos=(unsigned int *)&(m_in1_data.data[HEADER_BYTE_SIZE]);
+        recv_byte_size=*In1_CurPos;
+	In1_RemainSiz=In1_TotSiz-recv_byte_size;
+	std::cerr << " reading1: Tot=" << In1_TotSiz << ", Recv=" << recv_byte_size << std::endl;
+      }
+    }else{
+      preSiz=*In1_CurPos;
+      if (In1_RemainSiz<preSiz){
+	std::cerr << "Data(1) broken? Remain=" << In1_RemainSiz << ", preSiz=" << preSiz << std::endl;
+	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");
+      }
+      In1_RemainSiz-=preSiz;
+      In1_CurPos+=(preSiz/4);
+      recv_byte_size=*In1_CurPos;
+      std::cerr << " reading(1): Remain=" << In1_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
     }
+
     if (m_debug) {
-        std::cerr << "m_in1_data.data.length():" << recv_byte_size
+        std::cerr << "m_in_data.data.length():" << recv_byte_size
                   << std::endl;
     }
 
@@ -252,30 +281,51 @@ unsigned int Merger2to1::read_InPort1()
 
 unsigned int Merger2to1::read_InPort2()
 {
-    /////////////// read data from InPort Buffer ///////////////
     unsigned int recv_byte_size = 0;
-    bool ret = m_InPort2.read();
+    bool ret;
+    int GlobSiz;
+    int preSiz;
 
-    //////////////////// check read status /////////////////////
-    if (ret == false) { // false: TIMEOUT or FATAL
-        m_in2_status = check_inPort_status(m_InPort2);
-        if (m_in2_status == BUF_TIMEOUT) { // Buffer empty.
-            m_in2_timeout_counter++;
-            if (check_trans_lock()) {     // Check if stop command has come.
-                set_trans_unlock();       // Transit to CONFIGURE state.
-            }
-        }
-        else if (m_in2_status == BUF_FATAL) { // Fatal error
-            fatal_error_report(INPORT_ERROR);
-        }
-    }
-    else { // success
-        m_in2_timeout_counter = 0;
-        recv_byte_size = m_in2_data.data.length();
+    std::cerr << "Entering read_InPort2: Tot=" << In2_TotSiz << ", Remain=" << In2_RemainSiz << std::endl;
+
+    if (In2_RemainSiz==0){
+      ret = m_InPort2.read();
+      std::cerr << " m_InPort2.read(): ret=" << ret << std::endl;
+      if (ret==false){ // false: TIMEOUT or FATAL
+	m_in2_status=check_inPort_status(m_InPort2);
+	std::cerr << " check_inPort_status(2): ret=" << m_in2_status << std::endl;
+	if (m_in2_status==BUF_TIMEOUT){ // Buffer empty
+	  //	  m_in_timeout_counter++;
+	  if (check_trans_lock()) {     // Check if stop command has come.
+	    set_trans_unlock();       // Transit to CONFIGURE state.
+	  }
+        }else if (m_in2_status==BUF_FATAL){
+	  fatal_error_report(INPORT_ERROR);
+	}
+      }else{
+	//        m_in_timeout_counter = 0;
         m_in2_status = BUF_SUCCESS;
+	GlobSiz=m_in2_data.data.length();
+	In2_TotSiz=GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
+	In2_CurPos=(unsigned int *)&(m_in2_data.data[HEADER_BYTE_SIZE]);
+        recv_byte_size=*In2_CurPos;
+	In2_RemainSiz=In2_TotSiz-recv_byte_size;
+	std::cerr << " reading2: Tot=" << In2_TotSiz << ", Recv=" << recv_byte_size << std::endl;
+      }
+    }else{
+      preSiz=*In2_CurPos;
+      if (In2_RemainSiz<preSiz){
+	std::cerr << "Data(2) broken? Remain=" << In2_RemainSiz << ", preSiz=" << preSiz << std::endl;
+	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");
+      }
+      In2_RemainSiz-=preSiz;
+      In2_CurPos+=(preSiz/4);
+      recv_byte_size=*In2_CurPos;
+      std::cerr << " reading(2): Remain=" << In2_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
     }
+
     if (m_debug) {
-        std::cerr << "m_in2_data.data.length():" << recv_byte_size
+        std::cerr << "m_in_data.data.length():" << recv_byte_size
                   << std::endl;
     }
 

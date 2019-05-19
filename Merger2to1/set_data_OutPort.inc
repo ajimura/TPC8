@@ -12,17 +12,17 @@
     //    unsigned int *datapos1, *datapos2; // top pointer for the data from in ports (just after the DAQ-MW header)
     unsigned int *datapos[2]; // top pointer for the data from in ports (just after the DAQ-MW header)
 
-    datapos[0]=(unsigned int *)&(m_in1_data.data[HEADER_BYTE_SIZE]);
-    datapos[1]=(unsigned int *)&(m_in2_data.data[HEADER_BYTE_SIZE]);
+    datapos[0]=In1_CurPos; //(unsigned int *)&(m_in1_data.data[HEADER_BYTE_SIZE]);
+    datapos[1]=In2_CurPos; //(unsigned int *)&(m_in2_data.data[HEADER_BYTE_SIZE]);
 
     //get&check event num
-    //    std::cerr << "-----eventnum " << datapos1[3] << ":" << datapos2[3] << std::endl;
+        std::cerr << "-----eventnum " << datapos[0][3] << ":" << datapos[1][3] << std::endl;
     if ((eventnum=*(datapos[0]+3))!=*(datapos[1]+3)){
       std::cerr << "Event mismatch(num):" << eventnum << " " << *(datapos[1]+3) << std::endl;
       fatal_error_report(USER_DEFINED_ERROR1,"Event mismatch(num)!");
     }
     //get&check event tag
-    //    std::cerr << "-----eventtag " << datapos1[4] << ":" << datapos2[4] << std::endl;
+        std::cerr << "-----eventtag " << datapos[0][4] << ":" << datapos[1][4] << std::endl;
     eventtag=255;
     for(i=0;i<2;i++){
       if (*(datapos[i]+4)!=255){
@@ -42,15 +42,15 @@
 
 
     //get size info.
-    data1_block_size=data1_byte_size-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
-    data2_block_size=data2_byte_size-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
+    data1_block_size=data1_byte_size; //-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
+    data2_block_size=data2_byte_size; //-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
     tot_block_size=data1_block_size+data2_block_size;
     tot_data_size=tot_block_size+80; //+HEADER_BYTE_SIZE+FOOTER_BYTE_SIZE; //80 = Comp header + Comp Footer
-    //    std::cerr << "-----size info. " << data1_block_size << ", " << data2_block_size << ", " << tot_data_size << std::endl;
+        std::cerr << "-----size info. " << data1_block_size << ", " << data2_block_size << ", " << tot_data_size << std::endl;
 
     //get current time
     seq_num=get_sequence_num();
-    //    std::cerr << "-----seq num " << seq_num << std::endl;
+        std::cerr << "-----seq num " << seq_num << std::endl;
 
     // create component header
     Create_Header(comp_header, &comp_footer,
@@ -90,9 +90,12 @@
     m_out_data.data.length(tot_data_size+HEADER_BYTE_SIZE+FOOTER_BYTE_SIZE);
     memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &comp_header[0], 76);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE+76]), &m_in1_data.data[HEADER_BYTE_SIZE], data1_block_size);
+//    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE+76]), &m_in1_data.data[HEADER_BYTE_SIZE], data1_block_size);
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE+76]), In1_CurPos, data1_block_size);
+//    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE+76+data1_block_size]), 
+//	   &m_in2_data.data[HEADER_BYTE_SIZE],data2_block_size);
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE+76+data1_block_size]), 
-	   &m_in2_data.data[HEADER_BYTE_SIZE],data2_block_size);
+	   In2_CurPos,data2_block_size);
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE+76+tot_block_size]),&comp_footer, 4);
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE+76+tot_block_size+4]),&footer[0], FOOTER_BYTE_SIZE);
 

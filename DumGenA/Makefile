@@ -9,6 +9,8 @@ SRCS += $(COMP_NAME)Comp.cpp
 OBJS += ../lib/daqmwlib.o
 CPPFLAGS += -I../lib/ -g
 
+$(COMP_NAME).o : read_data_from_detectors.inc
+
 # sample install target
 #
 # MODE = 0755

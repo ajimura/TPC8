@@ -9,6 +9,8 @@ SRCS += $(COMP_NAME)Comp.cpp
 OBJS += ../lib/daqmwlib.o
 CPPFLAGS += -I../lib/ -I../DumGenA/ -g
 
+$(COMP_NAME).o : ../DumGenA/read_data_from_detectors.inc
+
 # sample install target
 #
 # MODE = 0755

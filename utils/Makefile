@@ -2,16 +2,16 @@
 
 APS = analmwbuf
 
-pcidev = $(shell ls /usr/share | grep swpci)
-socdev = $(shell ls /usr/share | grep swsoc8)
+pcidev = $(shell ls -d /usr/share/swpci 2>/dev/null | grep swpci)
+socdev = $(shell ls -d /usr/share/swsoc8 2>/dev/null | grep swsoc8)
 
-ifeq (${pcidev},swpci)
+ifeq (${pcidev},/usr/share/swpci)
 devexist=yes
 CFLAGS += -Wall -I/usr/share/swpci/include/ -I../lib/ -DPCIE
 LDLIBS += /usr/share/swpci/lib/swpci_lib.o
 endif
 
-ifeq (${socdev},swsoc8)
+ifeq (${socdev},/usr/share/swsoc8)
 devexist=yes
 CFLAGS += -Wall -I/usr/share/swsoc8/include/ -I../lib/
 LDLIBS += /usr/share/swsoc8/lib/swsoc_lib.o

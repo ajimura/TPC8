@@ -2,16 +2,16 @@
 
 LIBS=daqmwlib.o
 
-pcidev = $(shell ls /usr/share | grep swpci)
-socdev = $(shell ls /usr/share | grep swsoc8)
+pcidev = $(shell ls -d /usr/share/swpci 2>/dev/null | grep swpci)
+socdev = $(shell ls -d /usr/share/swsoc8 2>/dev/null | grep swsoc8)
 
-ifeq (${pcidev},swpci)
+ifeq (${pcidev},/usr/share/swpci)
 CFLAGS += -Wall -I/usr/share/swpci/include/ -DPCIE -g
 CFLAGS += -DDMA
 LIBS += rmap_lib.o tpclib.o trigio_lib.o tpcmath.o
 endif
 
-ifeq (${socdev},swsoc8)
+ifeq (${socdev},/usr/share/swsoc8)
 CFLAGS += -Wall -I/usr/share/swsoc8/include/ -g
 LIBS += rmap_lib.o tpclib.o trigio_lib.o tpcmath.o
 endif

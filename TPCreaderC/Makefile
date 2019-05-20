@@ -1,4 +1,5 @@
 COMP_NAME = TPCreaderC
+PARENT = ../TPCreader/
 
 all: $(COMP_NAME)Comp
 
@@ -22,6 +23,16 @@ CPPFLAGS += -I../lib/ -I../TPCreader/
 
 # for TPC readout
 OBJS += ../lib/tpclib.o ../lib/trigio_lib.o
+
+INCS  = $(PARENT)daq_configure.inc
+INCS += $(PARENT)daq_pause.inc
+INCS += $(PARENT)daq_resume.inc
+INCS += $(PARENT)daq_start.inc
+INCS += $(PARENT)daq_stop.inc
+INCS += $(PARENT)parse_params.inc
+INCS += $(PARENT)read_data_from_detectors.inc
+
+$(COMP_NAME).o : $(INCS)
 
 # sample install target
 #

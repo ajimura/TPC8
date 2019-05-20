@@ -39,6 +39,7 @@ DumGenA::DumGenA(RTC::Manager* manager)
     : DAQMW::DaqComponentBase(manager),
       m_OutPort("dumgena_out", m_out_data),
       m_recv_byte_size(0),
+      m_recv_timeout_counter(0),
       m_out_status(BUF_SUCCESS),
 
       m_debug(false)
@@ -97,12 +98,13 @@ int DumGenA::daq_configure()
     std::cout << "Component ID: 0x" << 
       std::setfill('0') << std::setw(8) << std::hex << ComponentID << std::endl;
     std::cout << std::dec;
+    std::cout << "Stock Max Num: " << Stock_MaxNum << std::endl;
 
     // Initialization start
     std::cout << "--- Initialization starting..." << std::endl;
 
     // allocate data buffer
-    m_data4=new unsigned int[generate_size+1024];
+    m_data4=new unsigned int[(generate_size+1024)*Stock_MaxNum];
     m_data1=(unsigned char *)m_data4;
     std::cout << "Prepare data buffer done" << std::endl;
 
@@ -121,6 +123,11 @@ int DumGenA::parse_params(::NVList* list)
     generate_size=0;
     interval_time=1000000;
     ComponentID=0;
+    ReadTimeout=10000;
+    Stock_MaxNum=1;
+    Stock_CurNum=0;
+    Stock_TotSiz=0;
+    Stock_Offset=0;
 
     int len = (*list).length();
     for (i = 0; i < len; i+=2) {
@@ -133,6 +140,7 @@ int DumGenA::parse_params(::NVList* list)
       if (sname == "GenSize") generate_size=atoi(svalue.c_str());
       if (sname == "IntvTime") interval_time=atoi(svalue.c_str());
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
+      if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
     }
 
     return 0;
@@ -222,39 +230,76 @@ int DumGenA::write_OutPort()
 int DumGenA::daq_run()
 {
     struct timespec ts;
-    double t0,t1;
+    double t0;
 
     if (m_debug) {
         std::cerr << "*** DumGenA::run" << std::endl;
     }
 
-    if (check_trans_lock()) {  // check if stop command has come
+    if (Stock_CurNum==0)
+
+      if (check_trans_lock()) {  // check if stop command has come
         set_trans_unlock();    // transit to CONFIGURED state
         return 0;
-    }
+      }
 
     if (m_out_status == BUF_SUCCESS) {   // previous OutPort.write() successfully done
         m_recv_byte_size = read_data_from_detectors();
-        if (m_recv_byte_size > 0) {
-            set_data(m_recv_byte_size); // set data to OutPort Buffer
-        }
+	//        if (m_recv_byte_size > 0) {
+	//            set_data(m_recv_byte_size); // set data to OutPort Buffer
+	//        }
     }
 
-    clock_gettime(CLOCK_MONOTONIC,&ts);
-    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-    //    std::cout << "Pre:" << std::fixed << std::setprecision(9) << t0 << std::endl;
-
-    if (write_OutPort() < 0) {
-        ;     // Timeout. do nothing.
+    if (m_out_status == BUF_TIMEOUT){
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+      if (write_OutPort()<0){
+	;
+      }else{
+	//	inc_sequence_num();                     // increase sequence num.
+	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	Stock_CurNum=0;
+	Stock_Offset=0;
+      }
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
     }
-    else {    // OutPort write successfully done
-        inc_sequence_num();                     // increase sequence num.
-        inc_total_data_size(m_recv_byte_size);  // increase total data byte size
+
+    if ( (Stock_CurNum==Stock_MaxNum) || (Stock_CurNum>0 && m_recv_timeout_counter>ReadTimeout) ){
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+      set_data(Stock_Offset);
+      if (write_OutPort()<0){
+	;
+      }else{
+	//	inc_sequence_num();                     // increase sequence num.
+	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	Stock_CurNum=0;
+	Stock_Offset=0;
+      }
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
     }
 
-    clock_gettime(CLOCK_MONOTONIC,&ts);
-    t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-    std::cout << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
+    // clock_gettime(CLOCK_MONOTONIC,&ts);
+    // t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+    // //    std::cout << "Pre:" << std::fixed << std::setprecision(9) << t0 << std::endl;
+
+    // if (write_OutPort() < 0) {
+    //     ;     // Timeout. do nothing.
+    // }
+    // else {    // OutPort write successfully done
+    //     inc_sequence_num();                     // increase sequence num.
+    //     inc_total_data_size(m_recv_byte_size);  // increase total data byte size
+    // }
+
+    // clock_gettime(CLOCK_MONOTONIC,&ts);
+    // t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+    // std::cout << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
 
     return 0;
 }

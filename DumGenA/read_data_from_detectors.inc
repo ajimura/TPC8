@@ -5,6 +5,7 @@
     time_t curtime;
     tm *ltime;
     int seq_num;
+    unsigned int *toppos;
     unsigned int *curpos;
     int totsize;
     unsigned char eventtag=0;
@@ -29,7 +30,8 @@
 
     // create component header
     //    curpos=m_data4;
-    curpos=Create_Header(m_data4,&comp_footer,
+    toppos=(unsigned int *)(m_data1+Stock_Offset);
+    curpos=Create_Header(toppos,&comp_footer,
 			 eventnum,(unsigned int)eventtag,
 			 ComponentType, ComponentID,
 			 0, (unsigned int)seq_num,
@@ -54,12 +56,17 @@
     //get event tag from RPC-260 TPC_TrigIO
     eventtag=0;
 
-    //modify header info (totsize, eventtag)
-    *m_data4=(int)(curpos-m_data4)*4;
-    *(m_data4+4)=eventtag;
-
     //set return value
-    received_data_size=(int)(curpos-m_data4)*4;
+//    received_data_size=(int)(curpos-m_data4)*4;
+    received_data_size=(int)(curpos-toppos)*4;
+    Stock_TotSiz+=received_data_size;
+    Stock_Offset+=received_data_size;
+    Stock_CurNum++;
+
+    //modify header info (totsize, eventtag)
+//    *m_data4=(int)(curpos-m_data4)*4;
+    *toppos=(int)(curpos-toppos)*4;
+    *(toppos+4)=eventtag;
 
     if (seq_num%message_freq == 0){
       curtime=time(0);
@@ -76,6 +83,7 @@
     //    }
     //    received_data_size=16;
 
+    inc_sequence_num();
     eventnum++;
 
     return received_data_size;

@@ -59,14 +59,21 @@ private:
   unsigned char *m_data1;
 
     unsigned int m_recv_byte_size;
+  unsigned int m_recv_timeout_counter;
 
     BufferStatus m_out_status;
+  unsigned int m_out_timeout_counter;
     bool m_debug;
 
   //parameter
   int generate_size;
   int interval_time;
   int ComponentID;
+  unsigned int ReadTimeout;
+  int Stock_MaxNum;
+  int Stock_CurNum;
+  int Stock_TotSiz;
+  int Stock_Offset;
 
   unsigned int eventnum;
 };

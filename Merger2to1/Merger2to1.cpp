@@ -108,7 +108,8 @@ int Merger2to1::daq_configure()
     Stock_CurNum=0;
     Stock_TotSiz=0;
     Stock_Offset=0;
-    Cur_MaxDataSiz=67108864; // 64M (tempolary)
+    //    Cur_MaxDataSiz=67108864; // 64M (tempolary)
+    Cur_MaxDataSiz=10240; // 10k (tempolary)
 
     m_data1=new unsigned char[Cur_MaxDataSiz];
     m_data4=(unsigned int *)m_data1;
@@ -144,6 +145,8 @@ int Merger2to1::parse_params(::NVList* list)
 int Merger2to1::daq_unconfigure()
 {
     std::cerr << "*** Merger2to1::unconfigure" << std::endl;
+
+    delete [] m_data1; std::cout << "Delete data buffer" << std::endl;
 
     return 0;
 }
@@ -365,6 +368,20 @@ int Merger2to1::daq_run()
     //    }
 
    return 0;
+}
+
+unsigned char * Merger2to1::renew_buf(unsigned char * orig_buf,
+				      unsigned int cursize, unsigned int newsize)
+{
+  unsigned char * new_buf;
+
+  new_buf = new unsigned char[newsize];
+  memcpy(new_buf, orig_buf, cursize);
+  delete [] orig_buf;
+
+  std::cerr << "Re-new data buf: " << cursize << " -> " << newsize << std::endl;
+
+  return new_buf;
 }
 
 extern "C"

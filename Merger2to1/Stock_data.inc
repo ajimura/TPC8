@@ -1,6 +1,7 @@
     int i;
     unsigned int tot_data_size;
     unsigned int tot_block_size;
+    unsigned int tot_next_size;
     unsigned int eventnum, eventtag, seq_num;
     unsigned int comp_footer;
 
@@ -42,6 +43,13 @@
     //get current time
     seq_num=get_sequence_num();
         std::cerr << "-----seq num " << seq_num << std::endl;
+
+    // check size of buf
+    tot_next_size=Stock_Offset+tot_data_size;
+    if (tot_next_size>Cur_MaxDataSiz){
+       m_data1=renew_buf(m_data1,Stock_Offset,tot_next_size);
+       Cur_MaxDataSiz=tot_next_size;
+    }
 
     // create component header
     toppos=(unsigned int *)(m_data1+Stock_Offset);

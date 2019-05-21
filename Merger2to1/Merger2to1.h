@@ -57,6 +57,7 @@ private:
   unsigned int read_InPort1();
   unsigned int read_InPort2();
   int write_OutPort();
+  unsigned char * renew_buf(unsigned char *orig_buf, unsigned int cursize, unsigned int newsize);
 
   static const unsigned int ComponentType = 420; // <- should be modified
 
@@ -86,12 +87,12 @@ private:
   unsigned int ReadTimeout;
   int Stock_MaxNum;
   int Stock_CurNum;
-  int Stock_TotSiz;
-  int Stock_Offset;
+  unsigned int Stock_TotSiz;
+  unsigned int Stock_Offset;
   unsigned char * m_data1;
   unsigned int * m_data4;
 
-  int Cur_MaxDataSiz;
+  unsigned int Cur_MaxDataSiz;
 };
 
 

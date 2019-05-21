@@ -12,7 +12,7 @@
 	m_in2_status=check_inPort_status(m_InPort2);
 	std::cerr << " check_inPort_status(2): ret=" << m_in2_status << std::endl;
 	if (m_in2_status==BUF_TIMEOUT){ // Buffer empty
-	  //	  m_in_timeout_counter++;
+          m_in2_timeout_counter++;
 	  if (check_trans_lock()) {     // Check if stop command has come.
 	    set_trans_unlock();       // Transit to CONFIGURE state.
 	  }
@@ -20,7 +20,7 @@
 	  fatal_error_report(INPORT_ERROR);
 	}
       }else{
-	//        m_in_timeout_counter = 0;
+        m_in2_timeout_counter = 0;
         m_in2_status = BUF_SUCCESS;
 	GlobSiz=m_in2_data.data.length();
 	In2_TotSiz=GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;

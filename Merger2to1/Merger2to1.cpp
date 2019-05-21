@@ -7,6 +7,8 @@
  *
  */
 
+#include <iomanip>
+#include <ctime>
 #include "Merger2to1.h"
 #include "daqmwlib.h"
 
@@ -108,7 +110,7 @@ int Merger2to1::daq_configure()
     Stock_Offset=0;
     Cur_MaxDataSiz=67108864; // 64M (tempolary)
 
-    m_data1=new unsigned char[CurMaxDataSiz];
+    m_data1=new unsigned char[Cur_MaxDataSiz];
     m_data4=(unsigned int *)m_data1;
 
     return 0;
@@ -271,7 +273,9 @@ int Merger2to1::set_data(unsigned int data_byte_size)
 
 int Merger2to1::daq_run()
 {
-  unsigned int event_data_size;
+  struct timespec ts;
+  double t0;
+
     if (m_debug) {
         std::cerr << "*** Merger2to1::run" << std::endl;
     }
@@ -313,7 +317,8 @@ int Merger2to1::daq_run()
       std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
     }
 
-   if ( (Stock_CurNum==Stock_MaxNum) || (Stock_CurNum>0 && m_recv_timeout_counter>ReadTimeout) ){
+   if ( (Stock_CurNum==Stock_MaxNum) ||
+	(Stock_CurNum>0 && (m_in1_timeout_counter>ReadTimeout||m_in2_timeout_counter>ReadTimeout)) ){
       clock_gettime(CLOCK_MONOTONIC,&ts);
       t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
       std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;

@@ -52,7 +52,7 @@ private:
     int parse_params(::NVList* list);
     int reset_InPort1();
     int reset_InPort2();
-  int Stock_data(unsigned int data1_byte_size,unsigned int data2_byte_size);
+  unsigned int Stock_data(unsigned int data1_byte_size,unsigned int data2_byte_size);
   int set_data(unsigned int data_byte_size);
   unsigned int read_InPort1();
   unsigned int read_InPort2();

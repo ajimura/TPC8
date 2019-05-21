@@ -1,11 +1,8 @@
     int i;
-    unsigned char header[8];
-    unsigned char footer[8];
     unsigned int tot_data_size;
     unsigned int tot_block_size;
-    unsigned int data1_block_size, data2_block_size; // size without daq-mw header and footer
     unsigned int eventnum, eventtag, seq_num;
-    unsigned int comp_header[19],comp_footer;
+    unsigned int comp_footer;
 
     unsigned int *toppos;
     unsigned int *curpos;
@@ -40,23 +37,23 @@
     //get size info.
     tot_block_size=data1_byte_size+data2_byte_size;
     tot_data_size=tot_block_size+80; //80 = Comp header + Comp Footer
-    std::cerr << "-----size info. " << data1_block_size << ", " << data2_block_size << ", " << tot_data_size << std::endl;
+    std::cerr << "-----size info. " << data1_byte_size << ", " << data2_byte_size << ", " << tot_data_size << std::endl;
 
     //get current time
     seq_num=get_sequence_num();
         std::cerr << "-----seq num " << seq_num << std::endl;
 
     // create component header
-    toppos=(unisgned int *)(m_data1+Stock_Offset);
+    toppos=(unsigned int *)(m_data1+Stock_Offset);
     curpos=Create_Header(toppos, &comp_footer,
 		  eventnum, eventtag,
 		  ComponentType, ComponentID,
 		  tot_data_size, (unsigned int)seq_num,
 		  0,0);
 
-    memcpy(curpos,In1_CurPos,data1_byte_size); curpos+=(data1_byte_size/4)
-    memcpy(curpos,In2_CurPos,data1_byte_size); curpos+=(data2_byte_size/4)
-    memcpy(curpos,comp_footer,FOOTER_BYTE_SIZE); curpos+=(FOOTER_BYTE_SIZE/4)
+    memcpy(curpos,In1_CurPos,data1_byte_size); curpos+=(data1_byte_size/4);
+    memcpy(curpos,In2_CurPos,data1_byte_size); curpos+=(data2_byte_size/4);
+    memcpy(curpos,&comp_footer,FOOTER_BYTE_SIZE); curpos+=(FOOTER_BYTE_SIZE/4);
     stock_size=(curpos-toppos)*4;
     Stock_TotSiz+=stock_size;
     Stock_Offset+=stock_size;

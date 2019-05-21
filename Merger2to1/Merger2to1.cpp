@@ -103,12 +103,25 @@ int Merger2to1::daq_configure()
     In2_RemainSiz=0;
     In2_CurPos=NULL;
 
+    Stock_CurNum=0;
+    Stock_TotSiz=0;
+    Stock_Offset=0;
+    Cur_MaxDataSiz=67108864; // 64M (tempolary)
+
+    m_data1=new unsigned char[CurMaxDataSiz];
+    m_data4=(unsigned int *)m_data1;
+
     return 0;
 }
 
 int Merger2to1::parse_params(::NVList* list)
 {
     std::cerr << "param list length:" << (*list).length() << std::endl;
+
+    //set default value
+    ComponentID=0;
+    ReadTimeout=10000;
+    Stock_MaxNum=1;
 
     int len = (*list).length();
     for (int i = 0; i < len; i+=2) {
@@ -119,6 +132,7 @@ int Merger2to1::parse_params(::NVList* list)
 	//        std::cerr << "value: " << svalue << std::endl;
 
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
+      if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
     }
 
     return 0;
@@ -196,11 +210,6 @@ int Merger2to1::reset_InPort2()
     return 0;
 }
 
-int Merger2to1::set_data_OutPort(unsigned int data1_byte_size, unsigned int data2_byte_size)
-{
-#include "set_data_OutPort.inc"
-}
-
 int Merger2to1::write_OutPort()
 {
     ////////////////// send data from OutPort  //////////////////
@@ -221,7 +230,8 @@ int Merger2to1::write_OutPort()
         }
     }
     else { // success
-        m_out_timeout_counter = 0;
+      m_out_timeout_counter = 0;
+      m_out_status = BUF_SUCCESS; // successfully done
     }
     return 0; // successfully done
 }
@@ -234,6 +244,29 @@ unsigned int Merger2to1::read_InPort1()
 unsigned int Merger2to1::read_InPort2()
 {
 #include "read_InPort2.inc"
+}
+
+unsigned int Merger2to1::Stock_data(unsigned int data1_byte_size, unsigned int data2_byte_size)
+{
+#include "Stock_data.inc"
+}
+
+int Merger2to1::set_data(unsigned int data_byte_size)
+{
+    unsigned char header[8];
+    unsigned char footer[8];
+
+    set_header(&header[0], data_byte_size);
+    set_footer(&footer[0]);
+
+    ///set OutPort buffer length
+    m_out_data.data.length(data_byte_size + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
+    memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], data_byte_size);
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + data_byte_size]), &footer[0],
+           FOOTER_BYTE_SIZE);
+
+    return 0;
 }
 
 int Merger2to1::daq_run()
@@ -249,34 +282,75 @@ int Merger2to1::daq_run()
       if (m_inport2_recv_data_size==0)
         m_inport2_recv_data_size = read_InPort2();
 
-      if ((m_inport1_recv_data_size == 0) || (m_inport2_recv_data_size == 0)){ // TIMEOUT
-	return 0;
-      } else {
-	  //            check_header_footer(m_in1_data, m_inport1_recv_data_size);
-	  //            check_header_footer(m_in2_data, m_inport2_recv_data_size);
-	set_data_OutPort(m_inport1_recv_data_size,m_inport2_recv_data_size);
+      //      if ((m_inport1_recv_data_size == 0) || (m_inport2_recv_data_size == 0)){ // TIMEOUT
+      //	return 0;
+      //      } else {
+      //	  //            check_header_footer(m_in1_data, m_inport1_recv_data_size);
+      //	  //            check_header_footer(m_in2_data, m_inport2_recv_data_size);
+      //	set_data_OutPort(m_inport1_recv_data_size,m_inport2_recv_data_size);
+      //      }
+      if ((m_inport1_recv_data_size > 0) && (m_inport2_recv_data_size > 0)){
+	Stock_data(m_inport1_recv_data_size,m_inport2_recv_data_size);
+	m_inport1_recv_data_size=0;
+	m_inport2_recv_data_size=0;
       }
     }
 
-    if ((m_in1_status != BUF_TIMEOUT) && (m_in2_status != BUF_TIMEOUT) && (m_out_status != BUF_TIMEOUT)) {
-        if (write_OutPort() < 0) { // TIMEOUT
-            ; // do nothing
-        }
-        else {
-            m_out_status = BUF_SUCCESS;
-        }
+    if (m_out_status == BUF_TIMEOUT){
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+      if (write_OutPort()<0){
+	;
+      }else{
+	//	inc_sequence_num();                     // increase sequence num.
+	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	Stock_CurNum=0;
+	Stock_Offset=0;
+      }
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
     }
 
-    if ((m_in1_status   != BUF_TIMEOUT) &&
-	(m_in2_status   != BUF_TIMEOUT) &&
-        (m_out_status != BUF_TIMEOUT)) {
-        inc_sequence_num();                    // increase sequence num.
-	//        unsigned int event_data_size = get_event_size(m_inport_recv_data_size);
-	event_data_size=m_inport1_recv_data_size+m_inport2_recv_data_size+80;
-        inc_total_data_size(event_data_size);  // increase total data byte size
-	m_inport1_recv_data_size=0;
-	m_inport2_recv_data_size=0;
+   if ( (Stock_CurNum==Stock_MaxNum) || (Stock_CurNum>0 && m_recv_timeout_counter>ReadTimeout) ){
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+      set_data(Stock_Offset);
+      if (write_OutPort()<0){
+	;
+      }else{
+	//	inc_sequence_num();                     // increase sequence num.
+	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	Stock_CurNum=0;
+	Stock_Offset=0;
+      }
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
     }
+
+//     if ((m_in1_status != BUF_TIMEOUT) && (m_in2_status != BUF_TIMEOUT) &&
+// 	(m_out_status != BUF_TIMEOUT)) {
+//         if (write_OutPort() < 0) { // TIMEOUT
+//             ; // do nothing
+//         }
+//         else {
+//             m_out_status = BUF_SUCCESS;
+//         }
+//     }
+
+//     if ((m_in1_status   != BUF_TIMEOUT) &&
+// 	(m_in2_status   != BUF_TIMEOUT) &&
+//         (m_out_status != BUF_TIMEOUT)) {
+//         inc_sequence_num();                    // increase sequence num.
+// 	//        unsigned int event_data_size = get_event_size(m_inport_recv_data_size);
+// 	event_data_size=m_inport1_recv_data_size+m_inport2_recv_data_size+80;
+//         inc_total_data_size(event_data_size);  // increase total data byte size
+// 	m_inport1_recv_data_size=0;
+// 	m_inport2_recv_data_size=0;
+//     }
 
     //    sleep(1);
     //

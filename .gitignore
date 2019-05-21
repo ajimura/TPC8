@@ -2,6 +2,7 @@
 *.o
 *Comp
 *.depend
+*.orig
 autogen/
 utils/adcini
 utils/analdata

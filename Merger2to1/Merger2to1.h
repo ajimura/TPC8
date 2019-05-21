@@ -52,7 +52,8 @@ private:
     int parse_params(::NVList* list);
     int reset_InPort1();
     int reset_InPort2();
-  int set_data_OutPort(unsigned int data1_byte_size,unsigned int data2_byte_size);
+  int Stock_data(unsigned int data1_byte_size,unsigned int data2_byte_size);
+  int set_data(unsigned int data_byte_size);
   unsigned int read_InPort1();
   unsigned int read_InPort2();
   int write_OutPort();
@@ -81,6 +82,16 @@ private:
   int In2_TotSiz;
   int In2_RemainSiz;
   unsigned int *In2_CurPos;
+
+  unsigned int ReadTimeout;
+  int Stock_MaxNum;
+  int Stock_CurNum;
+  int Stock_TotSiz;
+  int Stock_Offset;
+  unsigned char * m_data1;
+  unsigned int * m_data4;
+
+  int Cur_MaxDataSiz;
 };
 
 

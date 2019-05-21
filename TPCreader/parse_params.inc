@@ -12,7 +12,11 @@
     TrigIO_done=false;
     TrigIO_waittime=10;
     ComponentID=0;
-    stock_num=1;
+    ReadTimeout=10000;
+    Stock_MaxNum=1;
+    Stock_CurNum=0;
+    Stock_TotSiz=0;
+    Stock_Offset=0;
 
     int len = (*list).length();
     for (i = 0; i < len; i+=2) {
@@ -89,7 +93,7 @@
 	TrigIO_waittime=atoi(svalue.c_str());
       }
       if (sname == "StockNum"){
-	stock_num=atoi(svalue.c_str());
+	Stock_MaxNum=atoi(svalue.c_str());
       }
 
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());

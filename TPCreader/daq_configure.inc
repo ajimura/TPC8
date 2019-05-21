@@ -54,9 +54,9 @@
 
     // allocate data buffer
     m_data4=new unsigned int[
-		CompHeaderSize+
+		(CompHeaderSize+
 		EventHeaderSize+
-		(FADCHeaderSize+(256+ChHeaderSize)*16)*totNumFADC
+		(FADCHeaderSize+(256+ChHeaderSize)*16)*totNumFADC)*Stock_MaxNum
 	     ];
     m_data1=(unsigned char *)m_data4;
     std::cout << "Prepare data buffer done" << std::endl;

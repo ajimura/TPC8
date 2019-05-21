@@ -41,8 +41,10 @@ TPCreader::TPCreader(RTC::Manager* manager)
     : DAQMW::DaqComponentBase(manager),
       m_OutPort("tpcreader_out", m_out_data),
       m_recv_byte_size(0),
+      m_recv_timeout_counter(0),
       m_out_status(BUF_SUCCESS),
 
+      m_out_timeout_counter(0),
       m_debug(false)
 {
     // Registration: InPort/OutPort/Service
@@ -177,24 +179,35 @@ int TPCreader::daq_run()
         std::cerr << "*** TPCreader::run" << std::endl;
     }
 
-    if (check_trans_lock()) {  // check if stop command has come
+    if (Stock_CurNum==0)
+      if (check_trans_lock()) {  // check if stop command has come
         set_trans_unlock();    // transit to CONFIGURED state
         return 0;
-    }
+      }
 
     if (m_out_status == BUF_SUCCESS) {   // previous OutPort.write() successfully done
         m_recv_byte_size = read_data_from_detectors();
-        if (m_recv_byte_size > 0) {
-            set_data(m_recv_byte_size); // set data to OutPort Buffer
-        }
     }
 
-    if (write_OutPort() < 0) {
-        ;     // Timeout. do nothing.
+    if (m_out_status == BUF_TIMEOUT){
+      if (write_OutPort()<0){
+	;
+      }else{
+	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	Stock_CurNum=0;
+	Stock_Offset=0;
+      }
     }
-    else {    // OutPort write successfully done
-        inc_sequence_num();                     // increase sequence num.
-        inc_total_data_size(m_recv_byte_size);  // increase total data byte size
+
+    if ( (Stock_CurNum==Stock_MaxNum) || (Stock_CurNum>0 && m_recv_timeout_counter>ReadTimeout) ){
+      set_data(Stock_Offset);
+      if (write_OutPort()<0){
+	;
+      }else{
+	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	Stock_CurNum=0;
+	Stock_Offset=0;
+      }
     }
 
     return 0;

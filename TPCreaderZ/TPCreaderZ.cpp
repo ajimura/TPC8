@@ -190,20 +190,7 @@ int TPCreaderZ::daq_run()
 
     if (m_out_status == BUF_SUCCESS) {   // previous OutPort.write() successfully done
         m_recv_byte_size = read_data_from_detectors();
-	//        if (m_recv_byte_size > 0) {
-	//	  set_data(m_recv_byte_size); // set data to OutPort Buffer
-	//        }else{
-	//	  return 0; // data is not ready
-	//	}
     }
-
-    //    if (write_OutPort() < 0) {
-    //        ;     // Timeout. do nothing.
-    //    }
-    //    else {    // OutPort write successfully done
-    //        inc_sequence_num();                     // increase sequence num.
-    //        inc_total_data_size(m_recv_byte_size);  // increase total data byte size
-    //    }
 
     if (m_out_status == BUF_TIMEOUT){
       clock_gettime(CLOCK_MONOTONIC,&ts);
@@ -212,7 +199,6 @@ int TPCreaderZ::daq_run()
       if (write_OutPort()<0){
 	;
       }else{
-	//	inc_sequence_num();                     // increase sequence num.
 	inc_total_data_size(Stock_Offset);  // increase total data byte size
 	Stock_CurNum=0;
 	Stock_Offset=0;
@@ -230,7 +216,6 @@ int TPCreaderZ::daq_run()
       if (write_OutPort()<0){
 	;
       }else{
-	//	inc_sequence_num();                     // increase sequence num.
 	inc_total_data_size(Stock_Offset);  // increase total data byte size
 	Stock_CurNum=0;
 	Stock_Offset=0;

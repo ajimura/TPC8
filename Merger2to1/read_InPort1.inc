@@ -3,14 +3,14 @@
     int GlobSiz;
     int preSiz;
 
-    std::cerr << "Entering read_InPort1: Tot=" << In1_TotSiz << ", Remain=" << In1_RemainSiz << std::endl;
+//    std::cerr << "Entering read_InPort1: Tot=" << In1_TotSiz << ", Remain=" << In1_RemainSiz << std::endl;
 
     if (In1_RemainSiz==0){
       ret = m_InPort1.read();
-      std::cerr << " m_InPort1.read(): ret=" << ret << std::endl;
+//      std::cerr << " m_InPort1.read(): ret=" << ret << std::endl;
       if (ret==false){ // false: TIMEOUT or FATAL
 	m_in1_status=check_inPort_status(m_InPort1);
-	std::cerr << " check_inPort_status(1): ret=" << m_in1_status << std::endl;
+//	std::cerr << " check_inPort_status(1): ret=" << m_in1_status << std::endl;
 	if (m_in1_status==BUF_TIMEOUT){ // Buffer empty
           m_in1_timeout_counter++;
 	  if (check_trans_lock()) {     // Check if stop command has come.
@@ -20,6 +20,7 @@
 	  fatal_error_report(INPORT_ERROR);
 	}
       }else{
+        std::cerr << "Get Data1. Timeout: " << m_in1_timeout_counter << " -> 0" << std::endl;
         m_in1_timeout_counter = 0;
         m_in1_status = BUF_SUCCESS;
 	GlobSiz=m_in1_data.data.length();

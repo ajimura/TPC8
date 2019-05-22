@@ -60,13 +60,14 @@ private:
     int reset_InPort2();
     int reset_InPort3();
     int reset_InPort4();
-  int set_data_OutPort(unsigned int data1_byte_size,unsigned int data2_byte_size,
-		       unsigned int data3_byte_size,unsigned int data4_byte_size);
+  unsigned int Stock_data(unsigned int, unsigned int, unsigned int, unsigned int);
+  int set_data(unsigned int data_byte_size);
   unsigned int read_InPort1();
   unsigned int read_InPort2();
   unsigned int read_InPort3();
   unsigned int read_InPort4();
   int write_OutPort();
+  unsigned char * renew_buf(unsigned char *orig_buf, unsigned int cursize, unsigned int newsize);
 
   static const unsigned int ComponentType = 421; // <- should be modified
 
@@ -90,6 +91,32 @@ private:
     bool m_debug;
 
   int ComponentID;
+
+  int In1_TotSiz;
+  int In1_RemainSiz;
+  unsigned int *In1_CurPos;
+
+  int In2_TotSiz;
+  int In2_RemainSiz;
+  unsigned int *In2_CurPos;
+
+  int In3_TotSiz;
+  int In3_RemainSiz;
+  unsigned int *In3_CurPos;
+
+  int In4_TotSiz;
+  int In4_RemainSiz;
+  unsigned int *In4_CurPos;
+
+  unsigned int ReadTimeout;
+  int Stock_MaxNum;
+  int Stock_CurNum;
+  unsigned int Stock_TotSiz;
+  unsigned int Stock_Offset;
+  unsigned char * m_data1;
+  unsigned int * m_data4;
+
+  unsigned int Cur_MaxDataSiz;
 };
 
 

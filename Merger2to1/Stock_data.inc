@@ -60,7 +60,7 @@
 		  0,0);
 
     memcpy(curpos,In1_CurPos,data1_byte_size); curpos+=(data1_byte_size/4);
-    memcpy(curpos,In2_CurPos,data1_byte_size); curpos+=(data2_byte_size/4);
+    memcpy(curpos,In2_CurPos,data2_byte_size); curpos+=(data2_byte_size/4);
     memcpy(curpos,&comp_footer,4); curpos++;
     stock_size=(curpos-toppos)*4;
     Stock_TotSiz+=stock_size;

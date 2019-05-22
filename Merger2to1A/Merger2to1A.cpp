@@ -228,7 +228,8 @@ int Merger2to1A::write_OutPort()
         }
     }
     else { // success
-        m_out_timeout_counter = 0;
+      m_out_timeout_counter = 0;
+      m_out_status = BUF_SUCCESS; // successfully done
     }
     return 0; // successfully done
 }

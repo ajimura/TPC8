@@ -182,13 +182,6 @@ int Merger2to1::daq_resume()
     return 0;
 }
 
-//int Merger2to1::set_data_OutPort(unsigned int data_byte_size)
-//{
-//  m_out_data.data.length(data_byte_size);
-//  memcpy(&(m_out_data.data[0]),&m_in1_data.data[0],dtaa_byte_size);
-//  retuen 0;
-//}
-
 int Merger2to1::reset_InPort1()
 {
 //     uncomment if InPort is connected other OutPort of Component
@@ -289,13 +282,6 @@ int Merger2to1::daq_run()
       if (m_inport2_recv_data_size==0)
         m_inport2_recv_data_size = read_InPort2();
 
-      //      if ((m_inport1_recv_data_size == 0) || (m_inport2_recv_data_size == 0)){ // TIMEOUT
-      //	return 0;
-      //      } else {
-      //	  //            check_header_footer(m_in1_data, m_inport1_recv_data_size);
-      //	  //            check_header_footer(m_in2_data, m_inport2_recv_data_size);
-      //	set_data_OutPort(m_inport1_recv_data_size,m_inport2_recv_data_size);
-      //      }
       if ((m_inport1_recv_data_size > 0) && (m_inport2_recv_data_size > 0)){
 	Stock_data(m_inport1_recv_data_size,m_inport2_recv_data_size);
 	m_inport1_recv_data_size=0;
@@ -310,7 +296,6 @@ int Merger2to1::daq_run()
       if (write_OutPort()<0){
 	;
       }else{
-	//	inc_sequence_num();                     // increase sequence num.
 	inc_total_data_size(Stock_Offset);  // increase total data byte size
 	Stock_CurNum=0;
 	Stock_Offset=0;
@@ -329,7 +314,6 @@ int Merger2to1::daq_run()
       if (write_OutPort()<0){
 	;
       }else{
-	//	inc_sequence_num();                     // increase sequence num.
 	inc_total_data_size(Stock_Offset);  // increase total data byte size
 	Stock_CurNum=0;
 	Stock_Offset=0;
@@ -338,27 +322,6 @@ int Merger2to1::daq_run()
       t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
       std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
     }
-
-//     if ((m_in1_status != BUF_TIMEOUT) && (m_in2_status != BUF_TIMEOUT) &&
-// 	(m_out_status != BUF_TIMEOUT)) {
-//         if (write_OutPort() < 0) { // TIMEOUT
-//             ; // do nothing
-//         }
-//         else {
-//             m_out_status = BUF_SUCCESS;
-//         }
-//     }
-
-//     if ((m_in1_status   != BUF_TIMEOUT) &&
-// 	(m_in2_status   != BUF_TIMEOUT) &&
-//         (m_out_status != BUF_TIMEOUT)) {
-//         inc_sequence_num();                    // increase sequence num.
-// 	//        unsigned int event_data_size = get_event_size(m_inport_recv_data_size);
-// 	event_data_size=m_inport1_recv_data_size+m_inport2_recv_data_size+80;
-//         inc_total_data_size(event_data_size);  // increase total data byte size
-// 	m_inport1_recv_data_size=0;
-// 	m_inport2_recv_data_size=0;
-//     }
 
     //    sleep(1);
     //

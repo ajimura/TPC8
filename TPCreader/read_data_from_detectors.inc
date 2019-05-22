@@ -12,8 +12,6 @@
     unsigned int comp_footer;
 
     int ret;
-    struct timespec ts;
-    double t0;
 
     //    std::cout << "Wait next event !" << std::endl;
 

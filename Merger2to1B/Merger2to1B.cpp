@@ -7,6 +7,8 @@
  *
  */
 
+#include <iomanip>
+#include <ctime>
 #include "Merger2to1B.h"
 #include "daqmwlib.h"
 
@@ -95,12 +97,34 @@ int Merger2to1B::daq_configure()
     paramList = m_daq_service0.getCompParams();
     parse_params(paramList);
 
+    In1_TotSiz=0;
+    In1_RemainSiz=0;
+    In1_CurPos=NULL;
+
+    In2_TotSiz=0;
+    In2_RemainSiz=0;
+    In2_CurPos=NULL;
+
+    Stock_CurNum=0;
+    Stock_TotSiz=0;
+    Stock_Offset=0;
+    //    Cur_MaxDataSiz=67108864; // 64M (tempolary)
+    Cur_MaxDataSiz=10240; // 10k (tempolary)
+
+    m_data1=new unsigned char[Cur_MaxDataSiz];
+    m_data4=(unsigned int *)m_data1;
+
     return 0;
 }
 
 int Merger2to1B::parse_params(::NVList* list)
 {
     std::cerr << "param list length:" << (*list).length() << std::endl;
+
+    //set default value
+    ComponentID=0;
+    ReadTimeout=10000;
+    Stock_MaxNum=1;
 
     int len = (*list).length();
     for (int i = 0; i < len; i+=2) {
@@ -111,6 +135,7 @@ int Merger2to1B::parse_params(::NVList* list)
 	//        std::cerr << "value: " << svalue << std::endl;
 
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
+      if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
     }
 
     return 0;
@@ -120,6 +145,8 @@ int Merger2to1B::parse_params(::NVList* list)
 int Merger2to1B::daq_unconfigure()
 {
     std::cerr << "*** Merger2to1B::unconfigure" << std::endl;
+
+    delete [] m_data1; std::cout << "Delete data buffer" << std::endl;
 
     return 0;
 }
@@ -155,13 +182,6 @@ int Merger2to1B::daq_resume()
     return 0;
 }
 
-//int Merger2to1B::set_data_OutPort(unsigned int data_byte_size)
-//{
-//  m_out_data.data.length(data_byte_size);
-//  memcpy(&(m_out_data.data[0]),&m_in1_data.data[0],dtaa_byte_size);
-//  retuen 0;
-//}
-
 int Merger2to1B::reset_InPort1()
 {
 //     uncomment if InPort is connected other OutPort of Component
@@ -186,11 +206,6 @@ int Merger2to1B::reset_InPort2()
 
     std::cerr << "*** Merger2to1B::InPort2 flushed\n";
     return 0;
-}
-
-int Merger2to1B::set_data_OutPort(unsigned int data1_byte_size, unsigned int data2_byte_size)
-{
-#include "set_data_OutPort.inc"
 }
 
 int Merger2to1B::write_OutPort()
@@ -220,73 +235,44 @@ int Merger2to1B::write_OutPort()
 
 unsigned int Merger2to1B::read_InPort1()
 {
-    /////////////// read data from InPort Buffer ///////////////
-    unsigned int recv_byte_size = 0;
-    bool ret = m_InPort1.read();
-
-    //////////////////// check read status /////////////////////
-    if (ret == false) { // false: TIMEOUT or FATAL
-        m_in1_status = check_inPort_status(m_InPort1);
-        if (m_in1_status == BUF_TIMEOUT) { // Buffer empty.
-            m_in1_timeout_counter++;
-            if (check_trans_lock()) {     // Check if stop command has come.
-                set_trans_unlock();       // Transit to CONFIGURE state.
-            }
-        }
-        else if (m_in1_status == BUF_FATAL) { // Fatal error
-            fatal_error_report(INPORT_ERROR);
-        }
-    }
-    else { // success
-        m_in1_timeout_counter = 0;
-        recv_byte_size = m_in1_data.data.length();
-        m_in1_status = BUF_SUCCESS;
-    }
-    if (m_debug) {
-        std::cerr << "m_in1_data.data.length():" << recv_byte_size
-                  << std::endl;
-    }
-
-    return recv_byte_size;
+#include "read_InPort1.inc"
 }
 
 unsigned int Merger2to1B::read_InPort2()
 {
-    /////////////// read data from InPort Buffer ///////////////
-    unsigned int recv_byte_size = 0;
-    bool ret = m_InPort2.read();
+#include "read_InPort2.inc"
+}
 
-    //////////////////// check read status /////////////////////
-    if (ret == false) { // false: TIMEOUT or FATAL
-        m_in2_status = check_inPort_status(m_InPort2);
-        if (m_in2_status == BUF_TIMEOUT) { // Buffer empty.
-            m_in2_timeout_counter++;
-            if (check_trans_lock()) {     // Check if stop command has come.
-                set_trans_unlock();       // Transit to CONFIGURE state.
-            }
-        }
-        else if (m_in2_status == BUF_FATAL) { // Fatal error
-            fatal_error_report(INPORT_ERROR);
-        }
-    }
-    else { // success
-        m_in2_timeout_counter = 0;
-        recv_byte_size = m_in2_data.data.length();
-        m_in2_status = BUF_SUCCESS;
-    }
-    if (m_debug) {
-        std::cerr << "m_in2_data.data.length():" << recv_byte_size
-                  << std::endl;
-    }
+unsigned int Merger2to1B::Stock_data(unsigned int data1_byte_size, unsigned int data2_byte_size)
+{
+#include "Stock_data.inc"
+}
 
-    return recv_byte_size;
+int Merger2to1B::set_data(unsigned int data_byte_size)
+{
+    unsigned char header[8];
+    unsigned char footer[8];
+
+    set_header(&header[0], data_byte_size);
+    set_footer(&footer[0]);
+
+    ///set OutPort buffer length
+    m_out_data.data.length(data_byte_size + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
+    memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], data_byte_size);
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + data_byte_size]), &footer[0],
+           FOOTER_BYTE_SIZE);
+
+    return 0;
 }
 
 int Merger2to1B::daq_run()
 {
-  unsigned int event_data_size;
+  struct timespec ts;
+  double t0;
+
     if (m_debug) {
-        std::cerr << "*** Merger2to1B::run" << std::endl;
+        std::cerr << "*** Merger2to1::run" << std::endl;
     }
 
     if (m_out_status != BUF_TIMEOUT) {
@@ -295,33 +281,45 @@ int Merger2to1B::daq_run()
       if (m_inport2_recv_data_size==0)
         m_inport2_recv_data_size = read_InPort2();
 
-      if ((m_inport1_recv_data_size == 0) || (m_inport2_recv_data_size == 0)){ // TIMEOUT
-	return 0;
-      } else {
-	  //            check_header_footer(m_in1_data, m_inport1_recv_data_size);
-	  //            check_header_footer(m_in2_data, m_inport2_recv_data_size);
-	set_data_OutPort(m_inport1_recv_data_size,m_inport2_recv_data_size);
+      if ((m_inport1_recv_data_size > 0) && (m_inport2_recv_data_size > 0)){
+	Stock_data(m_inport1_recv_data_size,m_inport2_recv_data_size);
+	m_inport1_recv_data_size=0;
+	m_inport2_recv_data_size=0;
       }
     }
 
-    if ((m_in1_status != BUF_TIMEOUT) && (m_in2_status != BUF_TIMEOUT) && (m_out_status != BUF_TIMEOUT)) {
-        if (write_OutPort() < 0) { // TIMEOUT
-            ; // do nothing
-        }
-        else {
-            m_out_status = BUF_SUCCESS;
-        }
+    if (m_out_status == BUF_TIMEOUT){
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+      if (write_OutPort()<0){
+	;
+      }else{
+	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	Stock_CurNum=0;
+	Stock_Offset=0;
+      }
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
     }
 
-    if ((m_in1_status   != BUF_TIMEOUT) &&
-	(m_in2_status   != BUF_TIMEOUT) &&
-        (m_out_status != BUF_TIMEOUT)) {
-        inc_sequence_num();                    // increase sequence num.
-	//        unsigned int event_data_size = get_event_size(m_inport_recv_data_size);
-	event_data_size=m_inport1_recv_data_size+m_inport2_recv_data_size+80;
-        inc_total_data_size(event_data_size);  // increase total data byte size
-	m_inport1_recv_data_size=0;
-	m_inport2_recv_data_size=0;
+   if ( (Stock_CurNum==Stock_MaxNum) ||
+	(Stock_CurNum>0 && (m_in1_timeout_counter>ReadTimeout||m_in2_timeout_counter>ReadTimeout)) ){
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+      set_data(Stock_Offset);
+      if (write_OutPort()<0){
+	;
+      }else{
+	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	Stock_CurNum=0;
+	Stock_Offset=0;
+      }
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
     }
 
     //    sleep(1);
@@ -332,6 +330,20 @@ int Merger2to1B::daq_run()
     //    }
 
    return 0;
+}
+
+unsigned char * Merger2to1B::renew_buf(unsigned char * orig_buf,
+				      unsigned int cursize, unsigned int newsize)
+{
+  unsigned char * new_buf;
+
+  new_buf = new unsigned char[newsize];
+  memcpy(new_buf, orig_buf, cursize);
+  delete [] orig_buf;
+
+  std::cerr << "Re-new data buf: " << cursize << " -> " << newsize << std::endl;
+
+  return new_buf;
 }
 
 extern "C"

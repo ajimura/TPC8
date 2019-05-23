@@ -230,7 +230,7 @@ int DumGenA::write_OutPort()
 int DumGenA::daq_run()
 {
     struct timespec ts;
-    double t0;
+    double t0,t1;
 
     if (m_debug) {
         std::cerr << "*** DumGenA::run" << std::endl;
@@ -253,7 +253,7 @@ int DumGenA::daq_run()
     if (m_out_status == BUF_TIMEOUT){
       clock_gettime(CLOCK_MONOTONIC,&ts);
       t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+      //      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
       if (write_OutPort()<0){
 	;
       }else{
@@ -263,14 +263,14 @@ int DumGenA::daq_run()
 	Stock_Offset=0;
       }
       clock_gettime(CLOCK_MONOTONIC,&ts);
-      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-      std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+      t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "+w> " << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
     }
 
     if ( (Stock_CurNum==Stock_MaxNum) || (Stock_CurNum>0 && m_recv_timeout_counter>ReadTimeout) ){
       clock_gettime(CLOCK_MONOTONIC,&ts);
       t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+      //      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
       set_data(Stock_Offset);
       if (write_OutPort()<0){
 	;
@@ -281,8 +281,8 @@ int DumGenA::daq_run()
 	Stock_Offset=0;
       }
       clock_gettime(CLOCK_MONOTONIC,&ts);
-      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-      std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+      t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "+w> " << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
     }
 
     // clock_gettime(CLOCK_MONOTONIC,&ts);

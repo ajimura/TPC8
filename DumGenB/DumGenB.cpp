@@ -104,8 +104,19 @@ int DumGenB::daq_configure()
     std::cout << "--- Initialization starting..." << std::endl;
 
     // allocate data buffer
-    m_data4=new unsigned int[(generate_size+1024)*Stock_MaxNum];
-    m_data1=(unsigned char *)m_data4;
+    try{
+      m_data4=new unsigned int[(generate_size+1024)*Stock_MaxNum];
+      m_data1=(unsigned char *)m_data4;
+    }
+    catch(std::bad_alloc){
+      std::cerr << "Bad allocation: size=" << (generate_size+1024)*Stock_MaxNum << " bytes" << std::endl;
+      fatal_error_report(USER_DEFINED_ERROR3);
+    }
+    catch(...){
+      std::cerr << "Got exception" << std::endl;
+      fatal_error_report(USER_DEFINED_ERROR3);
+    }
+
     std::cout << "Prepare data buffer done" << std::endl;
 
     std::cout << "--- Now ready to start !!" << std::endl;

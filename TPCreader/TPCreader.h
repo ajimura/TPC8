@@ -14,7 +14,7 @@
 
 using namespace RTC;
 
-static const int CompHeaderSize = 13; // <- should be modified
+static const int CompHeaderSize = 20; // <- should be modified
 
 class TPCreader
     : public DAQMW::DaqComponentBase
@@ -66,9 +66,7 @@ private:
     bool m_debug;
 
   //size: unit in 4bytes
-  static const int ChHeaderSize = 2;
-  static const int FADCHeaderSize = 7;
-  static const int EventHeaderSize = 4;
+  static const int MaxFADCSize = 16384;
 
   //parameter for TPC readout from DAQ op.
   int totNumFADC;

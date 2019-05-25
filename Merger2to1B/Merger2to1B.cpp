@@ -111,8 +111,18 @@ int Merger2to1B::daq_configure()
     //    Cur_MaxDataSiz=67108864; // 64M (tempolary)
     Cur_MaxDataSiz=10240; // 10k (tempolary)
 
-    m_data1=new unsigned char[Cur_MaxDataSiz];
-    m_data4=(unsigned int *)m_data1;
+    try{
+      m_data1=new unsigned char[Cur_MaxDataSiz];
+      m_data4=(unsigned int *)m_data1;
+    }
+    catch(std::bad_alloc){
+      std::cerr << "Bad allocation..." << std::endl;
+      fatal_error_report(USER_DEFINED_ERROR1);
+    }
+    catch(...){
+      std::cerr << "Got exception..." << std::endl;
+      fatal_error_report(USER_DEFINED_ERROR1);
+    }
 
     return 0;
 }
@@ -338,7 +348,18 @@ unsigned char * Merger2to1B::renew_buf(unsigned char * orig_buf,
 {
   unsigned char * new_buf;
 
-  new_buf = new unsigned char[newsize];
+  try{
+    new_buf = new unsigned char[newsize];
+  }
+  catch(std::bad_alloc){
+    std::cerr << "Bad allocation..." << std::endl;
+    fatal_error_report(USER_DEFINED_ERROR1);
+  }
+  catch(...){
+    std::cerr << "Got exception..." << std::endl;
+    fatal_error_report(USER_DEFINED_ERROR1);
+  }
+
   memcpy(new_buf, orig_buf, cursize);
   delete [] orig_buf;
 

@@ -23,6 +23,16 @@ CPPFLAGS += -I../lib/
 # for TPC readout
 OBJS += ../lib/tpclib.o ../lib/trigio_lib.o
 
+INCS  = daq_configure.inc
+INCS += daq_pause.inc
+INCS += daq_resume.inc
+INCS += daq_start.inc
+INCS += daq_stop.inc
+INCS += parse_params.inc
+INCS += read_data_from_detectors.inc
+
+$(COMP_NAME).o : $(INCS)
+
 # sample install target
 #
 # MODE = 0755

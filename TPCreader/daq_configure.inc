@@ -135,12 +135,14 @@
     }
     //RPV-260 trigger count reset
 
-    if (trigio_reset_count()<0){
-      std::cerr << "Error in trigio_reset_count !!" << std::endl;
-      fatal_error_report(USER_DEFINED_ERROR3,"Error in trigio_reset_count");
-    }else{
-      std::cout << "trigio_reset_count ... Done" << std::endl;
-    }
+    if (TrigIO_done==true)
+      if (trigio_reset_count()<0){
+        std::cerr << "Error in trigio_reset_count !!" << std::endl;
+        fatal_error_report(USER_DEFINED_ERROR3,"Error in trigio_reset_count");
+      }else{
+        std::cout << "trigio_reset_count ... Done" << std::endl;
+      }
+
     std::cout << "--- Now ready to start !!" << std::endl;
 
     return 0;

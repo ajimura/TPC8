@@ -281,10 +281,16 @@ int Merger2to1::daq_run()
 {
   struct timespec ts;
   double t0;
+  int stop_flag;
 
     if (m_debug) {
         std::cerr << "*** Merger2to1::run" << std::endl;
     }
+
+    //*************************************************
+    //    if (check_trans_lock()){
+    //      if (In1_RemainSiz>0 || In2_RemainSize>0)
+    //      stop_flag=1; else stop_flag=0;
 
     if (m_out_status != BUF_TIMEOUT) {
       if (m_inport1_recv_data_size==0)

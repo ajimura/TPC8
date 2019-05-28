@@ -7,3 +7,5 @@ sysctl -w net.core.wmem_max=8388608
 sysctl -w net.ipv4.tcp_rmem="4096 4194304 4194304"
 sysctl -w net.ipv4.tcp_wmem="4096 4194304 4194304"
 sysctl -w net.ipv4.tcp_timestamps=0
+#sysctl -w net.ipv4.tcp_slow_start_after_idle=0
+

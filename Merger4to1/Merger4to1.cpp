@@ -110,18 +110,22 @@ int Merger4to1::daq_configure()
     In1_TotSiz=0;
     In1_RemainSiz=0;
     In1_CurPos=NULL;
+    In1_Done=0;
 
     In2_TotSiz=0;
     In2_RemainSiz=0;
     In2_CurPos=NULL;
+    In2_Done=0;
 
     In3_TotSiz=0;
     In3_RemainSiz=0;
     In3_CurPos=NULL;
+    In3_Done=0;
 
     In4_TotSiz=0;
     In4_RemainSiz=0;
     In4_CurPos=NULL;
+    In4_Done=0;
 
     Stock_CurNum=0;
     Stock_TotSiz=0;
@@ -278,9 +282,9 @@ int Merger4to1::write_OutPort()
             fatal_error_report(OUTPORT_ERROR);
         }
         if (m_out_status == BUF_TIMEOUT) { // Timeout
-            if (check_trans_lock()) {     // Check if stop command has come.
-                set_trans_unlock();       // Transit to CONFIGURE state.
-            }
+	  //            if (check_trans_lock()) {     // Check if stop command has come.
+	  //                set_trans_unlock();       // Transit to CONFIGURE state.
+	  //            }
             m_out_timeout_counter++;
             return -1;
         }
@@ -309,9 +313,9 @@ unsigned int Merger4to1::read_InPort1()
 //	std::cerr << " check_inPort_status(1): ret=" << m_in1_status << std::endl;
 	if (m_in1_status==BUF_TIMEOUT){ // Buffer empty
           m_in1_timeout_counter++;
-	  if (check_trans_lock()) {     // Check if stop command has come.
-	    set_trans_unlock();       // Transit to CONFIGURE state.
-	  }
+	  //	  if (check_trans_lock()) {     // Check if stop command has come.
+	  //	    set_trans_unlock();       // Transit to CONFIGURE state.
+	  //	  }
         }else if (m_in1_status==BUF_FATAL){
 	  fatal_error_report(INPORT_ERROR);
 	}
@@ -363,9 +367,9 @@ unsigned int Merger4to1::read_InPort2()
 //	std::cerr << " check_inPort_status(2): ret=" << m_in2_status << std::endl;
 	if (m_in2_status==BUF_TIMEOUT){ // Buffer empty
           m_in2_timeout_counter++;
-	  if (check_trans_lock()) {     // Check if stop command has come.
-	    set_trans_unlock();       // Transit to CONFIGURE state.
-	  }
+	  //	  if (check_trans_lock()) {     // Check if stop command has come.
+	  //	    set_trans_unlock();       // Transit to CONFIGURE state.
+	  //	  }
         }else if (m_in2_status==BUF_FATAL){
 	  fatal_error_report(INPORT_ERROR);
 	}
@@ -417,9 +421,9 @@ unsigned int Merger4to1::read_InPort3()
 //	std::cerr << " check_inPort_status(3): ret=" << m_in3_status << std::endl;
 	if (m_in3_status==BUF_TIMEOUT){ // Buffer empty
           m_in3_timeout_counter++;
-	  if (check_trans_lock()) {     // Check if stop command has come.
-	    set_trans_unlock();       // Transit to CONFIGURE state.
-	  }
+	  //	  if (check_trans_lock()) {     // Check if stop command has come.
+	  //	    set_trans_unlock();       // Transit to CONFIGURE state.
+	  //	  }
         }else if (m_in3_status==BUF_FATAL){
 	  fatal_error_report(INPORT_ERROR);
 	}
@@ -471,9 +475,9 @@ unsigned int Merger4to1::read_InPort4()
 //	std::cerr << " check_inPort_status(4): ret=" << m_in4_status << std::endl;
 	if (m_in4_status==BUF_TIMEOUT){ // Buffer empty
           m_in4_timeout_counter++;
-	  if (check_trans_lock()) {     // Check if stop command has come.
-	    set_trans_unlock();       // Transit to CONFIGURE state.
-	  }
+	  //	  if (check_trans_lock()) {     // Check if stop command has come.
+	  //	    set_trans_unlock();       // Transit to CONFIGURE state.
+	  //	  }
         }else if (m_in4_status==BUF_FATAL){
 	  fatal_error_report(INPORT_ERROR);
 	}
@@ -623,6 +627,87 @@ int Merger4to1::daq_run()
         std::cerr << "*** Merger4to1::run" << std::endl;
     }
 
+    if (check_trans_lock()){
+      if (m_out_status==BUF_TIMEOUT){
+	if (write_OutPort()==0){
+	  inc_total_data_size(Stock_Offset);  // increase total data byte size
+	  Stock_CurNum=0; Stock_Offset=0;
+	}else{
+	  set_trans_unlock();       // Transit to CONFIGURE state.
+	}
+	return 0;
+      }
+      if (Stock_CurNum>0){
+	set_data(Stock_Offset);
+	if (write_OutPort()==0){
+	  inc_total_data_size(Stock_Offset);  // increase total data byte size
+	  Stock_CurNum=0; Stock_Offset=0;
+	}else{
+	  set_trans_unlock();       // Transit to CONFIGURE state.
+	  return 0;
+	}
+      }
+      if (m_inport1_recv_data_size==0){
+	if (In1_Done==0){
+	  if (In1_RemainSiz==0) In1_Done=1;
+	  m_inport1_recv_data_size = read_InPort1();
+	}else{
+	  if (In1_RemainSiz>0) m_inport1_recv_data_size = read_InPort1();
+	}
+      }
+      if (m_inport2_recv_data_size==0){
+	if (In2_Done==0){
+	  if (In2_RemainSiz==0) In2_Done=1;
+	  m_inport2_recv_data_size = read_InPort2();
+	}else{
+	  if (In2_RemainSiz>0) m_inport2_recv_data_size = read_InPort2();
+	}
+      }
+      if (m_inport3_recv_data_size==0){
+	if (In3_Done==0){
+	  if (In3_RemainSiz==0) In3_Done=1;
+	  m_inport3_recv_data_size = read_InPort3();
+	}else{
+	  if (In3_RemainSiz>0) m_inport3_recv_data_size = read_InPort3();
+	}
+      }
+      if (m_inport4_recv_data_size==0){
+	if (In4_Done==0){
+	  if (In4_RemainSiz==0) In4_Done=1;
+	  m_inport4_recv_data_size = read_InPort4();
+	}else{
+	  if (In4_RemainSiz>0) m_inport4_recv_data_size = read_InPort4();
+	}
+      }
+      if ((m_inport1_recv_data_size > 0) &&
+	  (m_inport2_recv_data_size > 0) &&
+	  (m_inport3_recv_data_size > 0) &&
+	  (m_inport4_recv_data_size > 0)    ){
+	Stock_data(m_inport1_recv_data_size,m_inport2_recv_data_size,
+		   m_inport3_recv_data_size,m_inport4_recv_data_size);
+	m_inport1_recv_data_size=0;
+	m_inport2_recv_data_size=0;
+	m_inport3_recv_data_size=0;
+	m_inport4_recv_data_size=0;
+      }else{
+	set_trans_unlock();       // Transit to CONFIGURE state.
+	return 0;
+      }
+      if (Stock_CurNum>0){
+	set_data(Stock_Offset);
+	if (write_OutPort()==0){
+	  inc_total_data_size(Stock_Offset);  // increase total data byte size
+	  Stock_CurNum=0; Stock_Offset=0;
+	}else{
+	  set_trans_unlock();       // Transit to CONFIGURE state.
+	  return 0;
+	}
+      }
+      return 0;
+    }
+
+    In1_Done=0; In2_Done=0; In3_Done=0; In4_Done=0;
+
     if (m_out_status != BUF_TIMEOUT) {
       if (m_inport1_recv_data_size==0)
 	m_inport1_recv_data_size = read_InPort1();
@@ -682,13 +767,6 @@ int Merger4to1::daq_run()
       t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
       std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
     }
-
-    //    sleep(1);
-    //
-    //    if (check_trans_lock()) {  /// got stop command
-    //        set_trans_unlock();
-    //        return 0;
-    //    }
 
    return 0;
 }

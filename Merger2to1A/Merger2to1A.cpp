@@ -100,10 +100,12 @@ int Merger2to1A::daq_configure()
     In1_TotSiz=0;
     In1_RemainSiz=0;
     In1_CurPos=NULL;
+    In1_Done=0;
 
     In2_TotSiz=0;
     In2_RemainSiz=0;
     In2_CurPos=NULL;
+    In2_Done=0;
 
     Stock_CurNum=0;
     Stock_TotSiz=0;
@@ -230,9 +232,9 @@ int Merger2to1A::write_OutPort()
             fatal_error_report(OUTPORT_ERROR);
         }
         if (m_out_status == BUF_TIMEOUT) { // Timeout
-            if (check_trans_lock()) {     // Check if stop command has come.
-                set_trans_unlock();       // Transit to CONFIGURE state.
-            }
+	  //            if (check_trans_lock()) {     // Check if stop command has come.
+	  //                set_trans_unlock();       // Transit to CONFIGURE state.
+	  //            }
             m_out_timeout_counter++;
             return -1;
         }
@@ -286,6 +288,65 @@ int Merger2to1A::daq_run()
         std::cerr << "*** Merger2to1A::run" << std::endl;
     }
 
+    if (check_trans_lock()){
+      if (m_out_status==BUF_TIMEOUT){
+	if (write_OutPort()==0){
+	  inc_total_data_size(Stock_Offset);  // increase total data byte size
+	  Stock_CurNum=0; Stock_Offset=0;
+	}else{
+	  set_trans_unlock();       // Transit to CONFIGURE state.
+	}
+	return 0;
+      }
+      if (Stock_CurNum>0){
+	set_data(Stock_Offset);
+	if (write_OutPort()==0){
+	  inc_total_data_size(Stock_Offset);  // increase total data byte size
+	  Stock_CurNum=0; Stock_Offset=0;
+	}else{
+	  set_trans_unlock();       // Transit to CONFIGURE state.
+	  return 0;
+	}
+      }
+      if (m_inport1_recv_data_size==0){
+	if (In1_Done==0){
+	  if (In1_RemainSiz==0) In1_Done=1;
+	  m_inport1_recv_data_size = read_InPort1();
+	}else{
+	  if (In1_RemainSiz>0) m_inport1_recv_data_size = read_InPort1();
+	}
+      }
+      if (m_inport2_recv_data_size==0){
+	if (In2_Done==0){
+	  if (In2_RemainSiz==0) In2_Done=1;
+	  m_inport2_recv_data_size = read_InPort2();
+	}else{
+	  if (In2_RemainSiz>0) m_inport2_recv_data_size = read_InPort2();
+	}
+      }
+      if ((m_inport1_recv_data_size > 0) && (m_inport2_recv_data_size > 0)){
+	Stock_data(m_inport1_recv_data_size,m_inport2_recv_data_size);
+	m_inport1_recv_data_size=0;
+	m_inport2_recv_data_size=0;
+      }else{
+	set_trans_unlock();       // Transit to CONFIGURE state.
+	return 0;
+      }
+      if (Stock_CurNum>0){
+	set_data(Stock_Offset);
+	if (write_OutPort()==0){
+	  inc_total_data_size(Stock_Offset);  // increase total data byte size
+	  Stock_CurNum=0; Stock_Offset=0;
+	}else{
+	  set_trans_unlock();       // Transit to CONFIGURE state.
+	  return 0;
+	}
+      }
+      return 0;
+    }
+
+    In1_Done=0; In2_Done=0;
+
     if (m_out_status != BUF_TIMEOUT) {
       if (m_inport1_recv_data_size==0)
         m_inport1_recv_data_size = read_InPort1();
@@ -332,13 +393,6 @@ int Merger2to1A::daq_run()
       t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
       std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
     }
-
-    //    sleep(1);
-    //
-    //    if (check_trans_lock()) {  /// got stop command
-    //        set_trans_unlock();
-    //        return 0;
-    //    }
 
    return 0;
 }

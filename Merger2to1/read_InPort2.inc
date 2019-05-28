@@ -13,9 +13,9 @@
 //	std::cerr << " check_inPort_status(2): ret=" << m_in2_status << std::endl;
 	if (m_in2_status==BUF_TIMEOUT){ // Buffer empty
           m_in2_timeout_counter++;
-	  if (check_trans_lock()) {     // Check if stop command has come.
-	    set_trans_unlock();       // Transit to CONFIGURE state.
-	  }
+//	  if (check_trans_lock()) {     // Check if stop command has come.
+//	    set_trans_unlock();       // Transit to CONFIGURE state.
+//	  }
         }else if (m_in2_status==BUF_FATAL){
 	  fatal_error_report(INPORT_ERROR);
 	}

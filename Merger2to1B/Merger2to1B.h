@@ -79,10 +79,12 @@ private:
   int In1_TotSiz;
   int In1_RemainSiz;
   unsigned int *In1_CurPos;
+  int In1_Done;
 
   int In2_TotSiz;
   int In2_RemainSiz;
   unsigned int *In2_CurPos;
+  int In2_Done;
 
   unsigned int ReadTimeout;
   int Stock_MaxNum;

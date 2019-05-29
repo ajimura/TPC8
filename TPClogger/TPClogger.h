@@ -68,6 +68,7 @@ private:
   int In_TotSiz;
   int In_RemainSiz;
   unsigned int *In_CurPos;
+  int In_Done;
 
 };
 

@@ -92,6 +92,7 @@ int TPClogger::daq_configure()
     In_TotSiz=0;
     In_RemainSiz=0;
     In_CurPos=NULL;
+    In_Done=0;
 
     return ret;
 }
@@ -346,46 +347,16 @@ int TPClogger::daq_run()
 
     if (event_byte_size==0){ // no input
       if (check_trans_lock()) {
-	if (m_debug) {
-	  std::cerr << "**** trans unlock\n";
+	if (In_Done==1){
+	  set_trans_unlock();
+	}else{
+	  In_Done=1;
 	}
-	set_trans_unlock();
       }
       return 0;
-    }else{
     }
 
-//     bool ret = m_InPort.read();
-
-//     if (ret == true) {
-//         int block_byte_size = m_in_data.data.length();
-
-//         event_byte_size =
-//             block_byte_size - HEADER_BYTE_SIZE - FOOTER_BYTE_SIZE;
-//         if (m_debug) {
-//             std::cerr << "m_in_data.data.length:"
-//                       << m_in_data.data.length() << std::endl;
-//             std::cerr << "event_byte_size w/ header, fooger = "
-//                       << event_byte_size << std::endl;
-//         }
-
-//         if (event_byte_size == 0) {
-//             return 0;
-//         }
-
-//         if (check_header_footer(m_in_data, block_byte_size)) {
-//             //data header and footer were valid, do nothing
-//         }
-//     }
-//     else {
-//         if (check_trans_lock()) {
-//             if (m_debug) {
-//                 std::cerr << "**** trans unlock\n";
-//             }
-//             set_trans_unlock();
-//         }
-//         return 0;
-//     }
+    In_Done=0;
 
     if (m_isDataLogging) {
 

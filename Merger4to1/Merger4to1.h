@@ -124,6 +124,31 @@ private:
 };
 
 
+unsigned char * Merger4to1::renew_buf(unsigned char * orig_buf,
+				      unsigned int cursize, unsigned int newsize)
+{
+  unsigned char * new_buf;
+
+  try{
+    new_buf = new unsigned char[newsize];
+  }
+  catch(std::bad_alloc){
+    std::cerr << "Bad allocation..." << std::endl;
+    fatal_error_report(USER_DEFINED_ERROR1);
+  }
+  catch(...){
+    std::cerr << "Got exception..." << std::endl;
+    fatal_error_report(USER_DEFINED_ERROR1);
+  }
+
+  memcpy(new_buf, orig_buf, cursize);
+  delete [] orig_buf;
+
+  std::cerr << "Re-new data buf: " << cursize << " -> " << newsize << std::endl;
+
+  return new_buf;
+}
+
 extern "C"
 {
     void Merger4to1Init(RTC::Manager* manager);

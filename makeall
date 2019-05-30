@@ -14,6 +14,12 @@ cd ..
 cd Merger4to1
 make
 cd ..
+cd Merger4to1A
+make
+cd ..
+cd Merger4to1B
+make
+cd ..
 cd TPClogger
 make
 cd ..

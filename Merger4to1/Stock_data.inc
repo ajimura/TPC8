@@ -55,8 +55,10 @@
     // check size of buf
     tot_next_size=Stock_Offset+tot_data_size;
     if (tot_next_size>Cur_MaxDataSiz){
-       m_data1=renew_buf(m_data1,Stock_Offset,tot_next_size);
-       Cur_MaxDataSiz=tot_next_size;
+      if ((m_data1=renew_buf(m_data1,Stock_Offset,tot_next_size))==NULL){
+	fatal_error_report(USER_DEFINED_ERROR1);
+      }
+      Cur_MaxDataSiz=tot_next_size;
     }
 
     // create component header

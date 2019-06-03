@@ -188,11 +188,10 @@ int TPCreaderA::daq_run()
 	  inc_total_data_size(Stock_Offset);  // increase total data byte size
 	  Stock_CurNum=0;
 	  Stock_Offset=0;
-	
 	}
-        set_trans_unlock();    // transit to CONFIGURED state
-        return 0;
       }
+      set_trans_unlock();    // transit to CONFIGURED state
+      return 0;
     }
 
     if (m_out_status == BUF_TIMEOUT){

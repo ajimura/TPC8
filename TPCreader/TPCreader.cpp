@@ -180,6 +180,7 @@ int TPCreader::daq_run()
     }
 
     if (check_trans_lock()) {  // check if stop command has come
+      std::cout << "Stop command has come. Now Stock_CurNum=" << Stock_CurNum << std::endl;
       if (Stock_CurNum>0){
 	if (m_out_status!=BUF_TIMEOUT) set_data(Stock_Offset);
 	if (write_OutPort()<0){

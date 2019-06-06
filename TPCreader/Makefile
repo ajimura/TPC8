@@ -28,6 +28,7 @@ INCS += daq_pause.inc
 INCS += daq_resume.inc
 INCS += daq_start.inc
 INCS += daq_stop.inc
+INCS += daq_run.inc
 INCS += parse_params.inc
 INCS += read_data_from_detectors.inc
 

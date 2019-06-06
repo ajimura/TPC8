@@ -29,6 +29,7 @@ INCS += $(PARENT)daq_pause.inc
 INCS += $(PARENT)daq_resume.inc
 INCS += $(PARENT)daq_start.inc
 INCS += $(PARENT)daq_stop.inc
+INCS += $(PARENT)daq_run.inc
 INCS += $(PARENT)parse_params.inc
 INCS += $(PARENT)read_data_from_detectors.inc
 

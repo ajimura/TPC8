@@ -1,4 +1,5 @@
 COMP_NAME = Merger2to1B
+PARENT = ../Merger2to1/
 
 all: $(COMP_NAME)Comp
 
@@ -7,9 +8,14 @@ SRCS += $(COMP_NAME)Comp.cpp
 
 # LEPS2 DAQ common
 OBJS += ../lib/daqmwlib.o
-CPPFLAGS += -I../lib/ -I../Merger2to1/ -g
+CPPFLAGS += -I../lib/ -I$(PARENT) -g
 
-Merger2to1B.o: ../Merger2to1/read_InPort1.inc ../Merger2to1/read_InPort2.inc ../Merger2to1/Stock_data.inc
+INCS  = $(PARENT)read_InPort1.inc
+INCS += $(PARENT)read_InPort2.inc
+INCS += $(PARENT)Stock_data.inc
+INCS += $(PARENT)daq_run.inc
+
+$(COMP_NAME).o: $(INCS)
 
 # sample install target
 #

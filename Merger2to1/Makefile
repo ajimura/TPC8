@@ -9,7 +9,12 @@ SRCS += $(COMP_NAME)Comp.cpp
 OBJS += ../lib/daqmwlib.o
 CPPFLAGS += -I../lib/ -g
 
-Merger2to1.o: read_InPort1.inc read_InPort2.inc Stock_data.inc
+INCS  = read_InPort1.inc
+INCS += read_InPort2.inc
+INCS += Stock_data.inc
+INCS += daq_run.inc
+
+Merger2to1.o: $(INCS)
 
 # sample install target
 #

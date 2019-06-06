@@ -282,10 +282,10 @@ int Merger4to1::write_OutPort()
             fatal_error_report(OUTPORT_ERROR);
         }
         if (m_out_status == BUF_TIMEOUT) { // Timeout
-	  //            if (check_trans_lock()) {     // Check if stop command has come.
-	  //                set_trans_unlock();       // Transit to CONFIGURE state.
-	  //            }
             m_out_timeout_counter++;
+            return -1;
+        }
+        if (m_out_status == BUF_NOBUF) { // No Buffer on Downstream
             return -1;
         }
     }

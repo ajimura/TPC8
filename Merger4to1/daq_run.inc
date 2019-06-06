@@ -8,7 +8,7 @@
     }
 
     if (check_trans_lock()){
-      if (m_out_status==BUF_TIMEOUT){
+      if (m_out_status==BUF_TIMEOUT || m_out_status==BUF_NOBUF){
 	if (write_OutPort()==0){
 	  inc_total_data_size(Stock_Offset);  // increase total data byte size
 	  Stock_CurNum=0; Stock_Offset=0;
@@ -88,7 +88,7 @@
 
     In1_Done=0; In2_Done=0; In3_Done=0; In4_Done=0;
 
-    if (m_out_status != BUF_TIMEOUT) {
+    if (m_out_status != BUF_TIMEOUT && m_out_status != BUF_NOBUF) {
       if (m_inport1_recv_data_size==0)
 	m_inport1_recv_data_size = read_InPort1();
       if (m_inport2_recv_data_size==0)
@@ -111,7 +111,7 @@
       }
     }
 
-    if (m_out_status == BUF_TIMEOUT){
+    if (m_out_status == BUF_TIMEOUT || m_out_status == BUF_NOBUF){
       clock_gettime(CLOCK_MONOTONIC,&ts);
       t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
       std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;

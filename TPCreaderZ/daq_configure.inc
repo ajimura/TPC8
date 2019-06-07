@@ -44,6 +44,9 @@
     if ((totNumFADC=sw_open_check(NumFADC))<0){
       std::cerr << "Error in sw_open_check !!" << std::endl;
       fatal_error_report(USER_DEFINED_ERROR1,"Error in sw_open_check");
+    }else if (totNumFADC>120){
+      std::cerr << "FADC's are too much... #=" << totNumFADC << std::endl;
+      fatal_error_report(USER_DEFINED_ERROR1,"Error in sw_open_check");
     }else{
       std::cout << "SpaceWire port(s) opened" << std::endl;
     }
@@ -53,12 +56,20 @@
     std::cout << "Done" << std::endl;
 
     // allocate data buffer
-    m_data4=new unsigned int[
-		(CompHeaderSize+
-		EventHeaderSize+
-		(FADCHeaderSize+(256+ChHeaderSize)*16)*totNumFADC)*Stock_MaxNum
+    try{
+      m_data4=new unsigned int[
+               (CompHeaderSize + MaxFADCSize*totNumFADC) * Stock_MaxNum
 	     ];
-    m_data1=(unsigned char *)m_data4;
+      m_data1=(unsigned char *)m_data4;
+    }
+    catch(std::bad_alloc){
+      std::cerr << "Bad allocation..." << std::endl;
+      fatal_error_report(USER_DEFINED_ERROR3);
+    }
+    catch(...){
+      std::cerr << "Got exception..." << std::endl;
+      fatal_error_report(USER_DEFINED_ERROR3);
+    }
     std::cout << "Prepare data buffer done" << std::endl;
 
     // setup adc card
@@ -124,12 +135,15 @@
     }
     //RPV-260 trigger count reset
 
-    if (trigio_reset_count()<0){
-      std::cerr << "Error in trigio_reset_count !!" << std::endl;
-      fatal_error_report(USER_DEFINED_ERROR3,"Error in trigio_reset_count");
-    }else{
-      std::cout << "trigio_reset_count ... Done" << std::endl;
+    if (TrigIO_done==true){
+      if (trigio_reset_count()<0){
+        std::cerr << "Error in trigio_reset_count !!" << std::endl;
+        fatal_error_report(USER_DEFINED_ERROR3,"Error in trigio_reset_count");
+      }else{
+        std::cout << "trigio_reset_count ... Done" << std::endl;
+      }
     }
+
     std::cout << "--- Now ready to start !!" << std::endl;
 
     return 0;

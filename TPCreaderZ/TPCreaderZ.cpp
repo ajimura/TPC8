@@ -43,6 +43,7 @@ TPCreaderZ::TPCreaderZ(RTC::Manager* manager)
       m_recv_byte_size(0),
       m_recv_timeout_counter(0),
       m_out_status(BUF_SUCCESS),
+
       m_out_timeout_counter(0),
       m_debug(false)
 {
@@ -164,6 +165,9 @@ int TPCreaderZ::write_OutPort()
         if (m_out_status == BUF_TIMEOUT) { // Timeout
             return -1;
         }
+        if (m_out_status == BUF_NOBUF) { // No Buffer on Downstream
+            return -1;
+        }
     }
     else {
         m_out_status = BUF_SUCCESS; // successfully done
@@ -180,52 +184,53 @@ int TPCreaderZ::daq_run()
     if (m_debug) {
         std::cerr << "*** TPCreaderZ::run" << std::endl;
     }
+#include "daq_run.inc"
 
-    if (Stock_CurNum==0)
+//     if (Stock_CurNum==0)
 
-      if (check_trans_lock()) {  // check if stop command has come
-        set_trans_unlock();    // transit to CONFIGURED state
-        return 0;
-      }
+//       if (check_trans_lock()) {  // check if stop command has come
+//         set_trans_unlock();    // transit to CONFIGURED state
+//         return 0;
+//       }
 
-    if (m_out_status == BUF_SUCCESS) {   // previous OutPort.write() successfully done
-        m_recv_byte_size = read_data_from_detectors();
-    }
+//     if (m_out_status == BUF_SUCCESS) {   // previous OutPort.write() successfully done
+//         m_recv_byte_size = read_data_from_detectors();
+//     }
 
-    if (m_out_status == BUF_TIMEOUT){
-      clock_gettime(CLOCK_MONOTONIC,&ts);
-      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
-      if (write_OutPort()<0){
-	;
-      }else{
-	inc_total_data_size(Stock_Offset);  // increase total data byte size
-	Stock_CurNum=0;
-	Stock_Offset=0;
-      }
-      clock_gettime(CLOCK_MONOTONIC,&ts);
-      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-      std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
-    }
+//     if (m_out_status == BUF_TIMEOUT){
+//       clock_gettime(CLOCK_MONOTONIC,&ts);
+//       t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+//       std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+//       if (write_OutPort()<0){
+// 	;
+//       }else{
+// 	inc_total_data_size(Stock_Offset);  // increase total data byte size
+// 	Stock_CurNum=0;
+// 	Stock_Offset=0;
+//       }
+//       clock_gettime(CLOCK_MONOTONIC,&ts);
+//       t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+//       std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+//     }
 
-    if ( (Stock_CurNum==Stock_MaxNum) || (Stock_CurNum>0 && m_recv_timeout_counter>ReadTimeout) ){
-      clock_gettime(CLOCK_MONOTONIC,&ts);
-      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
-      set_data(Stock_Offset);
-      if (write_OutPort()<0){
-	;
-      }else{
-	inc_total_data_size(Stock_Offset);  // increase total data byte size
-	Stock_CurNum=0;
-	Stock_Offset=0;
-      }
-      clock_gettime(CLOCK_MONOTONIC,&ts);
-      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-      std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
-    }
+//     if ( (Stock_CurNum==Stock_MaxNum) || (Stock_CurNum>0 && m_recv_timeout_counter>ReadTimeout) ){
+//       clock_gettime(CLOCK_MONOTONIC,&ts);
+//       t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+//       std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+//       set_data(Stock_Offset);
+//       if (write_OutPort()<0){
+// 	;
+//       }else{
+// 	inc_total_data_size(Stock_Offset);  // increase total data byte size
+// 	Stock_CurNum=0;
+// 	Stock_Offset=0;
+//       }
+//       clock_gettime(CLOCK_MONOTONIC,&ts);
+//       t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+//       std::cout << "+w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+//     }
 
-    return 0;
+//     return 0;
 }
 
 extern "C"

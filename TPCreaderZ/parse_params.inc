@@ -17,6 +17,9 @@
     Stock_CurNum=0;
     Stock_TotSiz=0;
     Stock_Offset=0;
+    SwitchAB=0; // 0:A, 1:B
+    Resv_In=0;
+    Resv_Size=0;
 
     int len = (*list).length();
     for (i = 0; i < len; i+=2) {

@@ -153,6 +153,8 @@ int TPCreaderZ::set_data(unsigned int data_byte_size)
 
 int TPCreaderZ::write_OutPort()
 {
+    std::cerr << "write: StockNum=" << Stock_CurNum << " SockSize=" << Stock_Offset << std::endl;
+
     ////////////////// send data from OutPort  //////////////////
     bool ret = m_OutPort.write();
 

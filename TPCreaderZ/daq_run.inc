@@ -10,12 +10,12 @@
       }else{
 	//switch
 	if (SwitchAB==0){
-	  m_data1=m_dataB;	  m_data4=(unsigned char *)m_dataB;
-	  m_resv1=m_dataA;	  m_resv4=(unsigned char *)m_dataA;
+	  m_data1=m_dataB;	  m_data4=(unsigned int *)m_dataB;
+	  m_resv1=m_dataA;	  m_resv4=(unsigned int *)m_dataA;
 	  SwitchAB=1;
 	}else{
-	  m_data1=m_dataA;	  m_data4=(unsigned char *)m_dataA;
-	  m_resv1=m_dataB;	  m_resv4=(unsigned char *)m_dataB;
+	  m_data1=m_dataA;	  m_data4=(unsigned int *)m_dataA;
+	  m_resv1=m_dataB;	  m_resv4=(unsigned int *)m_dataB;
 	  SwitchAB=0;
 	}
 	Stock_CurNum=1;
@@ -25,7 +25,7 @@
       }
     }
     if (Stock_CurNum==0) return 0;
-    if (m_out_status==TIMEOUT || m_out_status==BUF_NOBUF){
+    if (m_out_status==BUF_TIMEOUT || m_out_status==BUF_NOBUF){
       if (write_OutPort()<0){
 	;
       }else{

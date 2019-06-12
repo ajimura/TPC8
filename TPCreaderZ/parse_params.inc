@@ -14,6 +14,7 @@
     ComponentID=0;
     ReadTimeout=10000;
     Stock_MaxNum=1;
+    Stock_MaxSiz=2097044;
     Stock_CurNum=0;
     Stock_TotSiz=0;
     Stock_Offset=0;
@@ -97,6 +98,9 @@
       }
       if (sname == "StockNum"){
 	Stock_MaxNum=atoi(svalue.c_str());
+      }
+      if (sname == "StockMaxSize"){
+	Stock_MaxSiz=atoi(svalue.c_str());
       }
 
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());

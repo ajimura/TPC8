@@ -9,6 +9,7 @@
         m_recv_byte_size = read_data_from_detectors();
       }else{
 	//switch
+	std::cerr << "Switching buffer ..." << std::endl;
 	if (SwitchAB==0){
 	  m_data1=m_dataB;	  m_data4=(unsigned int *)m_dataB;
 	  m_resv1=m_dataA;	  m_resv4=(unsigned int *)m_dataA;
@@ -21,6 +22,7 @@
 	Stock_CurNum=1;
 	Stock_TotSiz=Resv_Size;
 	Stock_Offset=Resv_Size;
+        Resv_In=0;
 	return 0;
       }
     }
@@ -34,6 +36,7 @@
 	Stock_Offset=0;
       }
     }else if (Resv_In==1){
+      std::cerr << "Buffer overflow... writing from regular tank..." << std::endl;
       set_data(Stock_Offset);
       if (write_OutPort()<0){
 	;

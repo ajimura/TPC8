@@ -873,8 +873,10 @@ int fadc_get_totsizeM2(){
   unsigned int add;
   int st;
   unsigned int tid,size;
+  int TotSize;
 
   st=0; count=DevsNum; j=0;
+  TotSize=0;
   while(count>0){
     count=0;
     for(i=0;i<DevsNum;i++){
@@ -893,13 +895,14 @@ int fadc_get_totsizeM2(){
 	  printf("Wrong TID: %d %d\n",i,j);
 	  return -1;
 	}
+	TotSize+=((((fadcinfo[i]+j)->totsize+1)/2)*4+28);
 	//	printf("TotSize(%d-%d): %3d(%04x) %d\n",
 	//	       i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize,st);
       }
     }
     j++;
   }
-  if (st<0) return -1; else return 0;
+  if (st<0) return -1; else return TotSize;
 }
 
 int fadc_get_event_data(unsigned int *rdata, int check){

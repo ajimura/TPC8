@@ -45,7 +45,7 @@
 
     std::cout << "Get data size: " << pre_totsize << " on " << Stock_Offset << std::endl;
 
-    if (Stock_Offset+pre_totsize+80>Stock_MaxSiz){
+    if ((Stock_Offset+pre_totsize+CompHeaderSize)>Stock_MaxSiz){
       std::cerr << "Overflow Stock buffer... storing into reserver tank..." << std::endl;
       toppos=(unsigned int *)m_resv1;
       Resv_In=1;

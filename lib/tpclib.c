@@ -34,6 +34,8 @@
 #define FADC_TrigOut 0x00000004
 #define FADC_BsyOut  0x00000008
 
+#define FADCHeaderSize 28
+
 #define DevsNum 8
 #define NumEvtBuffer 3
 
@@ -757,7 +759,6 @@ int fadc_check_data_ready_sel(){ // error: -1, not ready: 0, ready: readynum
   unsigned int add;
   int st;
   int i;
-  int times;
   unsigned int regready;
   int count;
 
@@ -895,7 +896,7 @@ int fadc_get_totsizeM2(){
 	  printf("Wrong TID: %d %d\n",i,j);
 	  return -1;
 	}
-	TotSize+=((((fadcinfo[i]+j)->totsize+1)/2)*4+28);
+	TotSize+=((((fadcinfo[i]+j)->totsize+1)/2)*4+FADCHeaderSize);
 	//	printf("TotSize(%d-%d): %3d(%04x) %d\n",
 	//	       i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize,st);
       }

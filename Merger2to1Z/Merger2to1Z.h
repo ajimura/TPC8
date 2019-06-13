@@ -88,6 +88,7 @@ private:
 
   unsigned int ReadTimeout;
   int Stock_MaxNum;
+  int Stock_MaxSiz;
   int Stock_CurNum;
   unsigned int Stock_TotSiz;
   unsigned int Stock_Offset;

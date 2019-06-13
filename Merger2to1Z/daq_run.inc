@@ -1,9 +1,4 @@
-  struct timespec ts;
-  double t0;
-
-    if (m_debug) {
-        std::cerr << "*** Merger2to1::run" << std::endl;
-    }
+    int OverFlow;
 
     if (check_trans_lock()){ // STOP comming
       if (m_out_status==BUF_TIMEOUT || m_out_status==BUF_NOBUF){ // if last write was fail
@@ -63,6 +58,7 @@
     }
 
     In1_Done=0; In2_Done=0;
+    OverFlow=0;
 
     if (m_out_status != BUF_TIMEOUT && m_out_status != BUF_NOBUF) {
       if (m_inport1_recv_data_size==0)
@@ -71,9 +67,14 @@
         m_inport2_recv_data_size = read_InPort2();
 
       if ((m_inport1_recv_data_size > 0) && (m_inport2_recv_data_size > 0)){
-	Stock_data(m_inport1_recv_data_size,m_inport2_recv_data_size);
-	m_inport1_recv_data_size=0;
-	m_inport2_recv_data_size=0;
+        if ((Stock_Offset+m_inport1_recv_data_size+m_inport2_recv_data_size+80)>Stock_MaxSiz){
+	  OverFlow=1;
+        }else{
+          OverFlow=0;
+          Stock_data(m_inport1_recv_data_size,m_inport2_recv_data_size);
+          m_inport1_recv_data_size=0;
+          m_inport2_recv_data_size=0;
+        }
       }
     }
 
@@ -88,7 +89,8 @@
     }
 
    if ( (Stock_CurNum==Stock_MaxNum) ||
-	(Stock_CurNum>0 && (m_in1_timeout_counter>ReadTimeout||m_in2_timeout_counter>ReadTimeout)) ){
+	(Stock_CurNum>0 && (m_in1_timeout_counter>ReadTimeout||m_in2_timeout_counter>ReadTimeout)) ||
+        (OverFlow==1) ){
       set_data(Stock_Offset);
       if (write_OutPort()<0){
 	;

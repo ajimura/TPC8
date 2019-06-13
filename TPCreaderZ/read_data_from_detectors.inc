@@ -14,8 +14,6 @@
 
     int ret;
 
-    //    std::cout << "Wait next event !" << std::endl;
-
     // wait trigger
     if (rdychk_exist)
       ret=fadc_check_data_ready_sel();
@@ -34,7 +32,7 @@
     m_recv_timeout_counter=0;
     seq_num=get_sequence_num();
 
-    std::cout << "Get data ready(" << seq_num << ") Stock=" << Stock_CurNum << "," << Stock_Offset << std::endl;
+    if (m_debug) std::cout << "Get data ready(" << seq_num << ") Stock=" << Stock_CurNum << "," << Stock_Offset << std::endl;
 
     //get data size
     if ((pre_totsize=fadc_get_totsizeM2())<0){
@@ -43,10 +41,10 @@
       fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_get_data_sizeM2");
     }
 
-    std::cout << "Get data size: " << pre_totsize << " on " << Stock_Offset << std::endl;
+    if (m_debug) std::cout << "Get data size: " << pre_totsize << " on " << Stock_Offset << std::endl;
 
     if ((Stock_Offset+pre_totsize+CompHeaderSize)>Stock_MaxSiz){
-      std::cerr << "Overflow Stock buffer... storing into reserver tank..." << std::endl;
+      if (m_debug) std::cerr << "Overflow Stock buffer... storing into reserver tank..." << std::endl;
       toppos=(unsigned int *)m_resv1;
       Resv_In=1;
     }else{
@@ -61,8 +59,6 @@
 			 0, (unsigned int)seq_num,
 			 totNumFADCforHeader2,totNumFADCforHeader1);
 
-    //    std::cout << "start event data" << std::endl;
-
     // get&write data
     if ((totsize=fadc_get_event_dataM2(curpos,seq_num))<0){
     //    if ((totsize=fadc_get_event_dataM(curpos,seq_num))<0){
@@ -76,9 +72,6 @@
     //footer start  -> should be modified to fit DAQ-system (20181004: SA)
     *(curpos++)=comp_footer;
 
-    //    std::cout << "Get event data " << totsize << std::endl;
-    //    outfile.write((char *)rdata, totsize);
-  
     // prepare for next event
     //ROC
     //    if (fadc_release_buffer()<0){
@@ -99,7 +92,6 @@
     if (Resv_In==1){
       Resv_Size=received_data_size;
     }else{
-      Stock_TotSiz+=received_data_size;
       Stock_Offset+=received_data_size;
       Stock_CurNum++;
     }

@@ -10,10 +10,9 @@
     int totsize;
     unsigned char eventtag=0;
     unsigned int comp_footer;
+    int pre_totsize;
 
     int ret;
-
-    //    std::cout << "Wait next event !" << std::endl;
 
     // wait trigger
     if (rdychk_exist)
@@ -33,26 +32,32 @@
     m_recv_timeout_counter=0;
     seq_num=get_sequence_num();
 
-    //    std::cout << "Get data ready (" << seq_num << ")" << std::endl;
+    if (m_debug) std::cout << "Get data ready(" << seq_num << ") Stock=" << Stock_CurNum << "," << Stock_Offset << std::endl;
 
     //get data size
-    if (fadc_get_totsizeM2()<0){
+    if ((pre_totsize=fadc_get_totsizeM2())<0){
       //    if (fadc_get_totsizeM()<0){
       std::cerr << "Error in fadc_get_data_sizeM2" << std::endl;
       fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_get_data_sizeM2");
     }
 
-    //    std::cout << "Get data size" << std::endl;
+    if (m_debug) std::cout << "Get data size: " << pre_totsize << " on " << Stock_Offset << std::endl;
+
+    if ((Stock_Offset+pre_totsize+CompHeaderSize)>Stock_MaxSiz){
+      if (m_debug) std::cerr << "Overflow Stock buffer... storing into reserver tank..." << std::endl;
+      toppos=(unsigned int *)m_resv1;
+      Resv_In=1;
+    }else{
+      toppos=(unsigned int *)(m_data1+Stock_Offset);
+      Resv_In=0;
+    }
 
     // create component header
-    toppos=(unsigned int *)(m_data1+Stock_Offset);
     curpos=Create_Header(toppos,&comp_footer,
 			 eventnum,(unsigned int)eventtag,
 			 ComponentType, ComponentID,
 			 0, (unsigned int)seq_num,
 			 totNumFADCforHeader2,totNumFADCforHeader1);
-
-    //    std::cout << "start event data" << std::endl;
 
     // get&write data
     if ((totsize=fadc_get_event_dataM2(curpos,seq_num))<0){
@@ -67,9 +72,6 @@
     //footer start  -> should be modified to fit DAQ-system (20181004: SA)
     *(curpos++)=comp_footer;
 
-    //    std::cout << "Get event data " << totsize << std::endl;
-    //    outfile.write((char *)rdata, totsize);
-  
     // prepare for next event
     //ROC
     //    if (fadc_release_buffer()<0){
@@ -87,9 +89,12 @@
 
     //set return value
     received_data_size=(int)(curpos-toppos)*4;
-    Stock_TotSiz+=received_data_size;
-    Stock_Offset+=received_data_size;
-    Stock_CurNum++;
+    if (Resv_In==1){
+      Resv_Size=received_data_size;
+    }else{
+      Stock_Offset+=received_data_size;
+      Stock_CurNum++;
+    }
 
     //modify header info (totsize, eventtag)
     *toppos=(int)(curpos-toppos)*4;

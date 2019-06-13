@@ -16,7 +16,6 @@
     Stock_MaxNum=1;
     Stock_MaxSiz=2097044;
     Stock_CurNum=0;
-    Stock_TotSiz=0;
     Stock_Offset=0;
     SwitchAB=0; // 0:A, 1:B
     Resv_In=0;

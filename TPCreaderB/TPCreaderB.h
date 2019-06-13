@@ -14,7 +14,7 @@
 
 using namespace RTC;
 
-static const int CompHeaderSize = 20; // <- should be modified
+static const int CompHeaderSize = 80; // unit in byte
 
 class TPCreaderB
     : public DAQMW::DaqComponentBase
@@ -55,17 +55,21 @@ private:
 
   //    static const int SEND_BUFFER_SIZE = 4096;
   //    unsigned char m_data[SEND_BUFFER_SIZE];
+  unsigned char *m_dataA, *m_dataB;
   unsigned int *m_data4;
   unsigned char *m_data1;
+  unsigned int *m_resv4;
+  unsigned char *m_resv1;
 
-    unsigned int m_recv_byte_size;
+  unsigned int m_recv_byte_size;
   unsigned int m_recv_timeout_counter;
 
-    BufferStatus m_out_status;
+  BufferStatus m_out_status;
   unsigned int m_out_timeout_counter;
-    bool m_debug;
+  bool m_debug;
 
-  //size: unit in 4bytes
+  //size: unit in byte
+  static const int FADCHeaderSize = 28;
   static const int MaxFADCSize = 16384;
 
   //parameter for TPC readout from DAQ op.
@@ -88,10 +92,14 @@ private:
   int TrigIO_waittime;
   int ComponentID;
   unsigned int ReadTimeout;
+
   int Stock_MaxNum;
+  int Stock_MaxSiz;
   int Stock_CurNum;
-  int Stock_TotSiz;
   int Stock_Offset;
+
+  int SwitchAB;
+  int Resv_In, Resv_Size;
 
   unsigned int eventnum;
 };

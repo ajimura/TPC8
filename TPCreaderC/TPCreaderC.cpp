@@ -97,7 +97,8 @@ int TPCreaderC::daq_unconfigure()
 {
     std::cerr << "*** TPCreaderC::unconfigure" << std::endl;
 
-    delete [] m_data4; std::cout << "Delete data buffer" << std::endl;
+    delete [] m_dataA; std::cout << "Delete data bufferA" << std::endl;
+    delete [] m_dataB; std::cout << "Delete data bufferB" << std::endl;
     fadc_close(); std::cout << "Close Spacewire ports" << std::endl;
     trigio_fin();
 
@@ -153,6 +154,10 @@ int TPCreaderC::set_data(unsigned int data_byte_size)
 
 int TPCreaderC::write_OutPort()
 {
+  if (m_debug) {
+    std::cerr << "write: StockNum=" << Stock_CurNum << " SockSize=" << Stock_Offset << std::endl;
+  }
+ 
     ////////////////// send data from OutPort  //////////////////
     bool ret = m_OutPort.write();
 
@@ -178,9 +183,6 @@ int TPCreaderC::write_OutPort()
 
 int TPCreaderC::daq_run()
 {
-    if (m_debug) {
-        std::cerr << "*** TPCreaderC::run" << std::endl;
-    }
 #include "daq_run.inc"
 }
 

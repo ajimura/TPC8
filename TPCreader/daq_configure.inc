@@ -57,10 +57,12 @@
 
     // allocate data buffer
     try{
-      m_data4=new unsigned int[
+      m_dataA=new unsigned char[
                (CompHeaderSize + MaxFADCSize*totNumFADC) * Stock_MaxNum
 	     ];
-      m_data1=(unsigned char *)m_data4;
+      m_dataB=new unsigned char[
+               (CompHeaderSize + MaxFADCSize*totNumFADC) * Stock_MaxNum
+	     ];
     }
     catch(std::bad_alloc){
       std::cerr << "Bad allocation..." << std::endl;
@@ -70,6 +72,10 @@
       std::cerr << "Got exception..." << std::endl;
       fatal_error_report(USER_DEFINED_ERROR3);
     }
+    m_data1=m_dataA;
+    m_data4=(unsigned int *)m_dataA;
+    m_resv1=m_dataB;
+    m_resv4=(unsigned int *)m_dataB;
     std::cout << "Prepare data buffer done" << std::endl;
 
     // setup adc card

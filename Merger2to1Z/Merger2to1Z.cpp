@@ -107,7 +107,6 @@ int Merger2to1Z::daq_configure()
     In2_Done=0;
 
     Stock_CurNum=0;
-    Stock_TotSiz=0;
     Stock_Offset=0;
     //    Cur_MaxDataSiz=67108864; // 64M (tempolary)
     Cur_MaxDataSiz=10240; // 10k (tempolary)
@@ -259,34 +258,34 @@ int Merger2to1Z::write_OutPort()
     return 0; // successfully done
 }
 
-unsigned int Merger2to1Z::read_InPort1()
+int Merger2to1Z::read_InPort1()
 {
 #include "read_InPort1.inc"
 }
 
-unsigned int Merger2to1Z::read_InPort2()
+int Merger2to1Z::read_InPort2()
 {
 #include "read_InPort2.inc"
 }
 
-unsigned int Merger2to1Z::Stock_data(unsigned int data1_byte_size, unsigned int data2_byte_size)
+void Merger2to1Z::Stock_data(int data1_byte_size, int data2_byte_size)
 {
 #include "Stock_data.inc"
 }
 
-int Merger2to1Z::set_data(unsigned int data_byte_size)
+int Merger2to1Z::set_data(int data_byte_size)
 {
     unsigned char header[8];
     unsigned char footer[8];
 
-    set_header(&header[0], data_byte_size);
+    set_header(&header[0], (unsigned int)data_byte_size);
     set_footer(&footer[0]);
 
     ///set OutPort buffer length
-    m_out_data.data.length(data_byte_size + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
+    m_out_data.data.length((unsigned int)data_byte_size + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
     memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], data_byte_size);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + data_byte_size]), &footer[0],
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + (unsigned int)data_byte_size]), &footer[0],
            FOOTER_BYTE_SIZE);
 
     return 0;
@@ -298,7 +297,7 @@ int Merger2to1Z::daq_run()
 }
 
 unsigned char * Merger2to1Z::renew_buf(unsigned char * orig_buf,
-				      unsigned int cursize, unsigned int newsize)
+				      int cursize, int newsize)
 {
   unsigned char * new_buf;
 

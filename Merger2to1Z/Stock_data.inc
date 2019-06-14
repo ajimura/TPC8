@@ -56,7 +56,7 @@
     curpos=Create_Header(toppos, &comp_footer,
 		  eventnum, eventtag,
 		  ComponentType, ComponentID,
-		  (insigned int)tot_data_size, seq_num,
+		  (unsigned int)tot_data_size, seq_num,
 		  0,0);
 
     memcpy(curpos,In1_CurPos,data1_byte_size); curpos+=(data1_byte_size/4);

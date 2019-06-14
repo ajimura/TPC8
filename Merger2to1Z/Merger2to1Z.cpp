@@ -47,8 +47,7 @@ Merger2to1Z::Merger2to1Z(RTC::Manager* manager)
       m_out_timeout_counter(0),
       m_inport1_recv_data_size(0),
       m_inport2_recv_data_size(0),
-      m_debug(false)
-      //      m_debug(true)
+      m_debug(true)
 {
     // Registration: InPort/OutPort/Service
 
@@ -240,9 +239,10 @@ int Merger2to1Z::write_OutPort()
             fatal_error_report(OUTPORT_ERROR);
         }
         if (m_out_status == BUF_TIMEOUT) { // Timeout
-	  //            if (check_trans_lock()) {     // Check if stop command has come.
-	  //                set_trans_unlock();       // Transit to CONFIGURE state.
-	  //            }
+            m_out_timeout_counter++;
+            return -1;
+        }
+        if (m_out_status == BUF_NOBUF) { // Timeout
             m_out_timeout_counter++;
             return -1;
         }

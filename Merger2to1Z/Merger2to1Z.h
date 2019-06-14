@@ -87,9 +87,9 @@ private:
   int In2_Done;
 
   unsigned int ReadTimeout;
-  int Stock_MaxNum;
-  int Stock_MaxSiz;
-  int Stock_CurNum;
+  unsigned int Stock_MaxNum;
+  unsigned int Stock_MaxSiz;
+  unsigned int Stock_CurNum;
   unsigned int Stock_TotSiz;
   unsigned int Stock_Offset;
   unsigned char * m_data1;

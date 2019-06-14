@@ -42,9 +42,9 @@
       std::cerr << " reading(1): Remain=" << In1_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
     }
 
-    if (m_debug) {
-        std::cerr << "m_in_data.data.length():" << recv_byte_size
-                  << std::endl;
-    }
+//    if (m_debug) {
+//        std::cerr << "m_in_data.data.length():" << recv_byte_size
+//                  << std::endl;
+//    }
 
     return recv_byte_size;

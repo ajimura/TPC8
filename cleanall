@@ -11,6 +11,9 @@ cd ..
 cd Merger2to1B
 make clean
 cd ..
+cd Merger2to1Z
+make clean
+cd ..
 cd Merger4to1
 make clean
 cd ..

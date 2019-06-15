@@ -62,11 +62,11 @@ private:
   unsigned char *m_resv1;
 
 
-  unsigned int m_recv_byte_size;
-  unsigned int m_recv_timeout_counter;
+  int m_recv_byte_size;
+  int m_recv_timeout_counter;
 
   BufferStatus m_out_status;
-  unsigned int m_out_timeout_counter;
+  int m_out_timeout_counter;
 
   bool m_debug;
 
@@ -93,7 +93,7 @@ private:
   bool TrigIO_done;
   int TrigIO_waittime;
   int ComponentID;
-  unsigned int ReadTimeout;
+  int ReadTimeout;
 
   int Stock_MaxNum;
   int Stock_MaxSiz;

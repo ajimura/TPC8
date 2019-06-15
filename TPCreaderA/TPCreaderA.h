@@ -47,7 +47,7 @@ private:
 
     int parse_params(::NVList* list);
     int read_data_from_detectors();
-    int set_data(unsigned int data_byte_size);
+    int set_data(int data_byte_size);
     int write_OutPort();
     void toLower(std::basic_string<char>& s);
 
@@ -61,11 +61,11 @@ private:
   unsigned int *m_resv4;
   unsigned char *m_resv1;
 
-  unsigned int m_recv_byte_size;
-  unsigned int m_recv_timeout_counter;
+  int m_recv_byte_size;
+  int m_recv_timeout_counter;
 
   BufferStatus m_out_status;
-  unsigned int m_out_timeout_counter;
+  int m_out_timeout_counter;
   bool m_debug;
 
   //size: unit in byte
@@ -91,7 +91,7 @@ private:
   bool TrigIO_done;
   int TrigIO_waittime;
   int ComponentID;
-  unsigned int ReadTimeout;
+  int ReadTimeout;
 
   int Stock_MaxNum;
   int Stock_MaxSiz;

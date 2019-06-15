@@ -10,7 +10,7 @@
     if (check_trans_lock()){
       if (m_out_status==BUF_TIMEOUT || m_out_status==BUF_NOBUF){
 	if (write_OutPort()==0){
-	  inc_total_data_size(Stock_Offset);  // increase total data byte size
+	  inc_total_data_size((unsigned int)Stock_Offset);  // increase total data byte size
 	  Stock_CurNum=0; Stock_Offset=0;
 	}else{
 	  set_trans_unlock();       // Transit to CONFIGURE state.
@@ -20,7 +20,7 @@
       if (Stock_CurNum>0){
 	set_data(Stock_Offset);
 	if (write_OutPort()==0){
-	  inc_total_data_size(Stock_Offset);  // increase total data byte size
+	  inc_total_data_size((unsigned int)Stock_Offset);  // increase total data byte size
 	  Stock_CurNum=0; Stock_Offset=0;
 	}else{
 	  set_trans_unlock();       // Transit to CONFIGURE state.
@@ -76,7 +76,7 @@
       if (Stock_CurNum>0){
 	set_data(Stock_Offset);
 	if (write_OutPort()==0){
-	  inc_total_data_size(Stock_Offset);  // increase total data byte size
+	  inc_total_data_size((unsigned int)Stock_Offset);  // increase total data byte size
 	  Stock_CurNum=0; Stock_Offset=0;
 	}else{
 	  set_trans_unlock();       // Transit to CONFIGURE state.
@@ -118,7 +118,7 @@
       if (write_OutPort()<0){
 	;
       }else{
-	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	inc_total_data_size((unsigned int)Stock_Offset);  // increase total data byte size
 	Stock_CurNum=0;
 	Stock_Offset=0;
       }
@@ -139,7 +139,7 @@
       if (write_OutPort()<0){
 	;
       }else{
-	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	inc_total_data_size((unsigned int)Stock_Offset);  // increase total data byte size
 	Stock_CurNum=0;
 	Stock_Offset=0;
       }

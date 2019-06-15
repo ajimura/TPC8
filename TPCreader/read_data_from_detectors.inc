@@ -4,7 +4,7 @@
     //    int i;
     time_t curtime;
     tm *ltime;
-    int seq_num;
+    unsigned int seq_num;
     unsigned int *toppos;
     unsigned int *curpos;
     int totsize;
@@ -30,14 +30,14 @@
     }
 
     m_recv_timeout_counter=0;
-    seq_num=get_sequence_num();
+    seq_num=(unsigned int)get_sequence_num();
 
     if (m_debug) std::cout << "Get data ready(" << seq_num << ") Stock=" << Stock_CurNum << "," << Stock_Offset << std::endl;
 
     //get data size
     if ((pre_totsize=fadc_get_totsizeM2())<0){
       //    if (fadc_get_totsizeM()<0){
-      std::cerr << "Error in fadc_get_totsizeM2" << std::endl;
+      std::cerr << "Error in fadc_get_data_sizeM2" << std::endl;
       fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_get_data_sizeM2");
     }
 
@@ -60,7 +60,7 @@
 			 totNumFADCforHeader2,totNumFADCforHeader1);
 
     // get&write data
-    if ((totsize=fadc_get_event_dataM2(curpos,seq_num))<0){
+    if ((totsize=fadc_get_event_dataM2(curpos,(int)seq_num))<0){
     //    if ((totsize=fadc_get_event_dataM(curpos,seq_num))<0){
       std::cerr << "Error in fadc_get_eventdataM2" << std::endl;
       fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_get_event_dataM2");
@@ -98,7 +98,7 @@
 
     //modify header info (totsize, eventtag)
     *toppos=(int)(curpos-toppos)*4;
-    *(toppos+4)=eventtag;
+    *(toppos+4)=(int)eventtag;
 
     //increment ring buffer read pointer for TrigIO
     if (TrigIO_done){

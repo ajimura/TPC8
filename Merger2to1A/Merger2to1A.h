@@ -52,10 +52,10 @@ private:
     int parse_params(::NVList* list);
     int reset_InPort1();
     int reset_InPort2();
-  unsigned int Stock_data(unsigned int data1_byte_size,unsigned int data2_byte_size);
-  int set_data(unsigned int data_byte_size);
-  unsigned int read_InPort1();
-  unsigned int read_InPort2();
+  void Stock_data(int data1_byte_size, int data2_byte_size);
+  int set_data(int data_byte_size);
+  int read_InPort1();
+  int read_InPort2();
   int write_OutPort();
   unsigned char * renew_buf(unsigned char *orig_buf, unsigned int cursize, unsigned int newsize);
 
@@ -65,12 +65,12 @@ private:
     BufferStatus m_in2_status;
     BufferStatus m_out_status;
 
-  unsigned int m_in1_timeout_counter;
-  unsigned int m_in2_timeout_counter;
-  unsigned int m_out_timeout_counter;
+  int m_in1_timeout_counter;
+  int m_in2_timeout_counter;
+  int m_out_timeout_counter;
 
-  unsigned int m_inport1_recv_data_size;
-  unsigned int m_inport2_recv_data_size;
+  int m_inport1_recv_data_size;
+  int m_inport2_recv_data_size;
 
     bool m_debug;
 
@@ -86,15 +86,15 @@ private:
   unsigned int *In2_CurPos;
   int In2_Done;
 
-  unsigned int ReadTimeout;
+  int ReadTimeout;
   int Stock_MaxNum;
   int Stock_CurNum;
-  unsigned int Stock_TotSiz;
-  unsigned int Stock_Offset;
+  int Stock_TotSiz;
+  int Stock_Offset;
   unsigned char * m_data1;
   unsigned int * m_data4;
 
-  unsigned int Cur_MaxDataSiz;
+  int Cur_MaxDataSiz;
 };
 
 

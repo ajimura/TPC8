@@ -3,7 +3,7 @@
     if (check_trans_lock()){					// STOP comming
       if (m_out_status==BUF_TIMEOUT || m_out_status==BUF_NOBUF){	// if last write was fail
 	if (write_OutPort()==0){					// try again
-	  inc_total_data_size(Stock_Offset);
+	  inc_total_data_size((unsigned int)Stock_Offset);
 	  Stock_CurNum=0; Stock_Offset=0;
 	}else{								// if fail, transit to CONFIGURE state.
 	  set_trans_unlock();
@@ -13,7 +13,7 @@
       if (Stock_CurNum>0){						// if data exist in stock
 	set_data(Stock_Offset);						// make out data
 	if (write_OutPort()==0){					// write data
-	  inc_total_data_size(Stock_Offset);
+	  inc_total_data_size((unsigned int)Stock_Offset);
 	  Stock_CurNum=0; Stock_Offset=0;
 	}else{								// if fail, transit to CONFIGURE state.
 	  set_trans_unlock();
@@ -47,7 +47,7 @@
       if (Stock_CurNum>0){						// still there's data
 	set_data(Stock_Offset);
 	if (write_OutPort()==0){
-	  inc_total_data_size(Stock_Offset);
+	  inc_total_data_size((unsigned int)Stock_Offset);
 	  Stock_CurNum=0; Stock_Offset=0;
 	}else{
 	  set_trans_unlock();
@@ -82,7 +82,7 @@
       if (write_OutPort()<0){
 	;
       }else{
-	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	inc_total_data_size((unsigned int)Stock_Offset);  // increase total data byte size
 	Stock_CurNum=0;
 	Stock_Offset=0;
       }
@@ -95,7 +95,7 @@
       if (write_OutPort()<0){
 	;
       }else{
-	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	inc_total_data_size((unsigned int)Stock_Offset);  // increase total data byte size
 	Stock_CurNum=0;
 	Stock_Offset=0;
       }

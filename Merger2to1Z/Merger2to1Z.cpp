@@ -297,7 +297,7 @@ int Merger2to1Z::daq_run()
 }
 
 unsigned char * Merger2to1Z::renew_buf(unsigned char * orig_buf,
-				      int cursize, int newsize)
+				      size_t cursize, size_t newsize)
 {
   unsigned char * new_buf;
 

@@ -108,7 +108,6 @@ int Merger2to1::daq_configure()
     In2_Done=0;
 
     Stock_CurNum=0;
-    Stock_TotSiz=0;
     Stock_Offset=0;
     //    Cur_MaxDataSiz=67108864; // 64M (tempolary)
     Cur_MaxDataSiz=10240; // 10k (tempolary)

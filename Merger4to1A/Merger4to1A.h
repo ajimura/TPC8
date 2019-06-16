@@ -114,8 +114,8 @@ private:
 
   int ReadTimeout;
   int Stock_MaxNum;
+  int Stock_MaxSiz;
   int Stock_CurNum;
-  int Stock_TotSiz;
   int Stock_Offset;
   unsigned char * m_data1;
   unsigned int * m_data4;

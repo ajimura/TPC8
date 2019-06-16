@@ -49,13 +49,13 @@
 	      << data3_byte_size << ", " << data4_byte_size << ", " << tot_data_size << std::endl;
 
     //get current time
-    seq_num=get_sequence_num();
+    seq_num=(unsigned int)get_sequence_num();
         std::cerr << "-----seq num " << seq_num << std::endl;
 
     // check size of buf
     tot_next_size=Stock_Offset+tot_data_size;
     if (tot_next_size>Cur_MaxDataSiz){
-      if ((m_data1=renew_buf(m_data1,Stock_Offset,tot_next_size))==NULL){
+      if ((m_data1=renew_buf(m_data1,(size_t)Stock_Offset,(size_t)tot_next_size))==NULL){
 	fatal_error_report(USER_DEFINED_ERROR1);
       }
       Cur_MaxDataSiz=tot_next_size;
@@ -66,16 +66,15 @@
     curpos=Create_Header(toppos, &comp_footer,
 		  eventnum, eventtag,
 		  ComponentType, ComponentID,
-		  tot_data_size, (unsigned int)seq_num,
+		  (unsigned int)tot_data_size, seq_num,
 		  0,0);
 
-    memcpy(curpos,In1_CurPos,data1_byte_size); curpos+=(data1_byte_size/4);
-    memcpy(curpos,In2_CurPos,data2_byte_size); curpos+=(data2_byte_size/4);
-    memcpy(curpos,In3_CurPos,data3_byte_size); curpos+=(data3_byte_size/4);
-    memcpy(curpos,In4_CurPos,data4_byte_size); curpos+=(data4_byte_size/4);
+    memcpy(curpos,In1_CurPos,(size_t)data1_byte_size); curpos+=(data1_byte_size/4);
+    memcpy(curpos,In2_CurPos,(size_t)data2_byte_size); curpos+=(data2_byte_size/4);
+    memcpy(curpos,In3_CurPos,(size_t)data3_byte_size); curpos+=(data3_byte_size/4);
+    memcpy(curpos,In4_CurPos,(size_t)data4_byte_size); curpos+=(data4_byte_size/4);
     memcpy(curpos,&comp_footer,4); curpos++;
     stock_size=(curpos-toppos)*4;
-    Stock_TotSiz+=stock_size;
     Stock_Offset+=stock_size;
     Stock_CurNum++;
     inc_sequence_num();

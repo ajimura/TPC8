@@ -1,4 +1,4 @@
-    unsigned int recv_byte_size = 0;
+    int recv_byte_size = 0;
     bool ret;
     int GlobSiz;
     int preSiz;
@@ -26,25 +26,25 @@
 	GlobSiz=m_in3_data.data.length();
 	In3_TotSiz=GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
 	In3_CurPos=(unsigned int *)&(m_in3_data.data[HEADER_BYTE_SIZE]);
-        recv_byte_size=*In3_CurPos;
+        recv_byte_size=(int)*In3_CurPos;
 	In3_RemainSiz=In3_TotSiz-recv_byte_size;
 	std::cerr << " reading3: Tot=" << In3_TotSiz << ", Recv=" << recv_byte_size << std::endl;
       }
     }else{
-      preSiz=*In3_CurPos;
+      preSiz=(int)*In3_CurPos;
       if (In3_RemainSiz<preSiz){
 	std::cerr << "Data(3) broken? Remain=" << In3_RemainSiz << ", preSiz=" << preSiz << std::endl;
 	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");
       }
       In3_RemainSiz-=preSiz;
       In3_CurPos+=(preSiz/4);
-      recv_byte_size=*In3_CurPos;
+      recv_byte_size=(int)*In3_CurPos;
       std::cerr << " reading(3): Remain=" << In3_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
     }
 
-    if (m_debug) {
-        std::cerr << "m_in_data.data.length():" << recv_byte_size
-                  << std::endl;
-    }
+//    if (m_debug) {
+//        std::cerr << "m_in_data.data.length():" << recv_byte_size
+//                  << std::endl;
+//    }
 
     return recv_byte_size;

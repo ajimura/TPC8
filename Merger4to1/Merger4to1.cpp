@@ -128,7 +128,6 @@ int Merger4to1::daq_configure()
     In4_Done=0;
 
     Stock_CurNum=0;
-    Stock_TotSiz=0;
     Stock_Offset=0;
     //    Cur_MaxDataSiz=67108864; // 64M (tempolary)
     Cur_MaxDataSiz=10240; // 10k (tempolary)
@@ -157,6 +156,7 @@ int Merger4to1::parse_params(::NVList* list)
     ComponentID=0;
     ReadTimeout=10000;
     Stock_MaxNum=1;
+    Stock_MaxSiz=2097044;
 
     int len = (*list).length();
     for (int i = 0; i < len; i+=2) {
@@ -168,6 +168,7 @@ int Merger4to1::parse_params(::NVList* list)
 
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
       if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
+      if (sname == "StockMaxSize") Stock_MaxSiz=atoi(svalue.c_str());
     }
 
     return 0;

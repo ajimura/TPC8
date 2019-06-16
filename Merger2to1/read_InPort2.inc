@@ -31,7 +31,7 @@
 	std::cerr << " reading2: Tot=" << In2_TotSiz << ", Recv=" << recv_byte_size << std::endl;
       }
     }else{
-      preSiz=*In2_CurPos;
+      preSiz=(int)*In2_CurPos;
       if (In2_RemainSiz<preSiz){
 	std::cerr << "Data(2) broken? Remain=" << In2_RemainSiz << ", preSiz=" << preSiz << std::endl;
 	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");

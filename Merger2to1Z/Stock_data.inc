@@ -59,8 +59,8 @@
 		  (unsigned int)tot_data_size, seq_num,
 		  0,0);
 
-    memcpy(curpos,In1_CurPos,data1_byte_size); curpos+=(data1_byte_size/4);
-    memcpy(curpos,In2_CurPos,data2_byte_size); curpos+=(data2_byte_size/4);
+    memcpy(curpos,In1_CurPos,(size_t)data1_byte_size); curpos+=(data1_byte_size/4);
+    memcpy(curpos,In2_CurPos,(size_t)data2_byte_size); curpos+=(data2_byte_size/4);
     memcpy(curpos,&comp_footer,4); curpos++;
     stock_size=(curpos-toppos)*4;
     Stock_Offset+=stock_size;

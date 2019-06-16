@@ -1,7 +1,7 @@
     int i;
-    unsigned int tot_data_size;
-    unsigned int tot_block_size;
-    unsigned int tot_next_size;
+    int tot_data_size;
+    int tot_block_size;
+    int tot_next_size;
     unsigned int eventnum, eventtag, seq_num;
     unsigned int comp_footer;
 
@@ -80,4 +80,4 @@
     Stock_CurNum++;
     inc_sequence_num();
 
-    return 0;
+    return;

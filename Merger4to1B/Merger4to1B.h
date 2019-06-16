@@ -62,10 +62,10 @@ private:
     int reset_InPort4();
   void Stock_data(int, int, int, int);
   int set_data(int data_byte_size);
-  unsigned int read_InPort1();
-  unsigned int read_InPort2();
-  unsigned int read_InPort3();
-  unsigned int read_InPort4();
+  int read_InPort1();
+  int read_InPort2();
+  int read_InPort3();
+  int read_InPort4();
   int write_OutPort();
   unsigned char * renew_buf(unsigned char *orig_buf, unsigned int cursize, unsigned int newsize);
 

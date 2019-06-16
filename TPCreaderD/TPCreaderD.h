@@ -47,7 +47,7 @@ private:
 
     int parse_params(::NVList* list);
     int read_data_from_detectors();
-    int set_data(unsigned int data_byte_size);
+    int set_data(int data_byte_size);
     int write_OutPort();
     void toLower(std::basic_string<char>& s);
 

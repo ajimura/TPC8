@@ -1,30 +1,26 @@
     const int message_freq = 1000;
 
     int received_data_size = 0;
-    //    int i;
     time_t curtime;
     tm *ltime;
-    int seq_num;
+    unsigned int seq_num;
     unsigned int *toppos;
     unsigned int *curpos;
     int totsize;
     unsigned char eventtag=0;
     unsigned int comp_footer;
 
-//    struct timespec ts;
-//    double t0;
-//
-//    clock_gettime(CLOCK_MONOTONIC,&ts);
-//    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-//    std::cout << std::fixed << std::setprecision(9) << t0 << std::endl;
-
-    //    std::cout << "Wait next event !" << std::endl;
-
-    /// write your logic here
     // wait trigger
     usleep(interval_time);
 
-    seq_num=get_sequence_num();
+    if (Stock_Offset+generate_size+80>Stock_MaxSiz){
+      m_recv_timeout_counter++;
+      return 0;
+    }else{
+      m_recv_timeout_counter=0;
+    }
+
+    seq_num=(unsigned int)get_sequence_num();
 
     //    std::cout << "Get data ready" << std::endl;
 
@@ -36,35 +32,26 @@
 			 ComponentType, ComponentID,
 			 0, (unsigned int)seq_num,
 			 0,0);
-//			 totNumFADCforHeader2,totNumFADCforHeader1);
-
-    //    std::cout << "start event data" << std::endl;
 
     // get&write data
     totsize=generate_size;
     curpos+=(totsize/4);
 
-    //    std::cout << "end event data" << std::endl;
-
-    //footer start  -> should be modified to fit DAQ-system (20181004: SA)
-    //    *(curpos++)=0x00000011;
+    //footer
     *(curpos++)=comp_footer;
 
     //    std::cout << "Get event data " << totsize << std::endl;
     //    outfile.write((char *)rdata, totsize);
   
-    //get event tag from RPC-260 TPC_TrigIO
-    eventtag=0;
+    eventtag=255;
 
     //set return value
-//    received_data_size=(int)(curpos-m_data4)*4;
     received_data_size=(int)(curpos-toppos)*4;
     Stock_TotSiz+=received_data_size;
     Stock_Offset+=received_data_size;
     Stock_CurNum++;
 
     //modify header info (totsize, eventtag)
-//    *m_data4=(int)(curpos-m_data4)*4;
     *toppos=(int)(curpos-toppos)*4;
     *(toppos+4)=eventtag;
 
@@ -76,12 +63,6 @@
         std::setw(2) << ltime->tm_sec << ": ";
       std::cout << "Seq Num(" << seq_num << ") EventTag(" << (int)eventtag << ")" << std::endl;
     }
-
-    //    usleep(500000);
-    //    for(i=0;i<16;i++){
-    //      m_data1[i]=i;
-    //    }
-    //    received_data_size=16;
 
     inc_sequence_num();
     eventnum++;

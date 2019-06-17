@@ -134,10 +134,10 @@ int DumGenB::parse_params(::NVList* list)
     generate_size=0;
     interval_time=1000000;
     ComponentID=0;
-    ReadTimeout=10000;
+    ReadTimeout=0;
     Stock_MaxNum=1;
+    Stock_MaxSiz=2097044;
     Stock_CurNum=0;
-    Stock_TotSiz=0;
     Stock_Offset=0;
 
     int len = (*list).length();
@@ -152,6 +152,7 @@ int DumGenB::parse_params(::NVList* list)
       if (sname == "IntvTime") interval_time=atoi(svalue.c_str());
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
       if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
+      if (sname == "StockMaxSize") Stock_MaxSiz=atoi(svalue.c_str());
     }
 
     return 0;
@@ -198,19 +199,19 @@ int DumGenB::read_data_from_detectors()
 #include "read_data_from_detectors.inc"
 }
 
-int DumGenB::set_data(unsigned int data_byte_size)
+int DumGenB::set_data(int data_byte_size)
 {
     unsigned char header[8];
     unsigned char footer[8];
 
-    set_header(&header[0], data_byte_size);
+    set_header(&header[0], (unsigned int)data_byte_size);
     set_footer(&footer[0]);
 
     ///set OutPort buffer length
-    m_out_data.data.length(data_byte_size + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
+    m_out_data.data.length((unsigned int)data_byte_size + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
     memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], data_byte_size);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + data_byte_size]), &footer[0],
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], (size_t)data_byte_size);
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + (unsigned int)data_byte_size]), &footer[0],
            FOOTER_BYTE_SIZE);
 
     return 0;
@@ -218,6 +219,12 @@ int DumGenB::set_data(unsigned int data_byte_size)
 
 int DumGenB::write_OutPort()
 {
+  struct timespec ts;
+  double t0,t1;
+
+  clock_gettime(CLOCK_MONOTONIC,&ts);
+  t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+
     ////////////////// send data from OutPort  //////////////////
     bool ret = m_OutPort.write();
 
@@ -230,22 +237,24 @@ int DumGenB::write_OutPort()
         if (m_out_status == BUF_TIMEOUT) { // Timeout
             return -1;
         }
+        if (m_out_status == BUF_NOBUF) { // Timeout
+            return -1;
+        }
     }
     else {
         m_out_status = BUF_SUCCESS; // successfully done
     }
+
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+    if (m_debug) std::cout << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
 
     return 0;
 }
 
 int DumGenB::daq_run()
 {
-    struct timespec ts;
-    double t0,t1;
-
-    if (m_debug) {
-        std::cerr << "*** DumGenB::run" << std::endl;
-    }
+  //    if (m_debug) std::cerr << "*** DumGenB::run" << std::endl;
 
     if (check_trans_lock()) {  // check if stop command has come
       std::cout << "Stop command has come. Now Stock_CurNum=" << Stock_CurNum << std::endl;
@@ -254,7 +263,7 @@ int DumGenB::daq_run()
 	if (write_OutPort()<0){
 	  ;
 	}else{
-	  inc_total_data_size(Stock_Offset);  // increase total data byte size
+	  inc_total_data_size((unsigned int)Stock_Offset);  // increase total data byte size
 	  Stock_CurNum=0;
 	  Stock_Offset=0;
 	}
@@ -265,60 +274,29 @@ int DumGenB::daq_run()
 
     if (m_out_status == BUF_SUCCESS) {   // previous OutPort.write() successfully done
         m_recv_byte_size = read_data_from_detectors();
-	//        if (m_recv_byte_size > 0) {
-	//            set_data(m_recv_byte_size); // set data to OutPort Buffer
-	//        }
     }
 
-    if (m_out_status == BUF_TIMEOUT){
-      clock_gettime(CLOCK_MONOTONIC,&ts);
-      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-      //      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
+    if (m_out_status == BUF_TIMEOUT || m_out_status == BUF_NOBUF){
       if (write_OutPort()<0){
 	;
       }else{
-	//	inc_sequence_num();                     // increase sequence num.
-	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	inc_total_data_size((unsigned int)Stock_Offset);  // increase total data byte size
 	Stock_CurNum=0;
 	Stock_Offset=0;
       }
-      clock_gettime(CLOCK_MONOTONIC,&ts);
-      t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-      std::cout << "+w> " << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
     }
 
     if ( (Stock_CurNum==Stock_MaxNum) || (Stock_CurNum>0 && m_recv_timeout_counter>ReadTimeout) ){
-      clock_gettime(CLOCK_MONOTONIC,&ts);
-      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-      //      std::cout << "-w>" << std::fixed << std::setprecision(9) << t0 << std::endl;
       set_data(Stock_Offset);
       if (write_OutPort()<0){
 	;
       }else{
 	//	inc_sequence_num();                     // increase sequence num.
-	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	inc_total_data_size((unsigned int)Stock_Offset);  // increase total data byte size
 	Stock_CurNum=0;
 	Stock_Offset=0;
       }
-      clock_gettime(CLOCK_MONOTONIC,&ts);
-      t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-      std::cout << "+w> " << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
     }
-
-//     clock_gettime(CLOCK_MONOTONIC,&ts);
-//     t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-
-//     if (write_OutPort() < 0) {
-//         ;     // Timeout. do nothing.
-//     }
-//     else {    // OutPort write successfully done
-//         inc_sequence_num();                     // increase sequence num.
-//         inc_total_data_size(m_recv_byte_size);  // increase total data byte size
-//     }
-
-//     clock_gettime(CLOCK_MONOTONIC,&ts);
-//     t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-//     std::cout << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
 
     return 0;
 }

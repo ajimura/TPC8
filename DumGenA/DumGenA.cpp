@@ -263,7 +263,7 @@ int DumGenA::daq_run()
 	if (write_OutPort()<0){
 	  ;
 	}else{
-	  inc_total_data_size(Stock_Offset);  // increase total data byte size
+	  inc_total_data_size((unsigned int)Stock_Offset);  // increase total data byte size
 	  Stock_CurNum=0;
 	  Stock_Offset=0;
 	}
@@ -280,7 +280,7 @@ int DumGenA::daq_run()
       if (write_OutPort()<0){
 	;
       }else{
-	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	inc_total_data_size((unsigned int)Stock_Offset);  // increase total data byte size
 	Stock_CurNum=0;
 	Stock_Offset=0;
       }
@@ -291,7 +291,7 @@ int DumGenA::daq_run()
       if (write_OutPort()<0){
 	;
       }else{
-	inc_total_data_size(Stock_Offset);  // increase total data byte size
+	inc_total_data_size((unsigned int)Stock_Offset);  // increase total data byte size
 	Stock_CurNum=0;
 	Stock_Offset=0;
       }

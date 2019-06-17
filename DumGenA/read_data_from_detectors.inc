@@ -47,7 +47,6 @@
 
     //set return value
     received_data_size=(int)(curpos-toppos)*4;
-    Stock_TotSiz+=received_data_size;
     Stock_Offset+=received_data_size;
     Stock_CurNum++;
 

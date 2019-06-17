@@ -47,7 +47,7 @@ private:
 
     int parse_params(::NVList* list);
     int read_data_from_detectors();
-    int set_data(unsigned int data_byte_size);
+    int set_data(int data_byte_size);
     int write_OutPort();
     void toLower(std::basic_string<char>& s);
 
@@ -58,21 +58,21 @@ private:
   unsigned int *m_data4;
   unsigned char *m_data1;
 
-    unsigned int m_recv_byte_size;
-  unsigned int m_recv_timeout_counter;
+  int m_recv_byte_size;
+  int m_recv_timeout_counter;
 
-    BufferStatus m_out_status;
-  unsigned int m_out_timeout_counter;
-    bool m_debug;
+  BufferStatus m_out_status;
+  int m_out_timeout_counter;
+  bool m_debug;
 
   //parameter
   int generate_size;
   int interval_time;
   int ComponentID;
-  unsigned int ReadTimeout;
+  int ReadTimeout;
   int Stock_MaxNum;
+  int Stock_MaxSiz;
   int Stock_CurNum;
-  int Stock_TotSiz;
   int Stock_Offset;
 
   unsigned int eventnum;

@@ -82,25 +82,15 @@
 	toLower(svalue);
 	if (svalue=="yes") TrigEnab+=FADC_ExtRst;
       }
-      if (sname == "TrigIOIP"){
-	TrigIOIP=svalue;
-      }
-      if (sname == "TrigIOPort"){
-	TrigIOPort=atoi(svalue.c_str());
-      }
+      if (sname == "TrigIOIP") TrigIOIP=svalue;
+      if (sname == "TrigIOPort") TrigIOPort=atoi(svalue.c_str());
       if (sname == "TrigIO_Done"){
-      	toLower(svalue);
+	toLower(svalue);
       	if (svalue == "yes") TrigIO_done=true;
       }
-      if (sname == "TrigIO_WaitTime"){
-	TrigIO_waittime=atoi(svalue.c_str());
-      }
-      if (sname == "StockNum"){
-	Stock_MaxNum=atoi(svalue.c_str());
-      }
-      if (sname == "StockMaxSize"){
-	Stock_MaxSiz=atoi(svalue.c_str());
-      }
+      if (sname == "TrigIO_WaitTime") TrigIO_waittime=atoi(svalue.c_str());
+      if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
+      if (sname == "StockMaxSize") Stock_MaxSiz=atoi(svalue.c_str());
 
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
     }

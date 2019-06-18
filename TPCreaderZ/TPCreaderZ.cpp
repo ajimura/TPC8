@@ -164,31 +164,27 @@ int TPCreaderZ::write_OutPort()
     std::cerr << "write: StockNum=" << Stock_CurNum << " SockSize=" << Stock_Offset << std::endl;
   }
 
-    ////////////////// send data from OutPort  //////////////////
-    bool ret = m_OutPort.write();
+  ////////////////// send data from OutPort  //////////////////
+  bool ret = m_OutPort.write();
 
-    //////////////////// check write status /////////////////////
-    if (ret == false) {  // TIMEOUT or FATAL
-        m_out_status  = check_outPort_status(m_OutPort);
-        if (m_out_status == BUF_FATAL) {   // Fatal error
-            fatal_error_report(OUTPORT_ERROR);
-        }
-        if (m_out_status == BUF_TIMEOUT) { // Timeout
-            return -1;
-        }
-        if (m_out_status == BUF_NOBUF) { // No Buffer on Downstream
-            return -1;
-        }
-    }
-    else {
-        m_out_status = BUF_SUCCESS; // successfully done
-    }
+  //////////////////// check write status /////////////////////
+  if (ret == false) {  // TIMEOUT or FATAL
+    m_out_status  = check_outPort_status(m_OutPort);
+    // Fatal error
+    if (m_out_status == BUF_FATAL) fatal_error_report(OUTPORT_ERROR);
+    // Timeout
+    if (m_out_status == BUF_TIMEOUT) return -1;
+    // No Buffer on Downstream
+    if (m_out_status == BUF_NOBUF) return -1;
+  } else {
+    m_out_status = BUF_SUCCESS; // successfully done
+  }
 
-    clock_gettime(CLOCK_MONOTONIC,&ts);
-    t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-    if (m_debug) std::cout << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
+  clock_gettime(CLOCK_MONOTONIC,&ts);
+  t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+  if (m_debug) std::cout << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
 
-    return 0;
+  return 0;
 }
 
 int TPCreaderZ::daq_run()

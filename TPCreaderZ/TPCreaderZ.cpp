@@ -43,8 +43,7 @@ TPCreaderZ::TPCreaderZ(RTC::Manager* manager)
       m_recv_byte_size(0),
       m_recv_timeout_counter(0),
       m_out_status(BUF_SUCCESS),
-
-      m_out_timeout_counter(0),
+      m_out_timeout_counter(0)
 {
     // Registration: InPort/OutPort/Service
 

@@ -3,6 +3,7 @@
     std::cout << "--- param list (length:" << (*list).length() << ")" << std::endl;
 
     //set default value
+    m_debug=0;
     pedestal_exist=false;
     ThresMargin=10;
     trigio_exist=false;
@@ -28,6 +29,11 @@
 
       //      std::cerr << "sname: " << sname << "  ";
       //      std::cerr << "value: " << svalue << std::endl;
+
+      if (sname == "DEBUG"){
+      	toLower(svalue);
+      	if (svalue == "yes") m_debug=true;
+      }
 
       if (sname == "NumFADC0") NumFADC[0]=atoi(svalue.c_str());
       if (sname == "NumFADC1") NumFADC[1]=atoi(svalue.c_str());
@@ -82,25 +88,15 @@
 	toLower(svalue);
 	if (svalue=="yes") TrigEnab+=FADC_ExtRst;
       }
-      if (sname == "TrigIOIP"){
-	TrigIOIP=svalue;
-      }
-      if (sname == "TrigIOPort"){
-	TrigIOPort=atoi(svalue.c_str());
-      }
+      if (sname == "TrigIOIP") TrigIOIP=svalue;
+      if (sname == "TrigIOPort") TrigIOPort=atoi(svalue.c_str());
       if (sname == "TrigIO_Done"){
-      	toLower(svalue);
+	toLower(svalue);
       	if (svalue == "yes") TrigIO_done=true;
       }
-      if (sname == "TrigIO_WaitTime"){
-	TrigIO_waittime=atoi(svalue.c_str());
-      }
-      if (sname == "StockNum"){
-	Stock_MaxNum=atoi(svalue.c_str());
-      }
-      if (sname == "StockMaxSize"){
-	Stock_MaxSiz=atoi(svalue.c_str());
-      }
+      if (sname == "TrigIO_WaitTime") TrigIO_waittime=atoi(svalue.c_str());
+      if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
+      if (sname == "StockMaxSize") Stock_MaxSiz=atoi(svalue.c_str());
 
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
     }

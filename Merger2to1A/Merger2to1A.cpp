@@ -46,9 +46,7 @@ Merger2to1A::Merger2to1A(RTC::Manager* manager)
       m_in2_timeout_counter(0),
       m_out_timeout_counter(0),
       m_inport1_recv_data_size(0),
-      m_inport2_recv_data_size(0),
-      m_debug(false)
-      //      m_debug(true)
+      m_inport2_recv_data_size(0)
 {
     // Registration: InPort/OutPort/Service
 
@@ -133,9 +131,11 @@ int Merger2to1A::parse_params(::NVList* list)
     std::cerr << "param list length:" << (*list).length() << std::endl;
 
     //set default value
+    m_debug=false;
     ComponentID=0;
     ReadTimeout=10000;
     Stock_MaxNum=1;
+    Stock_MaxSiz=2097044;
 
     int len = (*list).length();
     for (int i = 0; i < len; i+=2) {
@@ -145,8 +145,13 @@ int Merger2to1A::parse_params(::NVList* list)
 	//        std::cerr << "sname: " << sname << "  ";
 	//        std::cerr << "value: " << svalue << std::endl;
 
+      if (sname == "DEBUG"){
+      	if (svalue == "yes") m_debug=true;
+      }
+
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
       if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
+      if (sname == "StockMaxSize") Stock_MaxSiz=atoi(svalue.c_str());
     }
 
     return 0;

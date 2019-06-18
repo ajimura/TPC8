@@ -20,7 +20,7 @@
 	  fatal_error_report(INPORT_ERROR);
 	}
       }else{
-        std::cerr << "Get Data3. Timeout: " << m_in3_timeout_counter << " -> 0" << std::endl;
+        if (m_debug) std::cerr << "Get Data3. Timeout: " << m_in3_timeout_counter << " -> 0" << std::endl;
         m_in3_timeout_counter = 0;
         m_in3_status = BUF_SUCCESS;
 	GlobSiz=m_in3_data.data.length();
@@ -28,7 +28,7 @@
 	In3_CurPos=(unsigned int *)&(m_in3_data.data[HEADER_BYTE_SIZE]);
         recv_byte_size=(int)*In3_CurPos;
 	In3_RemainSiz=In3_TotSiz-recv_byte_size;
-	std::cerr << " reading3: Tot=" << In3_TotSiz << ", Recv=" << recv_byte_size << std::endl;
+	if (m_debug) std::cerr << " reading3: Tot=" << In3_TotSiz << ", Recv=" << recv_byte_size << std::endl;
       }
     }else{
       preSiz=(int)*In3_CurPos;
@@ -39,7 +39,7 @@
       In3_RemainSiz-=preSiz;
       In3_CurPos+=(preSiz/4);
       recv_byte_size=(int)*In3_CurPos;
-      std::cerr << " reading(3): Remain=" << In3_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
+      if (m_debug) std::cerr << " reading(3): Remain=" << In3_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
     }
 
 //    if (m_debug) {

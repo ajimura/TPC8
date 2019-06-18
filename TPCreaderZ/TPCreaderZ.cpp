@@ -45,7 +45,6 @@ TPCreaderZ::TPCreaderZ(RTC::Manager* manager)
       m_out_status(BUF_SUCCESS),
 
       m_out_timeout_counter(0),
-      m_debug(true)
 {
     // Registration: InPort/OutPort/Service
 

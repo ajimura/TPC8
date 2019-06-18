@@ -15,13 +15,13 @@
     datapos[1]=In2_CurPos;
 
     //get&check event num
-    std::cerr << "-----eventnum " << datapos[0][3] << ":" << datapos[1][3] << std::endl;
+    if (m_debug) std::cerr << "-----eventnum " << datapos[0][3] << ":" << datapos[1][3] << std::endl;
     if ((eventnum=*(datapos[0]+3))!=*(datapos[1]+3)){
       std::cerr << "Event mismatch(num):" << eventnum << " " << *(datapos[1]+3) << std::endl;
       fatal_error_report(USER_DEFINED_ERROR1,"Event mismatch(num)!");
     }
     //get&check event tag
-    std::cerr << "-----eventtag " << datapos[0][4] << ":" << datapos[1][4] << std::endl;
+    if (m_debug) std::cerr << "-----eventtag " << datapos[0][4] << ":" << datapos[1][4] << std::endl;
     eventtag=255;
     for(i=0;i<2;i++){
       if (*(datapos[i]+4)!=255){
@@ -38,11 +38,11 @@
     //get size info.
     tot_block_size=data1_byte_size+data2_byte_size;
     tot_data_size=tot_block_size+80; //80 = Comp header + Comp Footer
-    std::cerr << "-----size info. " << data1_byte_size << ", " << data2_byte_size << ", " << tot_data_size << std::endl;
+    if (m_debug) std::cerr << "-----size info. " << data1_byte_size << ", " << data2_byte_size << ", " << tot_data_size << std::endl;
 
     //get current time
     seq_num=(unsigned int)get_sequence_num();
-        std::cerr << "-----seq num " << seq_num << std::endl;
+    if (m_debug) std::cerr << "-----seq num " << seq_num << std::endl;
 
     // check size of buf
     tot_next_size=Stock_Offset+tot_data_size;

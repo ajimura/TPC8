@@ -3,6 +3,7 @@
     std::cout << "--- param list (length:" << (*list).length() << ")" << std::endl;
 
     //set default value
+    m_debug=0;
     pedestal_exist=false;
     ThresMargin=10;
     trigio_exist=false;
@@ -28,6 +29,11 @@
 
       //      std::cerr << "sname: " << sname << "  ";
       //      std::cerr << "value: " << svalue << std::endl;
+
+      if (sname == "DEBUG"){
+      	toLower(svalue);
+      	if (svalue == "yes") m_debug=true;
+      }
 
       if (sname == "NumFADC0") NumFADC[0]=atoi(svalue.c_str());
       if (sname == "NumFADC1") NumFADC[1]=atoi(svalue.c_str());

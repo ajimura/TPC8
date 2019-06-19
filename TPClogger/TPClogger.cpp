@@ -101,8 +101,8 @@ int TPClogger::parse_params(::NVList* list)
 {
     int ret = 0;
 
-    bool isExistParamLogging = false;
-    bool isExistParamDirName = false;
+    //    bool isExistParamLogging = false;
+    //    bool isExistParamDirName = false;
 
     int length = (*list).length();
     for (int i = 0; i < length; i += 2) {
@@ -120,16 +120,16 @@ int TPClogger::parse_params(::NVList* list)
         }
         if (sname == "isLogging") {
             toLower(svalue); // all characters of cvale are converted to lower.
-            isExistParamLogging = true;
+	    //            isExistParamLogging = true;
             if (svalue == "yes") {
                 m_isDataLogging = true;
                 fileUtils = new FileUtils();
-                isExistParamLogging = true;
+		//                isExistParamLogging = true;
                 std::cerr << "TPClogger: Save to file: true\n";
             }
             else if (svalue == "no") {
                 m_isDataLogging = false;
-                isExistParamLogging = true;
+		//                isExistParamLogging = true;
                 std::cerr << "TPClogger: Save to file: false\n";
             }
         }
@@ -154,7 +154,7 @@ int TPClogger::parse_params(::NVList* list)
             std::string svalue = (std::string)(*list)[i + 1].value;
 
             if (sname == "dirName") {
-                isExistParamDirName = true;
+	      //                isExistParamDirName = true;
                 m_dirName = svalue;
                 if (m_isDataLogging) {
                     std::cerr << "Dir name for data saving:"
@@ -338,7 +338,6 @@ int TPClogger::daq_run()
 {
 
     unsigned int comp_header[19],comp_footer;
-    unsigned int *top_ptr;
     unsigned int eventnum, eventtag, seq_num;
 
     int event_byte_size = 0;

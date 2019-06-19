@@ -362,7 +362,7 @@ int TPClogger::daq_run()
 
       eventnum=*(In_CurPos+3);
       eventtag=*(In_CurPos+4);
-      seq_num=get_sequence_num();
+      seq_num=(unsigned int)get_sequence_num();
       // create component header
       Create_Header(comp_header, &comp_footer,
 		    eventnum, eventtag,
@@ -386,7 +386,7 @@ int TPClogger::daq_run()
     inc_sequence_num();
 
     if (m_debug) {
-        unsigned long long seq_num = get_sequence_num();
+        seq_num = (unsigned int)get_sequence_num();
         if (seq_num % m_update_rate == 0) {
             std::cerr << "TPClogger: loop = " << seq_num << std::endl;
             std::cerr << "\033[A\r";

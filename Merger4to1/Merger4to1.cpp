@@ -363,7 +363,7 @@ int Merger4to1::daq_run()
 }
 
 unsigned char * Merger4to1::renew_buf(unsigned char * orig_buf,
-				      unsigned int cursize, unsigned int newsize)
+				      size_t cursize, size_t newsize)
 {
   unsigned char * new_buf;
 

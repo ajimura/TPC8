@@ -67,7 +67,7 @@ private:
   int read_InPort3();
   int read_InPort4();
   int write_OutPort();
-  unsigned char * renew_buf(unsigned char *orig_buf, unsigned int cursize, unsigned int newsize);
+  unsigned char * renew_buf(unsigned char *orig_buf, size_t cursize, size_t newsize);
 
   static const unsigned int ComponentType = 421; // <- should be modified
 

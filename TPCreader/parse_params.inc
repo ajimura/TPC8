@@ -4,11 +4,13 @@
 
     //set default value
     m_debug=0;
+    for(i=0;i<8;i++) NumFADC[i]=0;
     pedestal_exist=false;
     ThresMargin=10;
     trigio_exist=false;
     rdychk_exist=false;
-    for(i=0;i<8;i++) NumFADC[i]=0;
+    ComprType=FADC_Sup;
+    TrigEnab=FADC_ClkTrig;
     TrigIOIP="0.0.0.0";
     TrigIO_done=false;
     TrigIO_waittime=10;
@@ -16,11 +18,6 @@
     ReadTimeout=10000;
     Stock_MaxNum=1;
     Stock_MaxSiz=2097044;
-    Stock_CurNum=0;
-    Stock_Offset=0;
-    SwitchAB=0; // 0:A, 1:B
-    Resv_In=0;
-    Resv_Size=0;
 
     int len = (*list).length();
     for (i = 0; i < len; i+=2) {

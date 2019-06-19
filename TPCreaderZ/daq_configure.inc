@@ -3,6 +3,12 @@
     paramList = m_daq_service0.getCompParams();
     parse_params(paramList);
 
+    Stock_CurNum=0;
+    Stock_Offset=0;
+    SwitchAB=0; // 0:A, 1:B
+    Resv_In=0;
+    Resv_Size=0;
+
     // show obtained parameter
     std::cout << "NumFADC: " << NumFADC[0] << " " << NumFADC[1] << " " << NumFADC[2] << " " << NumFADC[3] <<  " " <<
       NumFADC[4] << " " << NumFADC[5] << " " << NumFADC[6] << " " << NumFADC[7] << std::endl;

@@ -1,0 +1,44 @@
+                <component cid="TPCreader0">
+                    <hostAddr>127.0.0.1</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>TPCreader0.rtc</instName>
+                    <execPath>/home/online/TPC8/TPCreader/TPCreaderComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>2</startOrd>
+                    <inPorts>
+                    </inPorts>
+                    <outPorts>
+                        <outPort>tpcreader_out</outPort>
+                    </outPorts>
+                    <params>
+		      <param pid="DEBUG">no</param>
+		      <param pid="NumFADC0">0</param>
+		      <param pid="NumFADC1">0</param>
+		      <param pid="NumFADC2">0</param>
+		      <param pid="NumFADC3">0</param>
+		      <param pid="NumFADC4">0</param>
+		      <param pid="NumFADC5">0</param>
+		      <param pid="NumFADC6">0</param>
+		      <param pid="NumFADC7">0</param>
+		      <param pid="SetPedestal">no</param>
+		      <param pid="PedestalFile">/home/online/TPC8/work/pedestal.txt</param>
+		      <param pid="ThresMargin">10</param>
+		      <param pid="SetTrigIO">yes</param>
+		      <param pid="TrigIOFile">/home/online/TPC8/work/trigio.txt</param>
+		      <param pid="SetRdyChk">ALL</param>
+		      <param pid="RdyChkFile">/home/online/TPC8/work/readychk.txt</param>
+		      <param pid="CompressionType">Simple</param>
+		      <param pid="TrigType">Clock</param>
+		      <param pid="ExtReset">no</param>
+		      <param pid="TrigIOIP">0.0.0.0</param>
+		      <param pid="TrigIOPort">4660</param>
+		      <param pid="TrigIO_Done">no</param>
+		      <param pid="TrigIO_WaitTime">10</param>
+		      <param pid="StockNum">1</param>
+		      <param pid="StockMaxSize">2097044</param>
+		      <param pid="ComponentID">0</param>
+                    </params>
+                </component>
+<!-- SetRdyChk: All or Sel -->
+<!-- CompressionType: Simple, P,D,M,Z and their combination as PZ -->
+<!-- TrigType: Clock or Ext -->

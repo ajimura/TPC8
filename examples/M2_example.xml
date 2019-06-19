@@ -1,0 +1,21 @@
+                <component cid="Merger2to10">
+                    <hostAddr>127.0.0.1</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>Merger2to10.rtc</instName>
+                    <execPath>/home/online/TPC8/Merger2to1/Merger2to1Comp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>2</startOrd>
+                    <inPorts>
+                        <inPort from="TPCreaderA0:tpcreadera_out">merger2to1_in1</inPort>
+                        <inPort from="TPCreaderB0:tpcreaderb_out">merger2to1_in2</inPort>
+                    </inPorts>
+                    <outPorts>
+                      <outPort>merger2to1_out</outPort>
+                    </outPorts>
+                    <params>
+		      <param pid="DEBUG">no</param>
+		      <param pid="StockNum">1</param>
+		      <param pid="StockMaxSize">2097044</param>
+                      <param pid="ComponentID">0</param>
+                    </params>
+                </component>

@@ -143,6 +143,19 @@ int Merger4to1::daq_configure()
       fatal_error_report(USER_DEFINED_ERROR1);
     }
 
+    // show obtained parameter
+    std::cout << "Stock Max Num: " << Stock_MaxNum << std::endl;
+    std::cout << "Stock Max Size: " << Stock_MaxSiz << std::endl;
+    //
+    std::cout << std::hex;
+    std::cout << "Component Type: 0x" << 
+      std::setfill('0') << std::setw(8) << std::hex << ComponentType << std::endl;
+    std::cout << "Component ID: 0x" << 
+      std::setfill('0') << std::setw(8) << std::hex << ComponentID << std::endl;
+    std::cout << std::dec;
+
+    std::cout << "--- Now ready to start !!" << std::endl;
+
     return 0;
 }
 

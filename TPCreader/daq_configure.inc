@@ -31,6 +31,9 @@
     std::cout << "TrigIO Done: " << TrigIO_done << std::endl;
     std::cout << "TrigIO Wait: " << TrigIO_waittime << std::endl;
     //
+    std::cout << "Stock Max Num: " << Stock_MaxNum << std::endl;
+    std::cout << "Stock Max Size: " << Stock_MaxSiz << std::endl;
+    //
     std::cout << std::hex;
     std::cout << "Component Type: 0x" << 
       std::setfill('0') << std::setw(8) << std::hex << ComponentType << std::endl;

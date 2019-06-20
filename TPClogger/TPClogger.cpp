@@ -108,10 +108,10 @@ int TPClogger::parse_params(::NVList* list)
 
     int length = (*list).length();
     for (int i = 0; i < length; i += 2) {
-        if (m_debug) {
-            std::cerr << "NVList[" << (*list)[i].name
-                      << "," << (*list)[i].value << "]" << std::endl;
-        }
+      //        if (m_debug) {
+      //            std::cerr << "NVList[" << (*list)[i].name
+      //                      << "," << (*list)[i].value << "]" << std::endl;
+      //        }
         std::string sname  = (std::string)(*list)[i].value;
         std::string svalue = (std::string)(*list)[i + 1].value;
 
@@ -143,9 +143,7 @@ int TPClogger::parse_params(::NVList* list)
 
         if (sname == "monRate") {
             m_update_rate = atoi(svalue.c_str());
-            if (m_debug) {
-                std::cerr << "update rate:" << m_update_rate << std::endl;
-            }
+	    std::cerr << "update rate:" << m_update_rate << std::endl;
         }
 
 	if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
@@ -153,10 +151,10 @@ int TPClogger::parse_params(::NVList* list)
 
     if (m_isDataLogging) {
         for (int i = 0; i < length ; i += 2) {
-            if (m_debug) {
-                std::cerr << "NVList[" << (*list)[i].name
-                          << "," << (*list)[i].value << "]" << std::endl;
-            }
+	  //            if (m_debug) {
+	  //                std::cerr << "NVList[" << (*list)[i].name
+	  //                          << "," << (*list)[i].value << "]" << std::endl;
+	  //            }
             std::string sname  = (std::string)(*list)[i].value;
             std::string svalue = (std::string)(*list)[i + 1].value;
 
@@ -199,9 +197,7 @@ int TPClogger::daq_unconfigure()
     std::cerr << "*** TPClogger::unconfigure" << std::endl;
     if (m_isDataLogging) {
         delete fileUtils;
-        if (m_debug) {
-            std::cerr << "fileUtils deleted\n";
-        }
+	std::cerr << "fileUtils deleted\n";
         fileUtils = 0;
     }
     return 0;
@@ -214,16 +210,13 @@ int TPClogger::daq_start()
     m_in_status = BUF_SUCCESS;
     m_filesOpened = false;
     unsigned int runNumber = m_daq_service0.getRunNo();
-    if (m_debug) {
-        std::cerr << "runNumber:" << runNumber << std::endl;
-    }
+    std::cerr << "runNumber:" << runNumber << std::endl;
+
     if (m_isDataLogging) {
         int ret = 0;
         fileUtils->set_run_no(runNumber);
-        if (m_debug) {
-            std::cerr << "m_maxFileSizeInMByte:"
-                      << m_maxFileSizeInMByte << std::endl;
-        }
+	std::cerr << "m_maxFileSizeInMByte:"
+		  << m_maxFileSizeInMByte << std::endl;
         fileUtils->set_max_size_in_megaBytes(m_maxFileSizeInMByte);
         ret = fileUtils->open_file(m_dirName);
         if (ret < 0) {
@@ -319,7 +312,8 @@ unsigned int TPClogger::read_InPort()
 	In_CurPos=(unsigned int *)&(m_in_data.data[HEADER_BYTE_SIZE]);
         recv_byte_size=*In_CurPos;
 	In_RemainSiz=In_TotSiz-recv_byte_size;
-	std::cerr << " reading: Tot=" << In_TotSiz << ", Recv=" << recv_byte_size << std::endl;
+	if (m_debug)
+	  std::cerr << " reading: Tot=" << In_TotSiz << ", Recv=" << recv_byte_size << std::endl;
       }
     }else{
       preSiz=*In_CurPos;
@@ -330,19 +324,22 @@ unsigned int TPClogger::read_InPort()
       In_RemainSiz-=preSiz;
       In_CurPos+=(preSiz/4);
       recv_byte_size=*In_CurPos;
-      std::cerr << " reading: Remain=" << In_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
+      if (m_debug)
+	std::cerr << " reading: Remain=" << In_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
     }
 
-    if (m_debug) {
-        std::cerr << "m_in_data.data.length():" << recv_byte_size
-                  << std::endl;
-    }
+    //    if (m_debug) {
+    //        std::cerr << "m_in_data.data.length():" << recv_byte_size
+    //                  << std::endl;
+    //    }
 
     return recv_byte_size;
 }
 
 int TPClogger::daq_run()
 {
+  time_t curtime;
+  tm *ltime;
 
     unsigned int comp_header[19],comp_footer;
     unsigned int eventnum, eventtag, seq_num;
@@ -391,13 +388,17 @@ int TPClogger::daq_run()
     inc_total_data_size(event_byte_size+80);
     inc_sequence_num();
 
-    if (m_debug) {
+    //    if (m_debug) {
         seq_num = (unsigned int)get_sequence_num();
         if (seq_num % m_update_rate == 0) {
-            std::cerr << "TPClogger: loop = " << seq_num << std::endl;
-            std::cerr << "\033[A\r";
+	  curtime=time(0);
+	  ltime=localtime(&curtime);
+	  std::cout << std::setw(2) << ltime->tm_hour << ":" <<
+	    std::setw(2) << ltime->tm_min << ":" <<
+	    std::setw(2) << ltime->tm_sec << ": ";
+	  std::cerr << "loop = " << seq_num << std::endl;
         }
-    }
+	//    }
 
     return 0;
 }

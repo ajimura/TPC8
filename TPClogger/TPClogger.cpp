@@ -44,8 +44,7 @@ TPClogger::TPClogger(RTC::Manager* manager)
       m_isDataLogging(false),
       m_filesOpened(false),
       m_in_status(BUF_SUCCESS),
-      m_update_rate(100),
-      m_debug(false)
+      m_update_rate(100)
 {
     // Registration: InPort/OutPort/Service
     registerInPort("tpclogger_in", m_InPort);
@@ -104,6 +103,9 @@ int TPClogger::parse_params(::NVList* list)
     //    bool isExistParamLogging = false;
     //    bool isExistParamDirName = false;
 
+    m_debug=false;
+    ComponentID=0;
+
     int length = (*list).length();
     for (int i = 0; i < length; i += 2) {
         if (m_debug) {
@@ -112,6 +114,11 @@ int TPClogger::parse_params(::NVList* list)
         }
         std::string sname  = (std::string)(*list)[i].value;
         std::string svalue = (std::string)(*list)[i + 1].value;
+
+	if (sname == "DEBUG"){
+	  if (svalue == "yes") m_debug=true;
+	}
+
         if (sname == "eventByteSize") {
             unsigned int eventByteSize = atoi(svalue.c_str());
             set_event_byte_size(eventByteSize);

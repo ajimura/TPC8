@@ -38,6 +38,7 @@ APS += get_data get_ped gettemp
 APS += analped analdata analpeak
 APS += port0read port3read fe_read
 APS += port1reset port2reset port3reset softreset hardreset
+APS += spwreset
 APS += trigio_read trigio_rdone trigio_cntrst
 #APS += chk_def set_def chk_busy chk_dready chk_trigio
 APS += chk_def set_def chk_linkup

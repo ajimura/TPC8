@@ -52,7 +52,7 @@ int main(int argc, char *argv[]) {
   n.key=key;
 
   /* link reset port2 */
-  add=0x2100; data=LinkDN;
+  add=0x2100; data=LinkDN|LinkUP;
   st =rmap_put_word(sw_fd,port,&n,add,data);
   add=0x2100; data=LinkUP;
   st+=rmap_put_word(sw_fd,port,&n,add,data);

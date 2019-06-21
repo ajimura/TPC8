@@ -26,6 +26,7 @@ utils/nodedef
 utils/nodeini
 utils/nodeini0
 utils/port0read
+utils/port1reset
 utils/port2reset
 utils/port3read
 utils/port3reset

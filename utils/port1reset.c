@@ -53,16 +53,8 @@ int main(int argc, char *argv[]) {
 
   /* link reset port2 */
   add=0x2100; data=LinkDN|LinkUP;
-  st =rmap_put_word(sw_fd,port,&n,add,data);
-  add=0x2100; data=LinkUP;
-  st+=rmap_put_word(sw_fd,port,&n,add,data);
+  st =rmap_throw_word(sw_fd,port,&n,add,data);
   if (st<0) printf("RMAP Error\n");
   sw_close(sw_fd);
   exit(0);
-}
-
-int conv_int_bit4(int in){
-  int out;
-  out=(in&1)+((in>>1)&1)*10+((in>>2)&1)*100+((in>>3)&1)*1000;
-  return(out);
 }

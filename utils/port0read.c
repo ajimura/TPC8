@@ -64,6 +64,9 @@ int main(int argc, char *argv[]) {
   add=0x090c;
   st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
   printf("[%04X] %08X\n",add,be32toh(data));
+  add=0x0918;
+  st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
+  printf("[%04X] %08X\n",add,be32toh(data));
 
   add=0x2100;
   st+=rmap_get_data(sw_fd,port,&n,add,&data,4);

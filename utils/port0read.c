@@ -16,29 +16,43 @@
 
 unsigned int key=0x02;
 unsigned int srcaddr=0x80;
-int port;
+int port=-1;
+int nodeid=-1;
 
 struct rmap_node_info n;
+
+int verbose=0;
 
 int main(int argc, char *argv[]) {
 
   int sw_fd;
 
   unsigned int add, data;
-  unsigned int nodeid;
   unsigned int logaddr;
   int st=0;
   int i,j;
 
-  printf("Port#? ");
-  scanf("%d",&port);
+  for(i=1;i<argc;i++){
+    if (argv[i][0]=='-'){
+      if (argv[i][1]=='v') verbose=1;
+    }else{
+      if (port<0) sscanf(argv[i],"%d",&port);
+      else if (nodeid<0) sscanf(argv[i],"%d",&nodeid);
+    }
+  }
 
-  //  printf("Logical Address? ");
-  //  scanf("%d",&logaddr);
-  printf("Node ID? ");
-  scanf("%d",&nodeid);
-  logaddr=nodeid+32;
+  if (port<0){
+    printf("Port#? ");
+    scanf("%d",&port);
+  }
+
+  if (nodeid<0){
+    printf("Node ID? ");
+    scanf("%d",&nodeid);
+  }
   
+  logaddr=nodeid+32;
+
   // open
   sw_fd=sw_open(port);
   if (sw_link_test(sw_fd,port)){
@@ -50,23 +64,25 @@ int main(int argc, char *argv[]) {
   n.dest_addr=logaddr; n.src_addr=srcaddr;
   n.key=key;
 
-  for(i=32;i<255;i+=8){
-    printf("[%3d(%02x)] ",i,i);
-    for(j=0;j<8;j++){
-      add=(i+j)*4;
-      st=rmap_get_data(sw_fd,port,&n,add,&data,4);
-      printf("%08X ",be32toh(data));
-    }printf("\n");
-  }
+  if (verbose>0)
+    for(i=32;i<255;i+=8){
+      printf("[%3d(%02x)] ",i,i);
+      for(j=0;j<8;j++){
+	add=(i+j)*4;
+	st=rmap_get_data(sw_fd,port,&n,add,&data,4);
+	printf("%08X ",be32toh(data));
+      }printf("\n");
+    }
+
   add=0x0908;
   st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
-  printf("[%04X] %08X\n",add,be32toh(data));
+  printf("[%04X]%08X ",add,be32toh(data));
   add=0x090c;
   st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
-  printf("[%04X] %08X\n",add,be32toh(data));
+  printf("[%04X]%08X ",add,be32toh(data));
   add=0x0918;
   st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
-  printf("[%04X] %08X\n",add,be32toh(data));
+  printf("[%04X]%08X\n",add,be32toh(data));
 
   add=0x2100;
   st+=rmap_get_data(sw_fd,port,&n,add,&data,4);

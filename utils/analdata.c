@@ -23,7 +23,7 @@ struct FadcDataInfo {
   int ChSize[16];
   int ChData[16][512];
   int numHit[16];
-  struct hitDataInfo hitData[16][20];
+  struct hitDataInfo hitData[16][200];
 };
 
 //struct HeaderInfo {
@@ -34,6 +34,8 @@ struct FadcDataInfo {
 //  int year,mon,day,hour,min,sec;
 //  int EventTag;
 //};
+
+#define MaxHit 200
 
 int main(int argc, char *argv[]) {
 
@@ -189,7 +191,7 @@ int main(int argc, char *argv[]) {
 	for(k=0;k<16;k++){
 	  DataPtr->numHit[k]=0; timebin=0;
 	  for(l=0;l<DataPtr->ChSize[k];l++){
-	    if (DataPtr->numHit[k]<20){
+	    if (DataPtr->numHit[k]<MaxHit){
 	      if ((DataPtr->ChData[k][l]>>14)==0x1){ /*cmp type or thres*/
 		;
 	      }else if ((DataPtr->ChData[k][l]>>14)==0x2 || /* TimeStamp */

@@ -283,7 +283,7 @@ void TPClogger::toLower(std::basic_string<char>& s)
 
 unsigned int TPClogger::read_InPort()
 {
-    unsigned int recv_byte_size = 0;
+    int recv_byte_size = 0;
     bool ret;
     int GlobSiz;
     int preSiz;
@@ -297,33 +297,34 @@ unsigned int TPClogger::read_InPort()
 	m_in_status=check_inPort_status(m_InPort);
 	//	std::cerr << " check_inPort_status(): ret=" << m_in_status << std::endl;
 	if (m_in_status==BUF_TIMEOUT){ // Buffer empty
-	  //	  m_in_timeout_counter++;
-	  if (check_trans_lock()) {     // Check if stop command has come.
-	    set_trans_unlock();       // Transit to CONFIGURE state.
-	  }
+	  m_in_timeout_counter++;
+	  //	  if (check_trans_lock()) {     // Check if stop command has come.
+	  //	    set_trans_unlock();       // Transit to CONFIGURE state.
+	  //	  }
         }else if (m_in_status==BUF_FATAL){
 	  fatal_error_report(INPORT_ERROR);
 	}
       }else{
-	//        m_in_timeout_counter = 0;
+        if (m_debug) std::cerr << "Get Data1. Timeout: " << m_in_timeout_counter << " -> 0" << std::endl;
+	m_in_timeout_counter = 0;
         m_in_status = BUF_SUCCESS;
 	GlobSiz=m_in_data.data.length();
 	In_TotSiz=GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
 	In_CurPos=(unsigned int *)&(m_in_data.data[HEADER_BYTE_SIZE]);
-        recv_byte_size=*In_CurPos;
+        recv_byte_size=(int)*In_CurPos;
 	In_RemainSiz=In_TotSiz-recv_byte_size;
 	if (m_debug)
-	  std::cerr << " reading: Tot=" << In_TotSiz << ", Recv=" << recv_byte_size << std::endl;
+	  std::cerr << " reading: Tot=" << In_TotSiz << ", Remain=" << In_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
       }
     }else{
-      preSiz=*In_CurPos;
+      preSiz=(int)*In_CurPos;
       if (In_RemainSiz<preSiz){
 	std::cerr << "Data broken? Remain=" << In_RemainSiz << ", preSiz=" << preSiz << std::endl;
 	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");
       }
-      In_RemainSiz-=preSiz;
       In_CurPos+=(preSiz/4);
-      recv_byte_size=*In_CurPos;
+      recv_byte_size=(int)*In_CurPos;
+      In_RemainSiz-=recv_byte_size;
       if (m_debug)
 	std::cerr << " reading: Remain=" << In_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
     }

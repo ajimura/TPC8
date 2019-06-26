@@ -60,10 +60,11 @@ private:
     std::string m_dirName;
     unsigned int m_maxFileSizeInMByte;
     BufferStatus m_in_status;
+    int m_in_timeout_counter;
     int m_update_rate;
     bool m_debug;
 
-  static const unsigned int ComponentType = 430; // <- should be modified
+  static const unsigned int ComponentType = 430;
   int ComponentID;
   int In_TotSiz;
   int In_RemainSiz;

@@ -36,9 +36,9 @@
 	std::cerr << "Data(1) broken? Remain=" << In1_RemainSiz << ", preSiz=" << preSiz << std::endl;
 	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");
       }
-      In1_RemainSiz-=preSiz;
       In1_CurPos+=(preSiz/4);
       recv_byte_size=(int)*In1_CurPos;
+      In1_RemainSiz-=recv_byte_size;
       if (m_debug) std::cerr << " reading(1): Remain=" << In1_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
     }
 

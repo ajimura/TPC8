@@ -27,6 +27,7 @@ utils/nodedef
 utils/nodeini
 utils/nodeini0
 utils/port0read
+utils/port1reset
 utils/port2reset
 utils/port3read
 utils/port3reset
@@ -38,6 +39,7 @@ utils/set_clkdiv
 utils/set_def
 utils/set_fullrange
 utils/softreset
+utils/spwreset
 utils/status
 utils/statusall
 utils/sw_loopback_test

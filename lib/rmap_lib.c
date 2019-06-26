@@ -383,8 +383,10 @@ int rmap_put_word(int sw_fd, int port,
   if (retval==0) return RM_LINK_ERROR;
   
   // GET STATUS
-  if ( (rx_buffer[3]&0xff) != 0x00) // NOT SUCCESS
+  if ( (rx_buffer[3]&0xff) != 0x00){ // NOT SUCCESS
+    printf("Error Ack'ed: code -- 0x%02X\n",rx_buffer[3]);
     return RM_DATA_ERROR;
+  }
 
   return 0;
   
@@ -424,13 +426,26 @@ int rmap_put_word_verbose(int sw_fd, int port,
   }printf("\n");
 
   if (retval==0) return RM_LINK_ERROR;
-  
+
   // GET STATUS
-  if ( (rx_buffer[3]&0xff) != 0x00) // NOT SUCCESS
+  if ( (rx_buffer[3]&0xff) != 0x00){ // NOT SUCCESS
+    printf("Error Ack'ed: code -- 0x%02X\n",rx_buffer[3]);
     return RM_DATA_ERROR;
+  }
 
   return 0;
   
+}
+
+int rmap_throw_word(int sw_fd, int port,
+			   struct rmap_node_info *n,
+			   unsigned int tx_address,
+			   unsigned int tx_data)
+{
+  unsigned int retval;
+  retval=sw_req(sw_fd,port,RM_PCKT_CMD|RM_PCKT_WRT,
+		n->src_addr,n->dest_addr,n->key,0x1234,tx_address,tx_data);
+  return retval;
 }
 
 unsigned char rmap_calc_crc(void *buf,unsigned int len){

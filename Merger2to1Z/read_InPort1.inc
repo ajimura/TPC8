@@ -32,12 +32,13 @@
       }
     }else{
       preSiz=(int)*In1_CurPos;
-      if (In1_RemainSiz<preSiz){
-	std::cerr << "Data(1) broken? Remain=" << In1_RemainSiz << ", preSiz=" << preSiz << std::endl;
-	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");
-      }
+      std::cerr << "preSize(1): " << preSiz << " on " << (unsigned char *)In1_CurPos-&(m_in1_data.data[HEADER_BYTE_SIZE]) << std::endl;
       In1_CurPos+=(preSiz/4);
       recv_byte_size=(int)*In1_CurPos;
+      if (In1_RemainSiz<recv_byte_size){
+	std::cerr << "Data(1) broken? Remain=" << In1_RemainSiz << ", Size=" << recv_byte_size << std::endl;
+	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");
+      }
       In1_RemainSiz-=recv_byte_size;
       if (m_debug) std::cerr << " reading(1): Remain=" << In1_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
     }

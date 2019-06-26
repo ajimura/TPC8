@@ -318,12 +318,12 @@ unsigned int TPClogger::read_InPort()
       }
     }else{
       preSiz=(int)*In_CurPos;
-      if (In_RemainSiz<preSiz){
-	std::cerr << "Data broken? Remain=" << In_RemainSiz << ", preSiz=" << preSiz << std::endl;
-	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");
-      }
       In_CurPos+=(preSiz/4);
       recv_byte_size=(int)*In_CurPos;
+      if (In_RemainSiz<recv_byte_size){
+	std::cerr << "Data broken? Remain=" << In_RemainSiz << ", Size=" << recv_byte_size << std::endl;
+	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");
+      }
       In_RemainSiz-=recv_byte_size;
       if (m_debug)
 	std::cerr << " reading: Remain=" << In_RemainSiz << ", Recv=" << recv_byte_size << std::endl;

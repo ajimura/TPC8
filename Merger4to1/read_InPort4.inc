@@ -32,12 +32,12 @@
       }
     }else{
       preSiz=(int)*In4_CurPos;
-      if (In4_RemainSiz<preSiz){
-	std::cerr << "Data(4) broken? Remain=" << In4_RemainSiz << ", preSiz=" << preSiz << std::endl;
-	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");
-      }
       In4_CurPos+=(preSiz/4);
       recv_byte_size=(int)*In4_CurPos;
+      if (In4_RemainSiz<recv_byte_size){
+	std::cerr << "Data(4) broken? Remain=" << In4_RemainSiz << ", Size=" << recv_byte_size << std::endl;
+	fatal_error_report(USER_DEFINED_ERROR1,"Data broken...");
+      }
       In4_RemainSiz-=recv_byte_size;
       if (m_debug) std::cerr << " reading(4): Remain=" << In4_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
     }

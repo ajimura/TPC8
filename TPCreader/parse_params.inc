@@ -70,6 +70,8 @@
 	else{
 	  ComprType=0;
 	  if ((int)svalue.find("p")>=0) ComprType+=FADC_Peak;
+	  if ((int)svalue.find("q")>=0) ComprType+=FADC_Peak2;
+	  if ((int)svalue.find("r")>=0) ComprType+=FADC_Peak3;
 	  if ((int)svalue.find("d")>=0) ComprType+=FADC_Dip;
 	  if ((int)svalue.find("m")>=0) ComprType+=FADC_Mark;
 	  if ((int)svalue.find("z")>=0) ComprType+=FADC_Zero;

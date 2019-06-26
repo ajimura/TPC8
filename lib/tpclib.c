@@ -25,6 +25,8 @@
 #define FADC_Dip 0x00000404
 #define FADC_Peak 0x00000808
 #define FADC_Sup 0x00001010
+#define FADC_Peak2 0x00002020
+#define FADC_Peak3 0x00004040
 
 #define FADC_ExtGTrigIn 0x00000010
 #define FADC_ExtRstIn 0x00000020

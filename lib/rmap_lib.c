@@ -331,7 +331,7 @@ int rmap_put_word0(int sw_fd, int port,
   int packet_size;
   
   packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_WRT|RM_PCKT_ACK,0x0000,n,tx_address,tx_data);
-  retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer, packet_size);
+  retval = sw_put_data0(sw_fd, port, (unsigned int *)tx_buffer, packet_size);
 
   for(i=0;i<8000;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
@@ -340,7 +340,7 @@ int rmap_put_word0(int sw_fd, int port,
     printf("Timeout in rmap_put_word\n"); return -1;
   }
 
-  retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
+  retval = sw_get_data0(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
   //  sw_print_status(sw_fd,port);
 
   /*

@@ -31,9 +31,9 @@
     //    std::cout << "Get data ready" << std::endl;
 
     //get data size
-    if (fadc_get_totsizeM2()<0){
-      //    if (fadc_get_totsizeM()<0){
-      std::cerr << "Error in fadc_get_data_sizeM2" << std::endl;
+//    if (fadc_get_totsizeM2()<0){
+    if (fadc_get_data_size()<0){
+      std::cerr << "(" << seq_num << ") " << "Error in fadc_get_data_sizeM2" << std::endl;
       fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_get_data_sizeM2");
     }
 
@@ -79,9 +79,9 @@
     //    std::cout << "start event data" << std::endl;
 
     // get&write data
-    if ((totsize=fadc_get_event_dataM2(curpos,seq_num))<0){
-    //    if ((totsize=fadc_get_event_dataM(curpos,seq_num))<0){
-      std::cerr << "Error in fadc_get_eventdataM2" << std::endl;
+//    if ((totsize=fadc_get_event_dataM2(curpos,seq_num))<0){
+    if ((totsize=fadc_get_event_data(curpos,seq_num))<0){
+      std::cerr << "(" << seq_num << ") " << "Error in fadc_get_eventdataM2" << std::endl;
       fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_get_event_dataM2");
     }
     curpos+=(totsize/4);
@@ -97,9 +97,9 @@
   
     // prepare for next event
     //ROC
-    //    if (fadc_release_buffer()<0){
-    //      fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_release_buffer");
-    //    }
+        if (fadc_release_buffer()<0){
+          fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_release_buffer");
+        }
 
     //increment next
     fadc_prepare_next();

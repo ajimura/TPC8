@@ -864,8 +864,8 @@ int fadc_get_totsize_each(struct fadc_info *adc){
   st=0;
   add=EBM_TotSize+BufBase*(adc->next);
   tid=adc->port*100+adc->nodeid;
-  st+=rmap_req_data(sw_fd[adc->port],adc->port,&(adc->node),tid,add,4);
-  st+=rmap_rcv_all(sw_fd[adc->port],adc->port,tid,&size,&(adc->totsize)); // <==== must check
+  st+=rmap_req_data0(sw_fd[adc->port],adc->port,&(adc->node),tid,add,4);
+  st+=rmap_rcv0(sw_fd[adc->port],adc->port,tid,&size,&(adc->totsize)); // <==== must check
   //  printf("TotSize: %3d(%04x) %d\n",adc->totsize,adc->totsize,st);
   return st;
 }
@@ -887,19 +887,19 @@ int fadc_get_totsizeM2(){
 	count++;
 	add=EBM_TotSize+BufBase*((fadcinfo[i]+j)->next);
 	tid=i*1000+j;
-	st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,4);
+	st+=rmap_req_data0(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,4);
 	//	printf("rmap_req: %d-%d TID=%d\n",i,j,tid);
       }
     }
     for(i=0;i<DevsNum;i++){
       if (j<fadc_num[i]){
 	tid=i*1000+j;
-	if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
+	if ((st=rmap_rcv0(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
 	  printf("Error occured in receiving data: %d %d -> retry\n",i,j);
 	  add=EBM_TotSize+BufBase*((fadcinfo[i]+j)->next);
 	  tid=i*1000+j;
-	  st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,4);
-	  if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
+	  st+=rmap_req_data0(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,4);
+	  if ((st=rmap_rcv0(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
 	    printf("Fail again...\n");
 	    return -1;
 	  }else{
@@ -1021,7 +1021,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  nextnode[i]=j;
 	  tid=i*1000+j;
 	  add=TGC_TrigID+BufBase*((fadcinfo[i]+j)->next);
-	  st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,12);
+	  st+=rmap_req_data0(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,12);
 	  //	  printf("REQ: %d-%d\n",i,j);
 	  break;
 	}else{
@@ -1034,7 +1034,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	nodeid=nextnode[i];
 	if (nodeid<fadc_num[i]){
 	  tid=i*1000+nodeid;
-	  if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,(fadcinfo[i]+nodeid)->tgcreg))<0){
+	  if ((st=rmap_rcv0(sw_fd[i],i,tid,&size,(fadcinfo[i]+nodeid)->tgcreg))<0){
 	    printf("Wrong TID: %d %d\n",i,nodeid);
 	    return -1;
 	  }
@@ -1081,7 +1081,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  nextnode[i]=j;
 	  tid=i*1000+j;
 	  add=EBM+BufBase*((fadcinfo[i]+j)->next)+0x80000000;
-	  st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,(((fadcinfo[i]+j)->totsize)+1)/2*4);
+	  st+=rmap_req_data0(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,(((fadcinfo[i]+j)->totsize)+1)/2*4);
 	  //	  printf("REQ: %d-%d size=%d(%x)\n",i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize);
 	  break;
 	}
@@ -1097,7 +1097,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  *(curpos++)=(adc)->totsize*2; totsize+=4;
 	  *(curpos++)=0; totsize+=4;
 	  tid=i*1000+nextnode[i];
-	  if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,curpos))<0){
+	  if ((st=rmap_rcv0(sw_fd[i],i,tid,&size,curpos))<0){
 	    printf("Wrong TID: %d %d\n",i,nextnode[i]);
 	    return -1;
 	  }

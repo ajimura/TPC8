@@ -178,7 +178,7 @@ int fadc_softreset_each(struct fadc_info *adc){
   unsigned int add, data;
   int st;
   add=CMN_Reset; data=0;
-  st=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   return st;
 }
 
@@ -200,7 +200,7 @@ int fadc_hardreset_each(struct fadc_info *adc){
   unsigned int add, data;
   int st;
   add=CMN_HardRst; data=0;
-  st=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   return st;
 }
 
@@ -224,22 +224,22 @@ int fadc_init_each_adc(struct fadc_info *adc){
   int div=0,phase=0,phase1=3;
 
   add=ASC+0x020; data=0x03;
-  st=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   add=ASC+0x020; data=0x00;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   add=ASC+0x000; data=0x3c;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   add=ASC+0x050; data=0x40;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
 
   add=ASC+0x02c; data=div;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   add=ASC+0x058; data=phase1+phase*16;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   add=ASC+0x424; data=0x03;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   add=ASC+0x808; data=0x01;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
 
   return st;
 }
@@ -261,13 +261,13 @@ int fadc_node_init(int port, int nodeid){
 
   // set routing for 0x20+nodeid
   add=(0x20+nodeid)*4; data=SW_Port0;
-  st=rmap_put_word0(sw_fd[port],port,&n,add,data);
+  st=rmap_put_word(sw_fd[port],port,&n,add,data);
 
   // set logical address to 0x20+nodeid 
   add=0x090c;
   st+=rmap_get_data(sw_fd[port],port,&n,add,&ret,4);
   data=(ret&0xff00ffff)|((nodeid+0x20)<<16);
-  st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+  st+=rmap_put_word(sw_fd[port],port,&n,add,data);
   logaddr=0x20+nodeid;
 
   // set node info
@@ -275,21 +275,21 @@ int fadc_node_init(int port, int nodeid){
 
   // set routing for 0xa0+nodeid 
   add=(0xa0+nodeid)*4; data=SW_Port3;
-  st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+  st+=rmap_put_word(sw_fd[port],port,&n,add,data);
 
   // set routing for 0x21+nodeid to 0x7c
   for(i=0x21+nodeid;i<0x7d;i++){
     add=i*4; data=SW_Port2;
-    st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+    st+=rmap_put_word(sw_fd[port],port,&n,add,data);
   }
   // set routing for 0xa1+nodeid to 0xfc
   for(i=0xa1+nodeid;i<0xfd;i++){
     add=i*4; data=SW_Port2;
-    st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+    st+=rmap_put_word(sw_fd[port],port,&n,add,data);
   }
   // set routing for 0x80
   add=0x80*4; data=SW_Port1;
-  st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+  st+=rmap_put_word(sw_fd[port],port,&n,add,data);
 
   /* show port2 status */
   add=0x2200;
@@ -303,9 +303,9 @@ int fadc_node_init(int port, int nodeid){
 
   /* set routing for 0xfe, 0xfd */
   add=0xfe*4; data=SW_Port2;
-  st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+  st+=rmap_put_word(sw_fd[port],port,&n,add,data);
   add=0xfd*4; data=SW_Port2;
-  st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+  st+=rmap_put_word(sw_fd[port],port,&n,add,data);
 
   if (st<0) return -1; else return 0;
 }
@@ -329,32 +329,32 @@ int fadc_node_def(int port, int nodeid){
   // set routing
   for(i=0x20;i<0x20+nodeid;i++){
     add=i*4; data=0;
-    st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+    st+=rmap_put_word(sw_fd[port],port,&n,add,data);
   }
   for(i=0x20+nodeid+1;i<0x80;i++){
     add=i*4; data=0;
-    st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+    st+=rmap_put_word(sw_fd[port],port,&n,add,data);
   }
   for(i=0x81;i<0xfe;i++){
     add=i*4; data=0;
-    st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+    st+=rmap_put_word(sw_fd[port],port,&n,add,data);
   }
   add=0xfe*4; data=SW_Port0;
-  st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+  st+=rmap_put_word(sw_fd[port],port,&n,add,data);
   // set logical address to 0xfe
   add=0x090c;
-  st+=rmap_get_data0(sw_fd[port],port,&n,add,&ret,4);
+  st+=rmap_get_data(sw_fd[port],port,&n,add,&ret,4);
   data=(ret&0xff00ffff)|((0xfe)<<16);
-  st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+  st+=rmap_put_word(sw_fd[port],port,&n,add,data);
 
   // set node info
   logaddr=0xfe;
   fadc_set_logaddr(&n, logaddr, srcaddr, key0);
 
   add=(0x20+nodeid)*4; data=0;
-  st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+  st+=rmap_put_word(sw_fd[port],port,&n,add,data);
   add=0x80*4; data=0;
-  st+=rmap_put_word0(sw_fd[port],port,&n,add,data);
+  st+=rmap_put_word(sw_fd[port],port,&n,add,data);
 
   if (st<0) return -1; else return 0;
 }
@@ -382,13 +382,13 @@ int fadc_setup_each(struct fadc_info *adc){
 
   //flush
   add=ROC_Done;  data=0x0f;
-  st=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   add=ROC_Done;  data=0x00;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
 
   //Get NextBuf ID -> next
   add=TGC_NextBuf;
-  st+=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&(adc->next), 4);
+  st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&(adc->next), 4);
   return st;
 }
 
@@ -449,10 +449,10 @@ int fadc_reset_trigcount_each(struct fadc_info *adc){
   unsigned int add,data;
   int i;
   add=TGC_CntRst; data=0;
-  if (rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data)<0) return -1;
+  if (rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data)<0) return -1;
   for(i=0;i<NumEvtBuffer;i++){
     add=EBM_CntRst+BufBase*i; data=0;
-    if (rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data)<0) return -1;
+    if (rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data)<0) return -1;
   }
   return 0;
 }
@@ -479,10 +479,10 @@ int fadc_set_comp_each(struct fadc_info *adc, int cmptype){
   st=0;
   for(j=0;j<16;j++){
     add=EBM_Thres+ChBase*j; data=adc->thres[j];
-    st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+    st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   }
   add=EBM_CmpType; data=cmptype;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   return st;
 }
 
@@ -504,7 +504,7 @@ int fadc_disable_localtrig_each(struct fadc_info *adc){
   int st;
   add=TGC_TrigInOut;
   data=FADC_ExtGTrigIn|FADC_ExtRstIn|FADC_TrigOut|FADC_BsyOut;
-  st=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   if (st<0) return -1; else return 0;
 }
 
@@ -526,7 +526,7 @@ int fadc_enable_localtrig_each(struct fadc_info *adc){
   int st;
   add=TGC_TrigInOut;
   data=FADC_ExtGTrigIn|FADC_ExtRstIn|FADC_ExtBusyIn|FADC_ExtLTrigIn|FADC_TrigOut|FADC_BsyOut;
-  st=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   if (st<0) return -1; else return 0;
 }
 
@@ -615,7 +615,7 @@ int fadc_trig_enable_each(struct fadc_info *adc, int trigenab){
   int st;
 
   add=TGC_TrigEnab; data=trigenab;
-  st=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
 
   return st;
 }
@@ -639,7 +639,7 @@ int fadc_trig_disable_each(struct fadc_info *adc){
   int st;
 
   add=TGC_TrigEnab; data=0;
-  st=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   //  add=TGC_TrigInOut;
   //  data=FADC_TrigOut|FADC_BsyOut;
   //  st+=rmap_put_word(sw_fd,adc->port,&(adc->node),add,data);
@@ -655,7 +655,7 @@ int fadc_wait_data_ready(){ // polling 1st fadc on port#0
   add=ROC_Ready;
   times=0;
   while(1){
-    st=rmap_get_data0(sw_fd[fadcinfo[0]->port],fadcinfo[0]->port,&(fadcinfo[0]->node),add,&data,4);
+    st=rmap_get_data(sw_fd[fadcinfo[0]->port],fadcinfo[0]->port,&(fadcinfo[0]->node),add,&data,4);
     if (st<0) return -1;
     if ((data>>fadcinfo[0]->next)&1) return 0;
     if (times++>WaitLoop) return -1;
@@ -677,7 +677,7 @@ int fadc_wait_data_ready_all(){
     for(i=0;i<DevsNum;i++){
       adc=fadcinfo[i];
       for(j=0;j<fadc_num[i];j++){
-	st=rmap_get_data0(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&((adc+j)->roc),4);
+	st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&((adc+j)->roc),4);
 	//	printf("ROC: %d-%d %08x\n",i,j,(adc+j)->roc);
 	if (st<0) return -1;
       }
@@ -708,7 +708,7 @@ int fadc_wait_data_ready_sel(){
   while(1){
     st=0; count=0;
     for(i=0;i<readynum;i++){
-      st=rmap_get_data0(sw_fd[readychk_port[i]],readychk_port[i],
+      st=rmap_get_data(sw_fd[readychk_port[i]],readychk_port[i],
 		       &((fadcinfo[readychk_port[i]]+readychk_node[i])->node),
 		       add,&(regready),4);
       //      printf("ROC#%d-%d: %08x\n",readychk_port[i],readychk_node[i],regready);
@@ -738,10 +738,10 @@ int fadc_show_buf_stat(int t){
   for(i=0;i<DevsNum;i++){
     adc=fadcinfo[i];
     for(j=0;j<fadc_num[i];j++){
-      st =rmap_get_data0(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add0,&data0,4);
-      st+=rmap_get_data0(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add1,&data1,4);
-      st+=rmap_get_data0(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add2,&data2,4);
-      st+=rmap_get_data0(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add3,&data3,4);
+      st =rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add0,&data0,4);
+      st+=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add1,&data1,4);
+      st+=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add2,&data2,4);
+      st+=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add3,&data3,4);
       if (st<0){
 	printf("RMAPget error\n"); return -1;
       }else{
@@ -775,7 +775,7 @@ int fadc_get_data_size_each(struct fadc_info *adc){
   st=0;
   for(j=0;j<16;j++){
     add=EBM_DataSize+ChBase*j+BufBase*(adc->next);
-    st+=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&(adc->size[j]),4);
+    st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&(adc->size[j]),4);
   }
   return st;
 }
@@ -807,8 +807,8 @@ int fadc_get_totsize_each(struct fadc_info *adc){
   st=0;
   add=EBM_TotSize+BufBase*(adc->next);
   tid=adc->port*100+adc->nodeid;
-  st+=rmap_req_data(sw_fd[adc->port],adc->port,&(adc->node),tid,add,4);
-  st+=rmap_rcv_all(sw_fd[adc->port],adc->port,tid,&size,&(adc->totsize)); // <==== must check
+  st+=rmap_req_data0(sw_fd[adc->port],adc->port,&(adc->node),tid,add,4);
+  st+=rmap_rcv0(sw_fd[adc->port],adc->port,tid,&size,&(adc->totsize)); // <==== must check
   //  printf("TotSize: %3d(%04x) %d\n",adc->totsize,adc->totsize,st);
   return st;
 }
@@ -828,14 +828,14 @@ int fadc_get_totsizeM2(){
 	count++;
 	add=EBM_TotSize+BufBase*((fadcinfo[i]+j)->next);
 	tid=i*1000+j;
-	st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,4);
+	st+=rmap_req_data0(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,4);
 	//	printf("rmap_req: %d-%d TID=%d\n",i,j,tid);
       }
     }
     for(i=0;i<DevsNum;i++){
       if (j<fadc_num[i]){
 	tid=i*1000+j;
-	if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
+	if ((st=rmap_rcv0(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
 	  printf("Error occured in receiving data: %d %d -> retry\n",i,j);
 	  add=EBM_TotSize+BufBase*((fadcinfo[i]+j)->next);
 	  tid=i*1000+j;
@@ -905,12 +905,12 @@ int fadc_get_data_each(struct fadc_info *adc, unsigned int *rdata){
 
   //TGC Count
   add=TGC_TrigID+BufBase*bufid;
-  st=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&tcount,4);
+  st=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&tcount,4);
   //  printf("Get #%d Event ! port=%d node=%d bufid=%d\n",tcount,adc->port,adc->nodeid,bufid);
   add=TGC_FClk+BufBase*bufid;
-  st+=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&fclk,4);
+  st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&fclk,4);
   add=TGC_CClk+BufBase*bufid;
-  st+=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&cclk,4);
+  st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&cclk,4);
   //  printf("TimeStamp: %d %d\n",fclk,cclk);
 
   if (st<0) return -1;
@@ -927,7 +927,7 @@ int fadc_get_data_each(struct fadc_info *adc, unsigned int *rdata){
     //    *bufdata++ = (j<<16)|(adc->size[j]); retsize+=4;
     //    bufdata++; retsize+=4;	// reserved
     add=MemBase + ChBase*j + BufBase*bufid;
-    st+=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,bufdata,(adc->size[j]+1)/2*4);
+    st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,bufdata,(adc->size[j]+1)/2*4);
     bufdata+=((adc->size[j]+1)/2); retsize+=((adc->size[j]+1)/2*4);
   }
   *bufdata++ = 0xffff0000; retsize+=4;
@@ -961,7 +961,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  nextnode[i]=j;
 	  tid=i*1000+j;
 	  add=TGC_TrigID+BufBase*((fadcinfo[i]+j)->next);
-	  st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,12);
+	  st+=rmap_req_data0(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,12);
 	  //	  printf("REQ: %d-%d\n",i,j);
 	  break;
 	}else{
@@ -974,7 +974,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	nodeid=nextnode[i];
 	if (nodeid<fadc_num[i]){
 	  tid=i*1000+nodeid;
-	  if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,(fadcinfo[i]+nodeid)->tgcreg))<0){
+	  if ((st=rmap_rcv0(sw_fd[i],i,tid,&size,(fadcinfo[i]+nodeid)->tgcreg))<0){
 	    printf("Wrong TID: %d %d\n",i,nodeid);
 	    return -1;
 	  }
@@ -1021,7 +1021,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  nextnode[i]=j;
 	  tid=i*1000+j;
 	  add=EBM+BufBase*((fadcinfo[i]+j)->next)+0x80000000;
-	  st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,(((fadcinfo[i]+j)->totsize)+1)/2*4);
+	  st+=rmap_req_data0(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,(((fadcinfo[i]+j)->totsize)+1)/2*4);
 	  //	  printf("REQ: %d-%d size=%d(%x)\n",i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize);
 	  break;
 	}
@@ -1037,7 +1037,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  *(curpos++)=(adc)->totsize*2; totsize+=4;
 	  *(curpos++)=0; totsize+=4;
 	  tid=i*1000+nextnode[i];
-	  if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,curpos))<0){
+	  if ((st=rmap_rcv0(sw_fd[i],i,tid,&size,curpos))<0){
 	    printf("Wrong TID: %d %d\n",i,nextnode[i]);
 	    return -1;
 	  }
@@ -1115,7 +1115,7 @@ int fadc_release_buffer_each(struct fadc_info *adc){
   int st;
   unsigned int add, data;
   add=ROC_Done; data=1<<(adc->next);
-  st=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   return st;
 }
 
@@ -1156,7 +1156,7 @@ int fadc_init_temp_each(struct fadc_info *adc){
   int st;
   unsigned int add, data;
   add=TMP_Conf; data=0x03;
-  st=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   return st;
 }
 
@@ -1177,7 +1177,7 @@ int fadc_get_temp_each(int port, int nodeid, unsigned int *temp){
   }
   if (id0==-1) return -1;
   add=TMP_Tmp;
-  st=rmap_get_data0(sw_fd[(fadcinfo[id0]+id1)->port],(fadcinfo[id0]+id1)->port,&((fadcinfo[id0]+id1)->node),add,temp,4);
+  st=rmap_get_data(sw_fd[(fadcinfo[id0]+id1)->port],(fadcinfo[id0]+id1)->port,&((fadcinfo[id0]+id1)->node),add,temp,4);
   return st;
 }
 
@@ -1192,7 +1192,7 @@ void fadc_check_roc_trig(){
     printf("Port#%d: ",i);
     adc=fadcinfo[i];
     for(j=0;j<fadc_num[i];j++){
-      st=rmap_get_data0(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&((adc+j)->roc),4);
+      st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&((adc+j)->roc),4);
       if (st<0) printf("Error on RMAP transfer.\n");
       if ((adc+j)->roc>>(adc+j)->next&1) printf("%d ",j);
       //    printf("ROC: %08x %08X\n",adc->roc,(adc+1)->roc);
@@ -1204,7 +1204,7 @@ void fadc_check_roc_trig(){
     printf("Port#%d: ",i);
     adc=fadcinfo[i];
     for(j=0;j<fadc_num[i];j++){
-      st=rmap_get_data0(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&data,4);
+      st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&data,4);
       if (st<0) printf("Error on RMAP transfer.\n");
       if ((data&0x000000f0)>0) printf("%d ",j);
       //    printf("ROC: %08x %08X\n",adc->roc,(adc+1)->roc);
@@ -1223,7 +1223,7 @@ void fadc_show_roc(){
     printf("Port#%d: ",i);
     adc=fadcinfo[i];
     for(j=0;j<fadc_num[i];j++){
-      st=rmap_get_data0(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&((adc+j)->roc),4);
+      st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&((adc+j)->roc),4);
       if (st<0) printf("Error on RMAP transfer.\n");
       if ((adc+j)->roc>>(adc+j)->next&1) printf("%d ",j);
       printf("%d:%08x ",j,(adc+j)->roc);
@@ -1242,7 +1242,7 @@ void fadc_check_busy(){
     printf("Port#%d: ",i);
     adc=fadcinfo[i];
     for(j=0;j<fadc_num[i];j++){
-      st=rmap_get_data0(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&data,4);
+      st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&data,4);
       if (st<0) printf("Error on RMAP transfer.\n");
       if ((data&0x00000f00)>0) printf("%d ",j);
       //    printf("ROC: %08x %08X\n",adc->roc,(adc+1)->roc);
@@ -1254,7 +1254,7 @@ void fadc_check_busy(){
     printf("Port#%d: ",i);
     adc=fadcinfo[i];
     for(j=0;j<fadc_num[i];j++){
-      st=rmap_get_data0(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&data,4);
+      st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&data,4);
       if (st<0) printf("Error on RMAP transfer.\n");
       if ((data&0x0000f000)>0) printf("%d ",j);
       //    printf("ROC: %08x %08X\n",adc->roc,(adc+1)->roc);
@@ -1300,49 +1300,49 @@ int fadc_check_default_value_each(struct fadc_info *adc){
   printf("%d-%d: ",adc->port,adc->nodeid);
 
   add=L1D_Delay;
-  st=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
+  st=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
   if (data!=0x000000b0){
     printf("L1D_Delay(%02X) ",data);
     first=0;
   }
   add=TGC_TrigEnab;
-  st+=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
   if (data!=0x00000000){
     printf("TGC_TrigEnab(%01X) ",data);
     first=0;
   }
   add=TGC_TrigInOut;
-  st+=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
   if (data!=0x0000000C){
     printf("TGC_TrigInOut(%02X) ",data);
     first=0;
   }
   //  add=TGC_BufEnab;
-  //  st=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
+  //  st=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
   //  if (data!=0x0000000F){
   //    printf("TGC_BufEnab(%01X) ",data);
   //    first=0;
   //  }
   add=TGC_ClkTrig;
-  st+=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
   if (data!=0x02625A00){
     printf("TGC_ClkTrig(%08X) ",data);
     first=0;
   }
   add=EBM_Range;
-  st+=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
   if (data!=0x00000320){
     printf("EBM_Range(%04X) ",data);
     first=0;
   }
   add=EBM_CmpType;
-  st+=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
   if (data!=0x00000010){
     printf("EBM_CmpType(%04X) ",data);
     first=0;
   }
   add=CMN_Version;
-  st+=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&data,4);
   if (data!=0x20181216){
     printf("CMN_Version(%08X) ",data);
     first=0;
@@ -1362,19 +1362,19 @@ int fadc_set_default_value_each(struct fadc_info *adc){
   int st=0;
 
   add=L1D_Delay; data=0xb0;
-  st=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   add=TGC_TrigEnab; data=0x0;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   add=TGC_TrigInOut; data=0x0C;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   //  add=TGC_BufEnab; data=0xF;
-  //  st=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  //  st=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   add=TGC_ClkTrig; data=0x02625A00;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   add=EBM_Range; data=0x0320;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   add=EBM_CmpType; data=0x10;
-  st+=rmap_put_word0(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   return st;
 }
 
@@ -1389,7 +1389,7 @@ void fadc_set_full_range(unsigned int range){
     adc=fadcinfo[i];
     for(j=0;j<fadc_num[i];j++){
       add=EBM_Range; data=range;
-      st+=rmap_put_word0(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,data);
+      st+=rmap_put_word(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,data);
     }
   }
   if (st<0) printf("Error on RMAP transfer.\n");
@@ -1408,7 +1408,7 @@ void fadc_set_clk_hz(unsigned int clkhz){
     adc=fadcinfo[i];
     for(j=0;j<fadc_num[i];j++){
       add=TGC_ClkTrig;
-      st+=rmap_put_word0(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,data);
+      st+=rmap_put_word(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,data);
     }
   }
   if (st<0) printf("Error on RMAP transfer.\n");
@@ -1425,61 +1425,61 @@ void fadc_check_TGC(int port, int node){
     
   printf("TGC-------------\n");
   add=TGC_FreeBuf;
-  st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
   printf("FreeBuf: %01X ", data);
   add=TGC_NextBuf;
-  st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
   printf("NextBuf; %01X ", data);
   add=TGC_Count;
-  st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
   printf("Count: %08X\n", data);
   printf("CountEach: ");
   for(i=0;i<NumEvtBuffer;i++){
-    add=TGC_CountEach+BufBase*i;  st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+    add=TGC_CountEach+BufBase*i;  st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
     printf("%08X ", data);
   } printf("\n");
   printf("TrigID: ");
   for(i=0;i<NumEvtBuffer;i++){
-    add=TGC_TrigID+BufBase*i; st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+    add=TGC_TrigID+BufBase*i; st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
     printf("%08X ", data);
   } printf("\n");
   printf("Clk: ");
   for(i=0;i<NumEvtBuffer;i++){
-    add=TGC_FClk+BufBase*i;  st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data1,4);
-    add=TGC_CClk+BufBase*i;  st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data2,4);
+    add=TGC_FClk+BufBase*i;  st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data1,4);
+    add=TGC_CClk+BufBase*i;  st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data2,4);
     printf("%04X%08X ", data2,data1);
   } printf("\n");
   add=TGC_TrigEnab;
-  st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
   printf("TrigEnab: %04X  ", data);
   add=TGC_TrigInOut;
-  st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
   printf("TrigInOut: %04X  ", data);
   add=TGC_BufEnab;
-  st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
   printf("BufEnab: %08X  ", data);
   add=TGC_ClkTrig;
-  st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
   printf("ClkTrig: %08X\n", data);
   add=TGC_NoEmpty;
-  st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
   printf("NoEmpty: %08X  ", data);
   add=TGC_Busy;
-  st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
   printf("Busy: %08X  ", data);
   //ROC
   add=ROC_Ready;
-  st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+  st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
   printf("Ready: %01X\n", data);
   printf("EBM-------------\n");
   printf("Count: ");
   for(i=0;i<NumEvtBuffer;i++){
-    add=EBM_Count+BufBase*i; st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+    add=EBM_Count+BufBase*i; st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
     printf("%08X  ", data);
   } printf("\n");
     printf("TotSize: ");
   for(i=0;i<NumEvtBuffer;i++){
-    add=EBM_TotSize+BufBase*i; st+=rmap_get_data0(sw_fd[port],port,&((adc+node)->node),add,&data,4);
+    add=EBM_TotSize+BufBase*i; st+=rmap_get_data(sw_fd[port],port,&((adc+node)->node),add,&data,4);
     printf("%04X  ",data);
   }printf("\n");
   if (st<0) printf("Error on RMAP transfer.\n");

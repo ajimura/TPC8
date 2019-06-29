@@ -349,11 +349,6 @@ int rmap_rcv0(int sw_fd, int port, unsigned int tid, unsigned int *rx_size, unsi
   if (rx_buffer[3]!=0){
     printf("rmap_rcv0: RMAP error code=%08x\n",rx_buffer[3]);
     sw_print_status(sw_fd,port);
-    printf("tx buffer ---\n");
-    for(i=0;i<packet_size;i++){
-      printf("%02x ",tx_buffer[i]);
-      if ((i+1)%8==0) printf("\n");
-    }printf("\n");
     printf("rx buffer ---\n");
     for(i=0;i<retval;i++){
       printf("%02x ",rx_buffer[i]);

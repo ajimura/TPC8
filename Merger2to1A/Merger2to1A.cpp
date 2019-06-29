@@ -138,8 +138,8 @@ int Merger2to1A::daq_start()
 int Merger2to1A::daq_stop()
 {
     std::cerr << "*** Merger2to1A::stop" << std::endl;
-    //    reset_InPort1();
-    //    reset_InPort2();
+    reset_InPort1();
+    reset_InPort2();
     return 0;
 }
 
@@ -166,12 +166,13 @@ int Merger2to1A::reset_InPort1()
 {
 //     uncomment if InPort is connected other OutPort of Component
 //
-     int ret = BUF_SUCCESS;
-     while (ret == BUF_SUCCESS) {
+     int ret = true;
+     while (ret == true) {
          ret = m_InPort1.read();
      }
+     m_inport1_recv_data_size=0;
 
-    std::cerr << "*** Merger2to1A::InPort1 flushed\n";
+    std::cerr << "*** Merger2to1::InPort1 flushed\n";
     return 0;
 }
 
@@ -179,12 +180,13 @@ int Merger2to1A::reset_InPort2()
 {
 //     uncomment if InPort is connected other OutPort of Component
 //
-     int ret = BUF_SUCCESS;
-     while (ret == BUF_SUCCESS) {
+     int ret = true;
+     while (ret == true) {
          ret = m_InPort2.read();
      }
+     m_inport2_recv_data_size=0;
 
-    std::cerr << "*** Merger2to1A::InPort2 flushed\n";
+    std::cerr << "*** Merger2to1::InPort2 flushed\n";
     return 0;
 }
 
@@ -205,9 +207,9 @@ int Merger2to1A::write_OutPort()
             fatal_error_report(OUTPORT_ERROR);
         }
         if (m_out_status == BUF_TIMEOUT) { // Timeout
-            if (check_trans_lock()) {     // Check if stop command has come.
-                set_trans_unlock();       // Transit to CONFIGURE state.
-            }
+	  //            if (check_trans_lock()) {     // Check if stop command has come.
+	  //                set_trans_unlock();       // Transit to CONFIGURE state.
+	  //            }
             m_out_timeout_counter++;
             return -1;
         }
@@ -229,9 +231,9 @@ unsigned int Merger2to1A::read_InPort1()
         m_in1_status = check_inPort_status(m_InPort1);
         if (m_in1_status == BUF_TIMEOUT) { // Buffer empty.
             m_in1_timeout_counter++;
-            if (check_trans_lock()) {     // Check if stop command has come.
-                set_trans_unlock();       // Transit to CONFIGURE state.
-            }
+	    //            if (check_trans_lock()) {     // Check if stop command has come.
+	    //                set_trans_unlock();       // Transit to CONFIGURE state.
+	    //            }
         }
         else if (m_in1_status == BUF_FATAL) { // Fatal error
             fatal_error_report(INPORT_ERROR);
@@ -261,9 +263,9 @@ unsigned int Merger2to1A::read_InPort2()
         m_in2_status = check_inPort_status(m_InPort2);
         if (m_in2_status == BUF_TIMEOUT) { // Buffer empty.
             m_in2_timeout_counter++;
-            if (check_trans_lock()) {     // Check if stop command has come.
-                set_trans_unlock();       // Transit to CONFIGURE state.
-            }
+	    //            if (check_trans_lock()) {     // Check if stop command has come.
+	    //                set_trans_unlock();       // Transit to CONFIGURE state.
+	    //            }
         }
         else if (m_in2_status == BUF_FATAL) { // Fatal error
             fatal_error_report(INPORT_ERROR);
@@ -287,6 +289,10 @@ int Merger2to1A::daq_run()
   unsigned int event_data_size;
     if (m_debug) {
         std::cerr << "*** Merger2to1A::run" << std::endl;
+    }
+
+    if (check_trans_lock()) {     // Check if stop command has come.
+      set_trans_unlock();       // Transit to CONFIGURE state.
     }
 
     if (m_out_status != BUF_TIMEOUT) {

@@ -16,13 +16,13 @@
     datapos[1]=(unsigned int *)&(m_in2_data.data[HEADER_BYTE_SIZE]);
 
     //get&check event num
-    //    std::cerr << "-----eventnum " << datapos1[3] << ":" << datapos2[3] << std::endl;
+    //    std::cerr << "-----eventnum " << datapos[0][3] << ":" << datapos[1][3] << std::endl;
     if ((eventnum=*(datapos[0]+3))!=*(datapos[1]+3)){
       std::cerr << "Event mismatch(num):" << eventnum << " " << *(datapos[1]+3) << std::endl;
       fatal_error_report(USER_DEFINED_ERROR1,"Event mismatch(num)!");
     }
     //get&check event tag
-    //    std::cerr << "-----eventtag " << datapos1[4] << ":" << datapos2[4] << std::endl;
+    //    std::cerr << "-----eventtag " << datapos[0][4] << ":" << datapos[1][4] << std::endl;
     eventtag=255;
     for(i=0;i<2;i++){
       if (*(datapos[i]+4)!=255){

@@ -216,10 +216,10 @@ int Merger4to1::daq_start()
 int Merger4to1::daq_stop()
 {
     std::cerr << "*** Merger4to1::stop" << std::endl;
-    //    reset_InPort1();
-    //    reset_InPort2();
-    //    reset_InPort3();
-    //    reset_InPort4();
+    reset_InPort1();
+    reset_InPort2();
+    reset_InPort3();
+    reset_InPort4();
     return 0;
 }
 
@@ -239,10 +239,11 @@ int Merger4to1::reset_InPort1()
 {
 //     uncomment if InPort is connected other OutPort of Component
 //
-     int ret = BUF_SUCCESS;
-     while (ret == BUF_SUCCESS) {
+     int ret = true;
+     while (ret == true) {
          ret = m_InPort1.read();
      }
+     m_inport1_recv_data_size=0;
 
     std::cerr << "*** Merger4to1::InPort1 flushed\n";
     return 0;
@@ -252,10 +253,11 @@ int Merger4to1::reset_InPort2()
 {
 //     uncomment if InPort is connected other OutPort of Component
 //
-     int ret = BUF_SUCCESS;
-     while (ret == BUF_SUCCESS) {
+     int ret = true;
+     while (ret == true) {
          ret = m_InPort2.read();
      }
+     m_inport2_recv_data_size=0;
 
     std::cerr << "*** Merger4to1::InPort2 flushed\n";
     return 0;
@@ -265,10 +267,11 @@ int Merger4to1::reset_InPort3()
 {
 //     uncomment if InPort is connected other OutPort of Component
 //
-     int ret = BUF_SUCCESS;
-     while (ret == BUF_SUCCESS) {
+     int ret = true;
+     while (ret == true) {
          ret = m_InPort3.read();
      }
+     m_inport3_recv_data_size=0;
 
     std::cerr << "*** Merger4to1::InPort3 flushed\n";
     return 0;
@@ -278,10 +281,11 @@ int Merger4to1::reset_InPort4()
 {
 //     uncomment if InPort is connected other OutPort of Component
 //
-     int ret = BUF_SUCCESS;
-     while (ret == BUF_SUCCESS) {
+     int ret = true;
+     while (ret == true) {
          ret = m_InPort4.read();
      }
+     m_inport4_recv_data_size=0;
 
     std::cerr << "*** Merger4to1::InPort4 flushed\n";
     return 0;

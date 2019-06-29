@@ -194,8 +194,8 @@ int Merger2to1B::daq_start()
 int Merger2to1B::daq_stop()
 {
     std::cerr << "*** Merger2to1B::stop" << std::endl;
-    //    reset_InPort1();
-    //    reset_InPort2();
+    reset_InPort1();
+    reset_InPort2();
     return 0;
 }
 
@@ -215,10 +215,11 @@ int Merger2to1B::reset_InPort1()
 {
 //     uncomment if InPort is connected other OutPort of Component
 //
-     int ret = BUF_SUCCESS;
-     while (ret == BUF_SUCCESS) {
+     int ret = true;
+     while (ret == true) {
          ret = m_InPort1.read();
      }
+     m_inport1_recv_data_size=0;
 
     std::cerr << "*** Merger2to1B::InPort1 flushed\n";
     return 0;
@@ -228,10 +229,11 @@ int Merger2to1B::reset_InPort2()
 {
 //     uncomment if InPort is connected other OutPort of Component
 //
-     int ret = BUF_SUCCESS;
-     while (ret == BUF_SUCCESS) {
+     int ret = true;
+     while (ret == true) {
          ret = m_InPort2.read();
      }
+     m_inport2_recv_data_size=0;
 
     std::cerr << "*** Merger2to1B::InPort2 flushed\n";
     return 0;

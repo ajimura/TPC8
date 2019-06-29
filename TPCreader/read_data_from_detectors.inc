@@ -1,4 +1,4 @@
-    const int message_freq = 1000;
+    const int message_freq = 1;
 
     int received_data_size = 0;
     //    int i;
@@ -129,7 +129,7 @@
       std::cout << std::setw(2) << ltime->tm_hour << ":" << 
         std::setw(2) << ltime->tm_min << ":" << 
         std::setw(2) << ltime->tm_sec << ": ";
-      std::cout << "Seq Num(" << seq_num << ") EventTag(" << (int)eventtag << ")" << std::endl;
+      std::cout << "Seq Num(" << seq_num << ") EventNum(" << eventnum << ") EventTag(" << (int)eventtag << ")" << std::endl;
     }
 
     //    usleep(500000);

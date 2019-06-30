@@ -173,7 +173,6 @@ int TPCreader::write_OutPort()
 
 int TPCreader::daq_run()
 {
-  int seq_temp;
 
     if (m_debug) {
         std::cerr << "*** TPCreader::run" << std::endl;
@@ -195,8 +194,6 @@ int TPCreader::daq_run()
         ;     // Timeout. do nothing.
     }
     else {    // OutPort write successfully done
-      seq_temp=(int)get_sequence_num();
-      std::cerr << "seq_num: " << seq_temp << " incremented" << std::endl;
       inc_sequence_num();                     // increase sequence num.
       inc_total_data_size(m_recv_byte_size);  // increase total data byte size
     }

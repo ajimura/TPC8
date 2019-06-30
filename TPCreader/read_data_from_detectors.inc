@@ -1,4 +1,4 @@
-    const int message_freq = 1;
+    const int message_freq = 1000;
 
     int received_data_size = 0;
     //    int i;

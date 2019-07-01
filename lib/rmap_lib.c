@@ -74,25 +74,33 @@ int rmap_get_data0(int sw_fd, int port,
   else n_data=rx_size;
 
   packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_ACK|RM_PCKT_INC,0x0000,n,rx_address,n_data);
-  retval = sw_put_data0(sw_fd, port, (unsigned int *)tx_buffer,
-  		       packet_size);
+  retval = sw_put_data0(sw_fd, port, (unsigned int *)tx_buffer, packet_size);
+
+  if (retval<0){
+    printf("rmap_get_data0: Error in sw_put_data0 ret=%d\n", retval);
+    sw_print_status(sw_fd,port);
+    return -1;
+  }
 
   for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
   }
   if (i==WaitLoop){
-    printf("Timeout in rmap_get_data %d\n",i); return -1;
+    printf("Timeout in rmap_get_data port=%d\n",port);
+    sw_print_status(sw_fd,port);
+    return -1;
   }
 
   retval = sw_get_data0(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
-
-  if (retval==0){
+  if (retval<=0){
+    printf("rmap_get_data0: Error in sw_get_data0 ret=%d\n", retval);
     sw_print_status(sw_fd,port);
-    return RM_LINK_ERROR;
+    return -1;
   }
   
   if ( (rx_buffer[3]&0xff) != 0x00){ // NOT SUCCESS
-    printf("--- %08x %08x\n",rx_buffer[3],rx_buffer[3]&0xff);
+    printf("rmap_get_data0: RMAP error code=%08x\n",rx_buffer[3]);
+    sw_print_status(sw_fd,port);
     printf("tx buffer ---\n");
     for(i=0;i<packet_size;i++){
       printf("%02x ",tx_buffer[i]);
@@ -126,25 +134,33 @@ int rmap_get_data(int sw_fd, int port,
   else n_data=rx_size;
 
   packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_ACK|RM_PCKT_INC,0x0000,n,rx_address,n_data);
-  retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer,
-  		       packet_size);
+  retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer, packet_size);
+
+  if (retval<0){
+    printf("rmap_get_data: Error in sw_put_data ret=%d\n", retval);
+    sw_print_status(sw_fd,port);
+    return -1;
+  }
 
   for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
   }
   if (i==WaitLoop){
-    printf("Timeout in rmap_get_data %d\n",i); return -1;
+    printf("Timeout in rmap_get_data port=%d\n",port);
+    sw_print_status(sw_fd,port);
+    return -1;
   }
 
   retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
-
-  if (retval==0){
+  if (retval<=0){
+    printf("rmap_get_data: Error in sw_get_data ret=%d\n", retval);
     sw_print_status(sw_fd,port);
-    return RM_LINK_ERROR;
+    return -1;
   }
   
   if ( (rx_buffer[3]&0xff) != 0x00){ // NOT SUCCESS
-    printf("--- %08x %08x\n",rx_buffer[3],rx_buffer[3]&0xff);
+    printf("rmap_get_data: RMAP error code=%08x\n",rx_buffer[3]);
+    sw_print_status(sw_fd,port);
     printf("tx buffer ---\n");
     for(i=0;i<packet_size;i++){
       printf("%02x ",tx_buffer[i]);
@@ -162,8 +178,7 @@ int rmap_get_data(int sw_fd, int port,
   return 0;
 }
 
-/*
-int rmap_get_data(int sw_fd, int port,
+int rmap_get_data2(int sw_fd, int port,
 			   struct rmap_node_info *n,
 			   unsigned int rx_address,
 			   unsigned int *rx_data,
@@ -185,15 +200,18 @@ int rmap_get_data(int sw_fd, int port,
     if ((j=sw_rx_status(sw_fd,port))>0) break;
   }
   if (i==WaitLoop){
-    printf("Timeout in rmap_get_data\n"); return -1;
+    printf("Timeout in rmap_get_data2\n");
+    sw_print_status(sw_fd,port);
+    return -1;
   }
 
   retval = sw_rcv(sw_fd, port, (unsigned int *)rx_data, &ret_status, 0,  X_BUFFER_SIZE);
-
-  if (retval==0){
+  if (retval<=0){
+    printf("rmap_get_data: Error in sw_rcv ret=%d\n", retval);
     sw_print_status(sw_fd,port);
-    return RM_LINK_ERROR;
+    return -1;
   }
+
   if (ret_status<0){
     printf("%d-%d %x %x\n",port,n->dest_addr-160,ret_status,rx_address);
     return RM_DATA_ERROR;
@@ -201,7 +219,6 @@ int rmap_get_data(int sw_fd, int port,
 
   return 0;
 }
-*/
 
 int rmap_get_data_verbose(int sw_fd, int port,
 			   struct rmap_node_info *n,
@@ -219,37 +236,44 @@ int rmap_get_data_verbose(int sw_fd, int port,
   else n_data=rx_size;
 
   packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_ACK|RM_PCKT_INC,0x0000,n,rx_address,n_data);
-  retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer,
-		       packet_size);
+  retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer, packet_size);
 
-    printf("tx buffer ---\n");
-    for(i=0;i<packet_size;i++){
-      printf("%02x ",tx_buffer[i]);
-      if ((i+1)%8==0) printf("\n");
-    }printf("\n");
+  if (retval<0){
+    printf("rmap_get_data_v: Error in sw_put_data ret=%d\n", retval);
+    sw_print_status(sw_fd,port);
+    return -1;
+  }
+
+  printf("tx buffer ---\n");
+  for(i=0;i<packet_size;i++){
+    printf("%02x ",tx_buffer[i]);
+    if ((i+1)%8==0) printf("\n");
+  }printf("\n");
 
   for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
   }
   if (i==WaitLoop){
-    printf("Timeout in rmap_get_data\n"); return -1;
+    printf("Timeout in rmap_get_data_v port=%d\n",port);
+    sw_print_status(sw_fd,port);
+    return -1;
   }
 
   retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
-
-    printf("rx buffer ---\n");
-    for(i=0;i<retval;i++){
-      printf("%02x ",rx_buffer[i]);
-      if ((i+1)%8==0) printf("\n");
-    }printf("\n");
-
-  if (retval==0){
+  if (retval<=0){
+    printf("rmap_get_data: Error in sw_get_data ret=%d\n", retval);
     sw_print_status(sw_fd,port);
-    return RM_LINK_ERROR;
+    return -1;
   }
-  
+
+  printf("rx buffer ---\n");
+  for(i=0;i<retval;i++){
+    printf("%02x ",rx_buffer[i]);
+    if ((i+1)%8==0) printf("\n");
+  }printf("\n");
+
   if ( (rx_buffer[3]&0xff) != 0x00){ // NOT SUCCESS
-    printf("--- %08x %08x\n",rx_buffer[3],rx_buffer[3]&0xff);
+    printf("rmap_get_data_v: RMAP error code=%08x\n",rx_buffer[3]);
     printf("tx buffer ---\n");
     for(i=0;i<packet_size;i++){
       printf("%02x ",tx_buffer[i]);
@@ -264,57 +288,6 @@ int rmap_get_data_verbose(int sw_fd, int port,
   }
   memcpy(rx_data,&(rx_buffer[12]),n_data);
 
-  return 0;
-}
-
-int rmap_get_data_W(int sw_fd, int port,
-			   struct rmap_node_info *n,
-			   unsigned int rx_address,
-			   unsigned int *rx_data,
-			   unsigned int rx_size)
-{
-  int i,j;
-  unsigned int n_data;
-  unsigned int retval;
-  unsigned int remain;
-  unsigned int *curpos;
-  int packet_size;
-
-  //  if (rx_size>2048) n_data=2048;
-  //  if (rx_size>4096) n_data=4096;
-  //  else n_data=rx_size;
-
-  curpos=rx_data;
-
-  remain=rx_size;
-  while(remain>0){
-
-    if (remain>X_BUFFER_SIZE) n_data=X_BUFFER_SIZE;
-    else n_data=remain;
-
-    packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_ACK|RM_PCKT_INC,0x0000,n,rx_address,n_data);
-    retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer,
-			 packet_size);
-  
-    for(i=0;i<4000;i++) {
-      if ((j=sw_rx_status(sw_fd,port))>0) break;
-    }
-    if (i==4000){
-      printf("Timeout in rmap_get_data\n"); return -1;
-    }
-
-    retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE+100);
-    if (retval==0) return RM_LINK_ERROR;
-  
-    if ( (rx_buffer[3]&0xff) != 0x00) // NOT SUCCESS
-      return RM_DATA_ERROR;
-
-    memcpy(curpos,&(rx_buffer[12]),n_data);
-    curpos+=(n_data/4);
-
-    remain-=n_data;
-
-  }
   return 0;
 }
 
@@ -336,6 +309,11 @@ int rmap_req_data0(int sw_fd, int port, struct rmap_node_info *n,
   packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_ACK|RM_PCKT_INC,tid,n,rx_address,n_data);
   retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer,
   		       packet_size);
+  if (retval<0){
+    printf("rmap_req_data0: Error in sw_put_data ret=%d\n", retval);
+    sw_print_status(sw_fd,port);
+    return -1;
+  }
 
   return retval;
 }
@@ -349,6 +327,11 @@ int rmap_req_data(int sw_fd, int port, struct rmap_node_info *n,
 
   retval=sw_req(sw_fd,port,RM_PCKT_CMD|RM_PCKT_ACK|RM_PCKT_INC,
 		n->src_addr,n->dest_addr,n->key,tid,rx_address,rx_size);
+  if (retval<0){
+    printf("rmap_req_data: Error in sw_req ret=%d\n", retval);
+    sw_print_status(sw_fd,port);
+    return -1;
+  }
   
   return retval;
 }
@@ -362,16 +345,38 @@ int rmap_rcv0(int sw_fd, int port, unsigned int tid, unsigned int *rx_size, unsi
     if ((j=sw_rx_status(sw_fd,port))>0) break;
   }
   if (i==WaitLoop){
-    printf("Timeout in rmap_rcv0\n"); return -1;
+    printf("Timeout in rmap_rcv0 port=%d\n",port);
+    sw_print_status(sw_fd,port);
+    return -1;
   }
   retval=sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE+100);
-  if (retval<0) return RM_LINK_ERROR;
-  if (retval==0) return RM_DATA_ERROR;
-  if (rx_buffer[3]!=0) return RM_LINK_ERROR;
+  if (retval<=0){
+    printf("rmap_rcv0: Error in sw_get_data ret=%d\n", retval);
+    sw_print_status(sw_fd,port);
+    return -1;
+  }
+  if (rx_buffer[3]!=0){
+    printf("rmap_rcv0: RMAP error code=%08x\n",rx_buffer[3]);
+    sw_print_status(sw_fd,port);
+    printf("rx buffer ---\n");
+    for(i=0;i<retval;i++){
+      printf("%02x ",rx_buffer[i]);
+      if ((i+1)%8==0) printf("\n");
+    }printf("\n");
+    return RM_DATA_ERROR;
+  }
   rx_tid =rx_buffer[5]*0x100+rx_buffer[6];
   *rx_size=rx_buffer[8]*0x10000+rx_buffer[9]*0x100+rx_buffer[10];
-  if (tid!=0 && tid!=rx_tid) return RM_LINK_ERROR;
-  if (*rx_size==0) return RM_BUF_NONE;
+  if (tid!=0 && tid!=rx_tid){
+    printf("rmap_rcv0: TID mismatch %04x shoud be %04x\n",rx_tid,tid);
+    sw_print_status(sw_fd,port);
+    return RM_LINK_ERROR;
+  }
+  if (*rx_size==0){
+    printf("rmap_rcv0: receive size=0\n");
+    sw_print_status(sw_fd,port);
+    return RM_BUF_NONE;
+  }
   memcpy(rx_data,&(rx_buffer[12]),*rx_size);
   return 0;
 }
@@ -410,28 +415,43 @@ int rmap_put_word0(int sw_fd, int port,
   packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_WRT|RM_PCKT_ACK,0x0000,n,tx_address,tx_data);
   retval = sw_put_data0(sw_fd, port, (unsigned int *)tx_buffer, packet_size);
 
-  for(i=0;i<8000;i++) {
+  if (retval<0){
+    printf("rmap_put_word0: Error in sw_put_data0 ret=%d\n", retval);
+    sw_print_status(sw_fd,port);
+    return -1;
+  }
+
+  for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
   }
-  if (i==8000){
-    printf("Timeout in rmap_put_word\n"); return -1;
+  if (i==WaitLoop){
+    printf("Timeout in rmap_put_word0\n");
+    sw_print_status(sw_fd,port);
+    return -1;
   }
 
   retval = sw_get_data0(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
-  //  sw_print_status(sw_fd,port);
+  if (retval<=0){
+    printf("rmap_put_word0: Error in sw_get_data0 ret=%d\n", retval);
+    sw_print_status(sw_fd,port);
+    return -1;
+  }
 
-  /*
-  for(i=0;i<retval;i++){
-    printf("%02x ",rx_buffer[i]);
-    if ((i+1)%8==0) printf("\n");
-  }printf("\n");
-  */
-
-  if (retval==0) return RM_LINK_ERROR;
-  
-  // GET STATUS
-  if ( (rx_buffer[3]&0xff) != 0x00) // NOT SUCCESS
+  if ( (rx_buffer[3]&0xff) != 0x00){ // NOT SUCCESS
+    printf("rmap_get_data0: RMAP error code=%08x\n",rx_buffer[3]);
+    sw_print_status(sw_fd,port);
+    printf("tx buffer ---\n");
+    for(i=0;i<packet_size;i++){
+      printf("%02x ",tx_buffer[i]);
+      if ((i+1)%8==0) printf("\n");
+    }printf("\n");
+    printf("rx buffer ---\n");
+    for(i=0;i<retval;i++){
+      printf("%02x ",rx_buffer[i]);
+      if ((i+1)%8==0) printf("\n");
+    }printf("\n");
     return RM_DATA_ERROR;
+  }
 
   return 0;
   
@@ -449,35 +469,49 @@ int rmap_put_word(int sw_fd, int port,
   packet_size=rmap_create_buffer(RM_PCKT_CMD|RM_PCKT_WRT|RM_PCKT_ACK,0x0000,n,tx_address,tx_data);
   retval = sw_put_data(sw_fd, port, (unsigned int *)tx_buffer, packet_size);
 
-  for(i=0;i<8000;i++) {
+  if (retval<0){
+    printf("rmap_put_word: Error in sw_put_data ret=%d\n", retval);
+    sw_print_status(sw_fd,port);
+    return -1;
+  }
+
+  for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
   }
-  if (i==8000){
-    printf("Timeout in rmap_put_word\n"); return -1;
+  if (i==WaitLoop){
+    printf("Timeout in rmap_put_word\n");
+    sw_print_status(sw_fd,port);
+    return -1;
   }
 
   retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);
-  //  sw_print_status(sw_fd,port);
+  if (retval<=0){
+    printf("rmap_put_word: Error in sw_get_data ret=%d\n", retval);
+    sw_print_status(sw_fd,port);
+    return -1;
+  }
 
-  /*
-  for(i=0;i<retval;i++){
-    printf("%02x ",rx_buffer[i]);
-    if ((i+1)%8==0) printf("\n");
-  }printf("\n");
-  */
-
-  if (retval==0) return RM_LINK_ERROR;
-  
-  // GET STATUS
-  if ( (rx_buffer[3]&0xff) != 0x00) // NOT SUCCESS
+  if ( (rx_buffer[3]&0xff) != 0x00){ // NOT SUCCESS
+    printf("rmap_get_data: RMAP error code=%08x\n",rx_buffer[3]);
+    sw_print_status(sw_fd,port);
+    printf("tx buffer ---\n");
+    for(i=0;i<packet_size;i++){
+      printf("%02x ",tx_buffer[i]);
+      if ((i+1)%8==0) printf("\n");
+    }printf("\n");
+    printf("rx buffer ---\n");
+    for(i=0;i<retval;i++){
+      printf("%02x ",rx_buffer[i]);
+      if ((i+1)%8==0) printf("\n");
+    }printf("\n");
     return RM_DATA_ERROR;
+  }
 
   return 0;
   
 }
 
-/*
-int rmap_put_word(int sw_fd, int port,
+int rmap_put_word2(int sw_fd, int port,
 			   struct rmap_node_info *n, 
 			   unsigned int tx_address, 
 			   unsigned int tx_data)
@@ -508,7 +542,6 @@ int rmap_put_word(int sw_fd, int port,
   return 0;
   
 }
-*/
 
 int rmap_put_word_verbose(int sw_fd, int port,
 			   struct rmap_node_info *n, 

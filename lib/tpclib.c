@@ -839,8 +839,8 @@ int fadc_get_totsizeM2(){
 	  printf("Error occured in receiving data: %d %d -> retry\n",i,j);
 	  add=EBM_TotSize+BufBase*((fadcinfo[i]+j)->next);
 	  tid=i*1000+j;
-	  st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,4);
-	  if ((st=rmap_rcv_all(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
+	  st+=rmap_req_data0(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,4);
+	  if ((st=rmap_rcv0(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
 	    printf("Fail again...\n");
 	    return -1;
 	  }else{

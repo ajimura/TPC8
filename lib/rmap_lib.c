@@ -381,7 +381,7 @@ int rmap_rcv0(int sw_fd, int port, unsigned int tid, unsigned int *rx_size, unsi
   return 0;
 }
 
-int rmap_rcv_all(int sw_fd, int port, unsigned int tid, unsigned int *rx_size, unsigned int *rx_data){
+int rmap_rcv(int sw_fd, int port, unsigned int tid, unsigned int *rx_size, unsigned int *rx_data){
   unsigned int retval;
   int status;
   int i,j;

@@ -887,19 +887,23 @@ int fadc_get_totsizeM2(){
 	count++;
 	add=EBM_TotSize+BufBase*((fadcinfo[i]+j)->next);
 	tid=i*1000+j;
-	st+=rmap_req_data0(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,4);
+	st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,4);
 	//	printf("rmap_req: %d-%d TID=%d\n",i,j,tid);
       }
     }
     for(i=0;i<DevsNum;i++){
       if (j<fadc_num[i]){
 	tid=i*1000+j;
-	if ((st=rmap_rcv0(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
+	if ((st=rmap_rcv(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
 	  printf("Error occured in receiving data: %d %d -> retry\n",i,j);
+	  while(sw_rx_status(sw_fd[i],i)>=0){
+	    printf("flushing rx buffer...\n");
+	    sw_rx_flush(sw_fd[i],i);
+	  }
 	  add=EBM_TotSize+BufBase*((fadcinfo[i]+j)->next);
 	  tid=i*1000+j;
-	  st+=rmap_req_data0(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,4);
-	  if ((st=rmap_rcv0(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
+	  st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,4);
+	  if ((st=rmap_rcv(sw_fd[i],i,tid,&size,&((fadcinfo[i]+j)->totsize)))<0){
 	    printf("Fail again...\n");
 	    return -1;
 	  }else{

@@ -34,8 +34,8 @@ unsigned int *Create_Header(unsigned int *header,
   *(curptr++)=(ltime->tm_min)*10000000 + (ltime->tm_sec)*100000;
   *(curptr++)=eventnum;
   *(curptr++)=eventtag;
-  *(curptr++)=ComponentType;
   *(curptr++)=ComponentID;
+  *(curptr++)=ComponentType;
   // reserved area
   *(curptr++)=0;  *(curptr++)=0;  *(curptr++)=0;  *(curptr++)=0;
   *(curptr++)=0;  *(curptr++)=0;  *(curptr++)=0;  *(curptr++)=0;

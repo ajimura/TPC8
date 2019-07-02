@@ -587,8 +587,8 @@ int get_header(int infile, struct CompHeaderInfo *header){
     header->sec=(data[2]%10000000)/100000;
     header->eventnum=data[3];
     header->eventtag=data[4];
-    header->comptype=data[5];
-    header->compid=data[6];
+    header->compid=data[5];
+    header->comptype=data[6];
     header->NumFADC[4]=data[16]&0xff;
     header->NumFADC[5]=(data[16]>>8)&0xff;
     header->NumFADC[6]=(data[16]>>16)&0xff;

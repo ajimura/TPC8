@@ -43,6 +43,7 @@ APS += trigio_read trigio_rdone trigio_cntrst
 #APS += chk_def set_def chk_busy chk_dready chk_trigio
 APS += chk_def set_def chk_linkup
 APS += set_fullrange
+APS += set_clkhz
 APS += getver
 APS += makeped
 APS += read32 write32 sw_speed sw_loopback_test

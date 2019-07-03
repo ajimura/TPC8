@@ -1025,7 +1025,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  nextnode[i]=j;
 	  tid=i*1000+j;
 	  add=TGC_TrigID+BufBase*((fadcinfo[i]+j)->next);
-	  st+=rmap_req_data0(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,12);
+	  st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,12);
 	  //	  printf("REQ: %d-%d\n",i,j);
 	  break;
 	}else{
@@ -1038,7 +1038,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	nodeid=nextnode[i];
 	if (nodeid<fadc_num[i]){
 	  tid=i*1000+nodeid;
-	  if ((st=rmap_rcv0(sw_fd[i],i,tid,&size,(fadcinfo[i]+nodeid)->tgcreg))<0){
+	  if ((st=rmap_rcv(sw_fd[i],i,tid,&size,(fadcinfo[i]+nodeid)->tgcreg))<0){
 	    printf("Wrong TID: %d %d\n",i,nodeid);
 	    return -1;
 	  }
@@ -1085,7 +1085,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  nextnode[i]=j;
 	  tid=i*1000+j;
 	  add=EBM+BufBase*((fadcinfo[i]+j)->next)+0x80000000;
-	  st+=rmap_req_data0(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,(((fadcinfo[i]+j)->totsize)+1)/2*4);
+	  st+=rmap_req_data(sw_fd[i],i,&((fadcinfo[i]+j)->node),tid,add,(((fadcinfo[i]+j)->totsize)+1)/2*4);
 	  //	  printf("REQ: %d-%d size=%d(%x)\n",i,j,(fadcinfo[i]+j)->totsize,(fadcinfo[i]+j)->totsize);
 	  break;
 	}
@@ -1101,7 +1101,7 @@ int fadc_get_event_dataM2(unsigned int *rdata, int check){
 	  *(curpos++)=(adc)->totsize*2; totsize+=4;
 	  *(curpos++)=0; totsize+=4;
 	  tid=i*1000+nextnode[i];
-	  if ((st=rmap_rcv0(sw_fd[i],i,tid,&size,curpos))<0){
+	  if ((st=rmap_rcv(sw_fd[i],i,tid,&size,curpos))<0){
 	    printf("Wrong TID: %d %d\n",i,nextnode[i]);
 	    return -1;
 	  }
@@ -1453,6 +1453,25 @@ void fadc_set_full_range(unsigned int range){
     adc=fadcinfo[i];
     for(j=0;j<fadc_num[i];j++){
       add=EBM_Range; data=range;
+      st+=rmap_put_word(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,data);
+    }
+  }
+  if (st<0) printf("Error on RMAP transfer.\n");
+}
+
+void fadc_set_clk_hz(unsigned int clkhz){
+  int i,j;
+  unsigned int add,data;
+  int st;
+  struct fadc_info *adc;
+
+  data=40000000/clkhz;
+
+  st=0;
+  for(i=0;i<DevsNum;i++){
+    adc=fadcinfo[i];
+    for(j=0;j<fadc_num[i];j++){
+      add=TGC_ClkTrig;
       st+=rmap_put_word(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,data);
     }
   }

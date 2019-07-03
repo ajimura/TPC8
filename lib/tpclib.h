@@ -72,6 +72,7 @@ void fadc_check_busy(void);
 void fadc_check_default_value(void);
 void fadc_set_default_value(void);
 void fadc_set_full_range(unsigned int);
+void fadc_set_clk_hz(unsigned int);
 void fadc_check_TGC(int, int);
 
 #ifdef __cplusplus

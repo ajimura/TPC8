@@ -105,7 +105,7 @@
       }
     }
     //set ready chk
-    if (trigio_exist==true){
+    if (rdychk_exist==true){
       fadc_read_readychk(rdychk_file.c_str());
     }
     // set compression type

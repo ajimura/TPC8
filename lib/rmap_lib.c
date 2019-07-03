@@ -1,6 +1,7 @@
 /* by Shuhei Ajimura */
 
 #include <stdio.h>
+#include <unistd.h>
 #include <string.h>
 #ifdef PCIE
 #include "swpci_lib.h"
@@ -31,7 +32,8 @@ struct rmap_node_info {
 
 #define RM_ProtoID 0x01
 
-#define WaitLoop 2000
+#define WaitLoop 8000
+#define WaitIntv 20
 
 unsigned char rmap_calc_crc(void *,unsigned int );
 int rmap_create_buffer(unsigned int, unsigned int, struct rmap_node_info *, unsigned int, unsigned int);
@@ -84,6 +86,7 @@ int rmap_get_data0(int sw_fd, int port,
 
   for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
+    usleep(WaitIntv);
   }
   if (i==WaitLoop){
     printf("Timeout in rmap_get_data0 port=%d\n",port);
@@ -144,10 +147,21 @@ int rmap_get_data(int sw_fd, int port,
 
   for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
+    usleep(WaitIntv);
   }
   if (i==WaitLoop){
     printf("Timeout in rmap_get_data port=%d\n",port);
     sw_print_status(sw_fd,port);
+    printf("tx buffer ---\n");
+    for(i=0;i<packet_size;i++){
+      printf("%02x ",tx_buffer[i]);
+      if ((i+1)%8==0) printf("\n");
+    }printf("\n");
+    printf("rx buffer ---\n");
+    for(i=0;i<retval;i++){
+      printf("%02x ",rx_buffer[i]);
+      if ((i+1)%8==0) printf("\n");
+    }printf("\n");
     return -1;
   }
 
@@ -199,6 +213,7 @@ int rmap_get_data2(int sw_fd, int port,
 
   for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
+    usleep(WaitIntv);
   }
   if (i==WaitLoop){
     printf("Timeout in rmap_get_data2\n");
@@ -334,6 +349,7 @@ int rmap_rcv0(int sw_fd, int port, unsigned int tid, unsigned int *rx_size, unsi
 
   for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
+    usleep(WaitIntv);
   }
   if (i==WaitLoop){
     printf("Timeout in rmap_rcv0 port=%d\n",port);
@@ -379,6 +395,7 @@ int rmap_rcv_all(int sw_fd, int port, unsigned int tid, unsigned int *rx_size, u
   
   for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
+    usleep(WaitIntv);
   }
   if (i==WaitLoop){
     printf("Timeout in rmap_rcv_header\n"); return -1;
@@ -414,6 +431,7 @@ int rmap_put_word0(int sw_fd, int port,
 
   for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
+    usleep(WaitIntv);
   }
   if (i==WaitLoop){
     printf("Timeout in rmap_put_word0\n");
@@ -468,10 +486,21 @@ int rmap_put_word(int sw_fd, int port,
 
   for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
+    usleep(WaitIntv);
   }
   if (i==WaitLoop){
     printf("Timeout in rmap_put_word\n");
     sw_print_status(sw_fd,port);
+    printf("tx buffer ---\n");
+    for(i=0;i<packet_size;i++){
+      printf("%02x ",tx_buffer[i]);
+      if ((i+1)%8==0) printf("\n");
+    }printf("\n");
+    printf("rx buffer ---\n");
+    for(i=0;i<retval;i++){
+      printf("%02x ",rx_buffer[i]);
+      if ((i+1)%8==0) printf("\n");
+    }printf("\n");
     return -1;
   }
 
@@ -515,6 +544,7 @@ int rmap_put_word2(int sw_fd, int port,
 
   for(i=0;i<WaitLoop;i++) {
     if ((j=sw_rx_status(sw_fd,port))>0) break;
+    usleep(WaitIntv);
   }
   if (i==WaitLoop){
     printf("Timeout in rmap_put_word\n"); return -1;

@@ -37,6 +37,7 @@ utils/regwrite
 utils/reset
 utils/set_clkdiv
 utils/set_def
+utils/set_clkhz
 utils/set_fullrange
 utils/softreset
 utils/spwreset

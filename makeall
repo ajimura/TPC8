@@ -32,6 +32,9 @@ cd ..
 cd DumGenB
 make
 cd ..
+cd TXer
+make
+cd ..
 if [ -e /usr/share/swsoc8 -o -e /usr/share/swpci ]; then
     cd TPCreader
     make

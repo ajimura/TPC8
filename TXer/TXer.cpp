@@ -42,7 +42,7 @@ TXer::TXer(RTC::Manager* manager)
       m_out_status(BUF_SUCCESS),
       m_in_timeout_counter(0),
       m_out_timeout_counter(0),
-      m_inport_recv_data_size(0),
+      m_inport_recv_data_size(0)
 {
     // Registration: InPort/OutPort/Service
 

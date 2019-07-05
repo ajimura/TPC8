@@ -1,17 +1,11 @@
-    int i;
     int tot_data_size;
     int tot_block_size;
     int tot_next_size;
-    unsigned int eventnum, eventtag, seq_num;
-    unsigned int comp_footer;
+    unsigned int seq_num;
 
     unsigned int *toppos;
     unsigned int *curpos;
     int stock_size;
-
-    unsigned int *datapos; // top pointer for the data from in ports (just after the DAQ-MW header)
-
-    datapos=In_CurPos;
 
     //get size info.
     tot_block_size=data_byte_size;

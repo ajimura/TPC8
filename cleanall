@@ -32,6 +32,9 @@ cd ..
 cd DumGenB
 make clean
 cd ..
+cd TXer
+make clean
+cd ..
 if [ -e /usr/share/swsoc8 -o -e /usr/share/swpci ]; then
     cd TPCreader
     make clean

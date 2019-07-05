@@ -9,8 +9,11 @@ SRCS += $(COMP_NAME)Comp.cpp
 OBJS += ../lib/daqmwlib.o
 CPPFLAGS += -I../lib/ -g
 
-INCS  = read_InPort.inc
+INCS = daq_configure.inc
+INCS += parse_params.inc
+INCS += read_InPort.inc
 INCS += Stock_data.inc
+INCS += set_data.inc
 INCS += daq_run.inc
 
 $(COMP_NAME).o: $(INCS)

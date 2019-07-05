@@ -44,9 +44,6 @@ TXer::TXer(RTC::Manager* manager)
       m_out_timeout_counter(0),
       m_inport_recv_data_size(0)
 {
-    // Registration: InPort/OutPort/Service
-
-    // Set InPort buffers
     registerInPort("txer_in", m_InPort);
     registerOutPort("txer_out", m_OutPort);
 
@@ -85,70 +82,12 @@ int TXer::daq_dummy()
 int TXer::daq_configure()
 {
     std::cerr << "*** TXer::configure" << std::endl;
-
-    ::NVList* paramList;
-    paramList = m_daq_service0.getCompParams();
-    parse_params(paramList);
-
-    In_TotSiz=0;
-    In_RemainSiz=0;
-    In_CurPos=NULL;
-    In_Done=0;
-
-    Stock_CurNum=0;
-    Stock_Offset=0;
-    //    Cur_MaxDataSiz=67108864; // 64M (tempolary)
-    Cur_MaxDataSiz=10240; // 10k (tempolary)
-
-    try{
-      m_data1=new unsigned char[Cur_MaxDataSiz];
-      m_data4=(unsigned int *)m_data1;
-    }
-    catch(std::bad_alloc){
-      std::cerr << "Bad allocation..." << std::endl;
-      fatal_error_report(USER_DEFINED_ERROR1);
-    }
-    catch(...){
-      std::cerr << "Got exception..." << std::endl;
-      fatal_error_report(USER_DEFINED_ERROR1);
-    }
-
-    // show obtained parameter
-    std::cout << "Stock Max Num: " << Stock_MaxNum << std::endl;
-    std::cout << "Stock Max Size: " << Stock_MaxSiz << std::endl;
-    //
-    std::cout << "--- Now ready to start !!" << std::endl;
-
-    return 0;
+#include "daq_configure.inc"
 }
 
 int TXer::parse_params(::NVList* list)
 {
-    std::cerr << "param list length:" << (*list).length() << std::endl;
-
-    //set default value
-    m_debug=false;
-    ReadTimeout=10000;
-    Stock_MaxNum=1;
-    Stock_MaxSiz=2097044;
-
-    int len = (*list).length();
-    for (int i = 0; i < len; i+=2) {
-        std::string sname  = (std::string)(*list)[i].value;
-        std::string svalue = (std::string)(*list)[i+1].value;
-
-	//        std::cerr << "sname: " << sname << "  ";
-	//        std::cerr << "value: " << svalue << std::endl;
-
-      if (sname == "DEBUG"){
-      	if (svalue == "yes") m_debug=true;
-      }
-
-      if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
-      if (sname == "StockMaxSize") Stock_MaxSiz=atoi(svalue.c_str());
-    }
-
-    return 0;
+#include "parse_params.inc"
 }
 
 
@@ -240,20 +179,7 @@ void TXer::Stock_data(int data_byte_size)
 
 int TXer::set_data(int data_byte_size)
 {
-    unsigned char header[8];
-    unsigned char footer[8];
-
-    set_header(&header[0], (unsigned int)data_byte_size);
-    set_footer(&footer[0]);
-
-    ///set OutPort buffer length
-    m_out_data.data.length((unsigned int)data_byte_size + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
-    memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], (size_t)data_byte_size);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + (unsigned int)data_byte_size]), &footer[0],
-           FOOTER_BYTE_SIZE);
-
-    return 0;
+#include "set_data.inc"
 }
 
 int TXer::daq_run()

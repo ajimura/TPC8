@@ -674,6 +674,7 @@ int fadc_wait_data_ready_all(){
   int wait;
   int times;
   struct fadc_info *adc;
+  int count;
 
   add=ROC_Ready;
   times=0;

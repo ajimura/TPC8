@@ -678,14 +678,28 @@ int fadc_wait_data_ready_all(){
   add=ROC_Ready;
   times=0;
   while(1){
-    for(i=0;i<DevsNum;i++){
-      adc=fadcinfo[i];
-      for(j=0;j<fadc_num[i];j++){
-	st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&((adc+j)->roc),4);
-	//	printf("ROC: %d-%d %08x\n",i,j,(adc+j)->roc);
-	if (st<0) return -1;
+    count=DevsNum;j=0;
+    while(count>0){
+      count=0;
+      for(i=0;i<DevsNum;i++){
+	adc=fadcinfo[i];
+	if (j<fadc_num[i]){
+	  count++;
+	  st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&((adc+j)->roc),4);
+          //      printf("ROC: %d-%d %08x\n",i,j,(adc+j)->roc);
+	  if (st<0) return -1;
+	}
       }
+      j++;
     }
+    //    for(i=0;i<DevsNum;i++){
+    //      adc=fadcinfo[i];
+    //      for(j=0;j<fadc_num[i];j++){
+    //	st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&((adc+j)->roc),4);
+    //	//	printf("ROC: %d-%d %08x\n",i,j,(adc+j)->roc);
+    //	if (st<0) return -1;
+    //      }
+    //    }
     wait=0;
     for(i=0;i<DevsNum;i++){
       adc=fadcinfo[i];

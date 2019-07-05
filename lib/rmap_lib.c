@@ -31,7 +31,7 @@ struct rmap_node_info {
 
 #define RM_ProtoID 0x01
 
-#define WaitLoop 2000
+#define WaitLoop 8000
 
 unsigned char rmap_calc_crc(void *,unsigned int );
 int rmap_create_buffer(unsigned int, unsigned int, struct rmap_node_info *, unsigned int, unsigned int);
@@ -88,6 +88,11 @@ int rmap_get_data0(int sw_fd, int port,
   if (i==WaitLoop){
     printf("Timeout in rmap_get_data port=%d\n",port);
     sw_print_status(sw_fd,port);
+    printf("tx buffer ---\n");
+    for(i=0;i<packet_size;i++){
+      printf("%02x ",tx_buffer[i]);
+      if ((i+1)%8==0) printf("\n");
+    }printf("\n");
     return -1;
   }
 
@@ -148,6 +153,11 @@ int rmap_get_data(int sw_fd, int port,
   if (i==WaitLoop){
     printf("Timeout in rmap_get_data port=%d\n",port);
     sw_print_status(sw_fd,port);
+    printf("tx buffer ---\n");
+    for(i=0;i<packet_size;i++){
+      printf("%02x ",tx_buffer[i]);
+      if ((i+1)%8==0) printf("\n");
+    }printf("\n");
     return -1;
   }
 
@@ -427,6 +437,11 @@ int rmap_put_word0(int sw_fd, int port,
   if (i==WaitLoop){
     printf("Timeout in rmap_put_word0\n");
     sw_print_status(sw_fd,port);
+    printf("tx buffer ---\n");
+    for(i=0;i<packet_size;i++){
+      printf("%02x ",tx_buffer[i]);
+      if ((i+1)%8==0) printf("\n");
+    }printf("\n");
     return -1;
   }
 
@@ -438,7 +453,7 @@ int rmap_put_word0(int sw_fd, int port,
   }
 
   if ( (rx_buffer[3]&0xff) != 0x00){ // NOT SUCCESS
-    printf("rmap_get_data0: RMAP error code=%08x\n",rx_buffer[3]);
+    printf("rmap_put_word0: RMAP error code=%08x\n",rx_buffer[3]);
     sw_print_status(sw_fd,port);
     printf("tx buffer ---\n");
     for(i=0;i<packet_size;i++){
@@ -481,6 +496,11 @@ int rmap_put_word(int sw_fd, int port,
   if (i==WaitLoop){
     printf("Timeout in rmap_put_word\n");
     sw_print_status(sw_fd,port);
+    printf("tx buffer ---\n");
+    for(i=0;i<packet_size;i++){
+      printf("%02x ",tx_buffer[i]);
+      if ((i+1)%8==0) printf("\n");
+    }printf("\n");
     return -1;
   }
 
@@ -492,7 +512,7 @@ int rmap_put_word(int sw_fd, int port,
   }
 
   if ( (rx_buffer[3]&0xff) != 0x00){ // NOT SUCCESS
-    printf("rmap_get_data: RMAP error code=%08x\n",rx_buffer[3]);
+    printf("rmap_put_word: RMAP error code=%08x\n",rx_buffer[3]);
     sw_print_status(sw_fd,port);
     printf("tx buffer ---\n");
     for(i=0;i<packet_size;i++){
@@ -526,7 +546,7 @@ int rmap_put_word2(int sw_fd, int port,
     if ((j=sw_rx_status(sw_fd,port))>0) break;
   }
   if (i==WaitLoop){
-    printf("Timeout in rmap_put_word\n"); return -1;
+    printf("Timeout in rmap_put_word2\n"); return -1;
   }
 
   retval = sw_get_data(sw_fd, port, (unsigned int *)rx_buffer,X_BUFFER_SIZE);

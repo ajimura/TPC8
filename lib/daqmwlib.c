@@ -36,10 +36,10 @@ unsigned int *Create_Header(unsigned int *header,
   *(curptr++)=eventtag;
   *(curptr++)=ComponentID;
   *(curptr++)=ComponentType;
+  *(curptr++)=0; // Version: data structure(?)
   // reserved area
   *(curptr++)=0;  *(curptr++)=0;  *(curptr++)=0;  *(curptr++)=0;
   *(curptr++)=0;  *(curptr++)=0;  *(curptr++)=0;  *(curptr++)=0;
-  *(curptr++)=0;
   // next 2 4bytes-data are reserved, but used for TPCreader
   //  *(curptr++)=0;  *(curptr++)=0;
   *(curptr++)=UserData0;  *(curptr++)=UserData1;

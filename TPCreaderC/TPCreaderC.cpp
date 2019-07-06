@@ -43,9 +43,7 @@ TPCreaderC::TPCreaderC(RTC::Manager* manager)
       m_recv_byte_size(0),
       m_recv_timeout_counter(0),
       m_out_status(BUF_SUCCESS),
-
-      m_out_timeout_counter(0),
-      m_debug(false)
+      m_out_timeout_counter(0)
 {
     // Registration: InPort/OutPort/Service
 
@@ -154,10 +152,18 @@ int TPCreaderC::set_data(int data_byte_size)
 
 int TPCreaderC::write_OutPort()
 {
+  struct timespec ts;
+  double t0=0.,t1;
+
   if (m_debug) {
     std::cerr << "write: StockNum=" << Stock_CurNum << " SockSize=" << Stock_Offset << std::endl;
   }
  
+  if (m_debug) {
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+  }
+
     ////////////////// send data from OutPort  //////////////////
     bool ret = m_OutPort.write();
 
@@ -176,6 +182,12 @@ int TPCreaderC::write_OutPort()
     }
     else {
         m_out_status = BUF_SUCCESS; // successfully done
+    }
+
+    if (m_debug) {
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "write time: " << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
     }
 
     return 0;

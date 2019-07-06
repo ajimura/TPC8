@@ -1,3 +1,6 @@
+  struct timespec ts;
+  double t0=0.,t1;
+
     const int message_freq = 1000;
 
     int received_data_size = 0;
@@ -28,6 +31,11 @@
       m_recv_timeout_counter++;
       return 0; // not ready
     }
+
+  if (m_debug) {
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+  }
 
     m_recv_timeout_counter=0;
     seq_num=(unsigned int)get_sequence_num();
@@ -80,6 +88,12 @@
 
     //increment next
     fadc_prepare_next();
+
+    if (m_debug) {
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+      std::cout << "read time: " << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
+    }
 
     //get event tag from RPC-260 TPC_TrigIO
     if (trigio_read_eventtag(&eventtag)<0){

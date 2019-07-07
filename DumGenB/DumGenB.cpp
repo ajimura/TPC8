@@ -41,7 +41,6 @@ DumGenB::DumGenB(RTC::Manager* manager)
       m_recv_byte_size(0),
       m_recv_timeout_counter(0),
       m_out_status(BUF_SUCCESS),
-
       m_debug(false)
 {
     // Registration: InPort/OutPort/Service
@@ -147,6 +146,11 @@ int DumGenB::parse_params(::NVList* list)
 
       //      std::cerr << "sname: " << sname << "  ";
       //      std::cerr << "value: " << svalue << std::endl;
+
+      if (sname == "DEBUG"){
+      	toLower(svalue);
+      	if (svalue == "yes") m_debug=true;
+      }
 
       if (sname == "GenSize") generate_size=atoi(svalue.c_str());
       if (sname == "IntvTime") interval_time=atoi(svalue.c_str());

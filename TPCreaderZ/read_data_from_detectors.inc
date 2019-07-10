@@ -1,3 +1,9 @@
+  unsigned char comp_buf[1048576];
+  unsigned char deco_buf[1048576];
+  unsigned int *comp_buf4=(unsigned int *)&(comp_buf[0]);
+  unsigned int *deco_buf4=(unsigned int *)&(deco_buf[0]);
+  unsigned long origsize,compsize,decompsize;
+
   struct timespec ts;
   double t0=0.,t1;
 
@@ -131,5 +137,27 @@
 
     inc_sequence_num();                     // increase sequence num.
     eventnum++;
+
+// check compression by zlib
+    printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
+	   *toppos,*(toppos+1),*(toppos+2),*(toppos+3),
+	   *(toppos+4),*(toppos+5),*(toppos+6),*(toppos+7));
+    compsize=1048576;
+    if (compress(comp_buf,&compsize,(unsigned char *)toppos,received_data_size)!=Z_OK){
+      printf("error in compress()\n");
+    }
+    printf("Compressed: size=%ld -> %ld\n",received_data_size,compsize);
+    printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
+	   *comp_buf4,*(comp_buf4+1),*(comp_buf4+2),*(comp_buf4+3),
+	   *(comp_buf4+4),*(comp_buf4+5),*(comp_buf4+6),*(comp_buf4+7));
+
+    decompsize=1048576;
+    if (uncompress(deco_buf,&decompsize,comp_buf,compsize)!=Z_OK){
+      printf("error in uncompress()\n");
+    }
+    printf("Uncompressed: size=%ld -> %ld\n",compsize,decompsize);
+    printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
+	   *deco_buf4,*(deco_buf4+1),*(deco_buf4+2),*(deco_buf4+3),
+	   *(deco_buf4+4),*(deco_buf4+5),*(deco_buf4+6),*(deco_buf4+7));
 
     return received_data_size;

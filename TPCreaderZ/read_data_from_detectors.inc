@@ -146,16 +146,16 @@
     if (compress(comp_buf,&compsize,(unsigned char *)toppos,received_data_size)!=Z_OK){
       printf("error in compress()\n");
     }
-    printf("Compressed: size=%d -> %d\n",received_data_size,compsize);
+    printf("Compressed: size=%ld -> %ld\n",received_data_size,compsize);
     printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
 	   *comp_buf4,*(comp_buf4+1),*(comp_buf4+2),*(comp_buf4+3),
 	   *(comp_buf4+4),*(comp_buf4+5),*(comp_buf4+6),*(comp_buf4+7));
 
     decompsize=1048576;
-    if (uncompress(deco_buf,&decompsize,comp_buf,copsize)!=Z_OK){
+    if (uncompress(deco_buf,&decompsize,comp_buf,compsize)!=Z_OK){
       printf("error in uncompress()\n");
     }
-    printf("Uncompressed: size=%d -> %d\n",compsize,decompsize);
+    printf("Uncompressed: size=%ld -> %ld\n",compsize,decompsize);
     printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
 	   *deco_buf4,*(deco_buf4+1),*(deco_buf4+2),*(deco_buf4+3),
 	   *(deco_buf4+4),*(deco_buf4+5),*(deco_buf4+6),*(deco_buf4+7));

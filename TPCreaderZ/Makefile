@@ -17,8 +17,9 @@ ifeq ($(shell uname -m),armv7l)
 OBJS += /usr/share/swsoc8/lib/swsoc_lib.o
 CPPFLAGS += -I/usr/share/swsoc8/include/ -g
 endif
-OBJS += ../lib/rmap_lib.o -lz
+OBJS += ../lib/rmap_lib.o
 CPPFLAGS += -I../lib/
+LDLIBS = -lz
 
 # for TPC readout
 OBJS += ../lib/tpclib.o ../lib/trigio_lib.o

@@ -9,6 +9,7 @@
 
 #include <iomanip>
 #include <ctime>
+#include <zlib.h>
 #include "TPCreaderZ.h"
 #include "daqmwlib.h"
 #include "tpclib.h"
@@ -155,11 +156,13 @@ int TPCreaderZ::write_OutPort()
   struct timespec ts;
   double t0,t1;
 
-  clock_gettime(CLOCK_MONOTONIC,&ts);
-  t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-
   if (m_debug) {
     std::cerr << "write: StockNum=" << Stock_CurNum << " SockSize=" << Stock_Offset << std::endl;
+  }
+
+  if (m_debug) {
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
   }
 
   ////////////////// send data from OutPort  //////////////////
@@ -178,9 +181,11 @@ int TPCreaderZ::write_OutPort()
     m_out_status = BUF_SUCCESS; // successfully done
   }
 
-  clock_gettime(CLOCK_MONOTONIC,&ts);
-  t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-  if (m_debug) std::cout << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
+  if (m_debug) {
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+    std::cout << "write time: " << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
+  }
 
   return 0;
 }

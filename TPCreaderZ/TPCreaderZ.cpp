@@ -138,6 +138,12 @@ int TPCreaderZ::set_data(int data_byte_size)
     unsigned char header[8];
     unsigned char footer[8];
 
+    unsigned char comp_buf[Stock_MaxSiz];
+    unsigned char deco_buf[Stock_MaxSiz];
+    unsigned int *comp_buf4=(unsigned int *)&(comp_buf[0]);
+    unsigned int *deco_buf4=(unsigned int *)&(deco_buf[0]);
+    unsigned long origsize,compsize,decompsize;
+
     set_header(&header[0], (unsigned int)data_byte_size);
     set_footer(&footer[0]);
 
@@ -147,6 +153,28 @@ int TPCreaderZ::set_data(int data_byte_size)
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], (size_t)data_byte_size);
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + (unsigned int)data_byte_size]), &footer[0],
            FOOTER_BYTE_SIZE);
+
+// check compression by zlib
+    printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
+	   *m_data1,*(m_data1+1),*(m_data1+2),*(m_data1+3),
+	   *(m_data1+4),*(m_data1+5),*(m_data1+6),*(m_data1+7));
+    compsize=Stock_MaxSiz;
+    if (compress(comp_buf,&compsize,m_data1,data_byte_size)!=Z_OK){
+      printf("error in compress()\n");
+    }
+    printf("Compressed: size=%ld -> %ld\n",data_byte_size,compsize);
+    printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
+	   *comp_buf4,*(comp_buf4+1),*(comp_buf4+2),*(comp_buf4+3),
+	   *(comp_buf4+4),*(comp_buf4+5),*(comp_buf4+6),*(comp_buf4+7));
+
+    decompsize=Stock_MaxSiz;
+    if (uncompress(deco_buf,&decompsize,comp_buf,compsize)!=Z_OK){
+      printf("error in uncompress()\n");
+    }
+    printf("Uncompressed: size=%ld -> %ld\n",compsize,decompsize);
+    printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
+	   *deco_buf4,*(deco_buf4+1),*(deco_buf4+2),*(deco_buf4+3),
+	   *(deco_buf4+4),*(deco_buf4+5),*(deco_buf4+6),*(deco_buf4+7));
 
     return 0;
 }

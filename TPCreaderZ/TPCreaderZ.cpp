@@ -146,6 +146,13 @@ int TPCreaderZ::set_data(int data_byte_size)
   unsigned int *toppos=m_data4;
   unsigned int outsize, bufsize;
 
+  if (m_debug)
+    std::cerr << "in set_data: data_byte_size=" << data_byte_size << std::endl;
+
+  m_out_data.data.length((unsigned int)Stock_MaxSiz);
+  if (m_debug)
+    std::cerr << "Outdata address=" << reinterpret_cast<void *>(&(m_out_data.data[0])) << std::endl;
+
   if (OutCompress){
     compsize=Stock_MaxSiz;
     if (compress(&(m_out_data.data[HEADER_BYTE_SIZE+4]),&compsize,m_data1,data_byte_size)!=Z_OK){
@@ -157,7 +164,7 @@ int TPCreaderZ::set_data(int data_byte_size)
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &bufsize, 4);
   }else{
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], (size_t)data_byte_size);
-    outsize=data_byte_size;
+    outsize=(unsigned int)data_byte_size;
   }
 
   set_header(&header[0], outsize);
@@ -166,8 +173,9 @@ int TPCreaderZ::set_data(int data_byte_size)
   ///set OutPort buffer length
   memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
   //    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], (size_t)data_byte_size);
-  memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + (unsigned int)data_byte_size]), &footer[0],
+  memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + outsize]), &footer[0],
 	 FOOTER_BYTE_SIZE);
+
   m_out_data.data.length((unsigned int)outsize + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
 
 // check compression by zlib

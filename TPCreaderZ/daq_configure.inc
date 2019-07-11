@@ -65,6 +65,8 @@
     std::cout << "Done" << std::endl;
 
     // allocate data buffer
+    m_out_data.data.length((unsigned int)Stock_MaxSiz);
+
     try{
       m_dataA=new unsigned char[
                (CompHeaderSize + MaxFADCSize*totNumFADC) * Stock_MaxNum

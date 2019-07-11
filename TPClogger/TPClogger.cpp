@@ -13,6 +13,7 @@
  *
  */
 
+#include <zlib.h>
 #include "TPClogger.h"
 #include "daqmwlib.h"
 

@@ -138,19 +138,58 @@ int TPCreaderZ::set_data(int data_byte_size)
     unsigned char header[8];
     unsigned char footer[8];
 
-    std::cerr << "pre: " << &(m_out_data.data[0]) << std::endl;
+  unsigned char comp_buf[Stock_MaxSiz];
+  unsigned char deco_buf[Stock_MaxSiz];
+  unsigned int *comp_buf4=(unsigned int *)&(comp_buf[0]);
+  unsigned int *deco_buf4=(unsigned int *)&(deco_buf[0]);
+  unsigned long origsize,compsize,decompsize;
+  unsigned int *toppos=m_data4;
+  unsigned int outsize, bufsize;
 
-    set_header(&header[0], (unsigned int)data_byte_size);
-    set_footer(&footer[0]);
-
-    ///set OutPort buffer length
-    std::cerr << "pos(1): " << &(m_out_data.data[0]) << std::endl;
-    m_out_data.data.length((unsigned int)data_byte_size + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
-    std::cerr << "pos(2): " << &(m_out_data.data[0]) << std::endl;
-    memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
+  if (OutCompress){
+    compsize=Stock_MaxSiz;
+    if (compress(&(m_out_data.data[HEADER_BYTE_SIZE+4]),&compsize,m_data1,data_byte_size)!=Z_OK){
+      printf("error in compress()\n");
+    }
+    if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
+    outsize=(unsigned int)(compsize+4);
+    bufsize=outsize|0xf0000000;
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &bufsize, 4);
+  }else{
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], (size_t)data_byte_size);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + (unsigned int)data_byte_size]), &footer[0],
-           FOOTER_BYTE_SIZE);
+    outsize=data_byte_size;
+  }
+
+  set_header(&header[0], outsize);
+  set_footer(&footer[0]);
+
+  ///set OutPort buffer length
+  memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
+  //    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], (size_t)data_byte_size);
+  memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + (unsigned int)data_byte_size]), &footer[0],
+	 FOOTER_BYTE_SIZE);
+  m_out_data.data.length((unsigned int)outsize + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
+
+// check compression by zlib
+//    printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
+//	   *toppos,*(toppos+1),*(toppos+2),*(toppos+3),
+//	   *(toppos+4),*(toppos+5),*(toppos+6),*(toppos+7));
+//    compsize=Stock_MaxSiz;
+//    if (compress(comp_buf,&compsize,(unsigned char *)toppos,data_byte_size)!=Z_OK){
+//      printf("error in compress()\n");
+//    }
+//    printf("Compressed: size=%ld -> %ld\n",data_byte_size,compsize);
+//    printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
+//	   *comp_buf4,*(comp_buf4+1),*(comp_buf4+2),*(comp_buf4+3),
+//	   *(comp_buf4+4),*(comp_buf4+5),*(comp_buf4+6),*(comp_buf4+7));
+//    decompsize=Stock_MaxSiz;
+//    if (uncompress(deco_buf,&decompsize,comp_buf,compsize)!=Z_OK){
+//      printf("error in uncompress()\n");
+//    }
+//    printf("Uncompressed: size=%ld -> %ld\n",compsize,decompsize);
+//    printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
+//	   *deco_buf4,*(deco_buf4+1),*(deco_buf4+2),*(deco_buf4+3),
+//	   *(deco_buf4+4),*(deco_buf4+5),*(deco_buf4+6),*(deco_buf4+7));
 
     return 0;
 }

@@ -53,6 +53,7 @@ private:
     int reset_InPort();
     unsigned int read_InPort();
     void toLower(std::basic_string<char>& s);
+    unsigned char * renew_buf(unsigned char *orig_buf, size_t cursize, size_t newsize);
 
     FileUtils* fileUtils;
     bool m_isDataLogging;
@@ -68,9 +69,11 @@ private:
   int ComponentID;
   int In_TotSiz;
   int In_RemainSiz;
-  unsigned int *In_CurPos;
+  unsigned int *In_CurPos; //Data pointer before decompressed in case
   int In_Done;
 
+  unsigned char *DataPos1; //Data pointer ready to use
+  int Cur_MaxDataSiz;
 };
 
 extern "C"

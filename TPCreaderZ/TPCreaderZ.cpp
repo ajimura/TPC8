@@ -159,9 +159,10 @@ int TPCreaderZ::set_data(int data_byte_size)
       printf("error in compress()\n");
     }
     if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
-    outsize=(unsigned int)(compsize+4);
+    outsize=(unsigned int)(compsize+8);
     bufsize=outsize|0xf0000000;
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &bufsize, 4);
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &bufsize, 4); // 4+4+compressed size
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE+4]), &data_byte_size, 4); //original size
   }else{
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], (size_t)data_byte_size);
     outsize=(unsigned int)data_byte_size;

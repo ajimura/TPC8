@@ -94,6 +94,20 @@ int TPClogger::daq_configure()
     In_CurPos=NULL;
     In_Done=0;
 
+    Cur_MaxDataSiz=10240; // 10k (tempolary)
+    try{
+      DataPos1=new unsigned char[Cur_MaxDataSiz];
+      DataPos4=(unsigned int *)DataPos1;
+    }
+    catch(std::bad_alloc){
+      std::cerr << "Bad allocation..." << std::endl;
+      fatal_error_report(USER_DEFINED_ERROR1);
+    }
+    catch(...){
+      std::cerr << "Got exception..." << std::endl;
+      fatal_error_report(USER_DEFINED_ERROR1);
+    }
+
     return ret;
 }
 
@@ -285,6 +299,7 @@ void TPClogger::toLower(std::basic_string<char>& s)
 unsigned int TPClogger::read_InPort()
 {
     int recv_byte_size = 0;
+    int *decompsize;
     bool ret;
     int GlobSiz;
     int preSiz;
@@ -310,9 +325,27 @@ unsigned int TPClogger::read_InPort()
 	m_in_timeout_counter = 0;
         m_in_status = BUF_SUCCESS;
 	GlobSiz=m_in_data.data.length();
-	In_TotSiz=GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
-	In_CurPos=(unsigned int *)&(m_in_data.data[HEADER_BYTE_SIZE]);
-        recv_byte_size=(int)*In_CurPos;
+	decompsize=(int *)&(m_in_data.data[HEADER_BYTE_SIZE+4]);
+	if (*decompsize>Cur_MaxDataSiz){
+	  DataPos1=renew_buf(DataPos1,(size_t)Cur_MaxDataSiz,(size_t)decompsize);
+	  Cur_MaxDataSiz=decompsize;
+	}
+	if (GlobSiz&0xf0000000){ // compressed data
+	  In_TotSiz=(GlobSiz&0x0fffffff)-8;
+	  if (uncompress(DataPos1,&In_TotSiz,&(m_in_data.data[HEADER_BYTE_SIZE+8]),In_TotSiz)!=Z_OK){
+	    std::cerr << "Failed in uncompress" << std::endl;
+	    fatal_error_report(INPORT_ERROR);
+	  }
+	  if (*decompsize!=In_TotSiz){
+	    std::cerr << "Failted in uncompress, size mismatch..." << std::endl;
+	    fatal_error_report(INPORT_ERROR);
+	  }
+	  In_CurPos=(unsigned int *)DataPos1;
+	}else{
+	  In_TotSiz=(GlobSiz&0x0fffffff)-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
+	  In_CurPos=(unsigned int *)&(m_in_data.data[HEADER_BYTE_SIZE]);
+	}
+	recv_byte_size=(int)*In_CurPos;
 	In_RemainSiz=In_TotSiz-recv_byte_size;
 	if (m_debug)
 	  std::cerr << " reading: Tot=" << In_TotSiz << ", Remain=" << In_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
@@ -403,6 +436,31 @@ int TPClogger::daq_run()
 	//    }
 
     return 0;
+}
+
+unsigned char * TPClogger::renew_buf(unsigned char * orig_buf,
+				      size_t cursize, size_t newsize)
+{
+  unsigned char * new_buf;
+
+  try{
+    new_buf = new unsigned char[newsize];
+  }
+  catch(std::bad_alloc){
+    std::cerr << "Bad allocation..." << std::endl;
+    fatal_error_report(USER_DEFINED_ERROR1);
+  }
+  catch(...){
+    std::cerr << "Got exception..." << std::endl;
+    fatal_error_report(USER_DEFINED_ERROR1);
+  }
+
+  memcpy(new_buf, orig_buf, cursize);
+  delete [] orig_buf;
+
+  std::cerr << "Re-new data buf: " << cursize << " -> " << newsize << std::endl;
+
+  return new_buf;
 }
 
 extern "C"

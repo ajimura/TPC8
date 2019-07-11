@@ -138,11 +138,15 @@ int TPCreaderZ::set_data(int data_byte_size)
     unsigned char header[8];
     unsigned char footer[8];
 
+    std::cerr << "pre: " << &(m_out_data.data[0]) << std::endl;
+
     set_header(&header[0], (unsigned int)data_byte_size);
     set_footer(&footer[0]);
 
     ///set OutPort buffer length
+    std::cerr << "pos(1): " << &(m_out_data.data[0]) << std::endl;
     m_out_data.data.length((unsigned int)data_byte_size + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
+    std::cerr << "pos(2): " << &(m_out_data.data[0]) << std::endl;
     memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], (size_t)data_byte_size);
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + (unsigned int)data_byte_size]), &footer[0],

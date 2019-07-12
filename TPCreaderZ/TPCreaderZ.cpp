@@ -135,16 +135,19 @@ int TPCreaderZ::read_data_from_detectors()
 
 int TPCreaderZ::set_data(int data_byte_size)
 {
-    unsigned char header[8];
-    unsigned char footer[8];
+  struct timespec ts;
+  double t0,t1;
 
-  unsigned char comp_buf[Stock_MaxSiz];
-  unsigned char deco_buf[Stock_MaxSiz];
-  unsigned int *comp_buf4=(unsigned int *)&(comp_buf[0]);
-  unsigned int *deco_buf4=(unsigned int *)&(deco_buf[0]);
-  unsigned long origsize,compsize,decompsize;
-  unsigned int *toppos=m_data4;
+  unsigned char header[8];
+  unsigned char footer[8];
+
+  unsigned long origsize,compsize;
   unsigned int outsize, bufsize;
+
+  if (m_debug) {
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+  }
 
   if (m_debug)
     std::cerr << "in set_data: data_byte_size=" << data_byte_size << std::endl;
@@ -157,7 +160,8 @@ int TPCreaderZ::set_data(int data_byte_size)
     compsize=Stock_MaxSiz;
     origsize=(unsigned long)data_byte_size;
     if (compress(&(m_out_data.data[HEADER_BYTE_SIZE+8]),&compsize,m_data1,origsize)!=Z_OK){
-      printf("error in compress()\n");
+      std::cerr << "Error in compress()" << std::endl;
+      fatal_error_report(OUTPORT_ERROR);
     }
     if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
     outsize=(unsigned int)(compsize+8);
@@ -180,28 +184,12 @@ int TPCreaderZ::set_data(int data_byte_size)
 
   m_out_data.data.length((unsigned int)outsize + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
 
-// check compression by zlib
-//    printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
-//	   *toppos,*(toppos+1),*(toppos+2),*(toppos+3),
-//	   *(toppos+4),*(toppos+5),*(toppos+6),*(toppos+7));
-//    compsize=Stock_MaxSiz;
-//    if (compress(comp_buf,&compsize,(unsigned char *)toppos,data_byte_size)!=Z_OK){
-//      printf("error in compress()\n");
-//    }
-//    printf("Compressed: size=%ld -> %ld\n",data_byte_size,compsize);
-//    printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
-//	   *comp_buf4,*(comp_buf4+1),*(comp_buf4+2),*(comp_buf4+3),
-//	   *(comp_buf4+4),*(comp_buf4+5),*(comp_buf4+6),*(comp_buf4+7));
-//    decompsize=Stock_MaxSiz;
-//    if (uncompress(deco_buf,&decompsize,comp_buf,compsize)!=Z_OK){
-//      printf("error in uncompress()\n");
-//    }
-//    printf("Uncompressed: size=%ld -> %ld\n",compsize,decompsize);
-//    printf("Orig: %08x %08x %08x %08x %08x %08x %08x %08x\n",
-//	   *deco_buf4,*(deco_buf4+1),*(deco_buf4+2),*(deco_buf4+3),
-//	   *(deco_buf4+4),*(deco_buf4+5),*(deco_buf4+6),*(deco_buf4+7));
-
-    return 0;
+  if (m_debug) {
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+    std::cout << "setdata time: " << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
+  }
+  return 0;
 }
 
 int TPCreaderZ::write_OutPort()

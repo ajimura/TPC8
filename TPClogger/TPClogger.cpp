@@ -310,39 +310,31 @@ unsigned int TPClogger::read_InPort()
 
     if (In_RemainSiz==0){
       ret = m_InPort.read();
-      //      std::cerr << " m_InPort.read(): ret=" << ret << std::endl;
       if (ret==false){ // false: TIMEOUT or FATAL
 	m_in_status=check_inPort_status(m_InPort);
-	//	std::cerr << " check_inPort_status(): ret=" << m_in_status << std::endl;
 	if (m_in_status==BUF_TIMEOUT){ // Buffer empty
 	  m_in_timeout_counter++;
-	  //	  if (check_trans_lock()) {     // Check if stop command has come.
-	  //	    set_trans_unlock();       // Transit to CONFIGURE state.
-	  //	  }
         }else if (m_in_status==BUF_FATAL){
 	  fatal_error_report(INPORT_ERROR);
 	}
       }else{
-        if (m_debug) std::cerr << "Get Data1. Timeout: " << m_in_timeout_counter << " -> 0" << std::endl;
+        if (m_debug) std::cerr << "Get Data. Timeout: " << m_in_timeout_counter << " -> 0" << std::endl;
 	m_in_timeout_counter = 0;
         m_in_status = BUF_SUCCESS;
-	GlobSiz=m_in_data.data.length();
-	std::cerr << "GlobSiz=" << GlobSiz << std::endl;
-	memcpy(&BufSiz,&(m_in_data.data[HEADER_BYTE_SIZE]),4);
-	std::cerr << "BufSiz=" << BufSiz << "(" << std::hex << BufSiz << ")" << std::endl << std::dec;
+	GlobSiz=m_in_data.data.length(); // size of DAQ-MW packet
+	if (m_debug) std::cerr << "Received Size=" << GlobSiz << std::endl;
+	memcpy(&BufSiz,&(m_in_data.data[HEADER_BYTE_SIZE]),4); // size of 
 	if (BufSiz&0xf0000000){ // compressed data
-	  decompsize=(int *)&(m_in_data.data[HEADER_BYTE_SIZE+4]);
+	  decompsize=(int *)&(m_in_data.data[HEADER_BYTE_SIZE+4]); // original size
 	  if (*decompsize>Cur_MaxDataSiz){
 	    DataPos1=renew_buf(DataPos1,(size_t)Cur_MaxDataSiz,(size_t)*decompsize);
 	    Cur_MaxDataSiz=*decompsize;
 	  }
 	  origsize=(unsigned long)*decompsize;
 	  compsize=(unsigned long)(GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE-8);
-	  std::cerr << "uncompressing: datasize=" << compsize << ", bufsize=" << origsize << std::endl;
+	  if (m_debug) std::cerr << "uncompressing: datasize=" << compsize << ", bufsize=" << origsize << std::endl;
 	  if ((zret=uncompress(DataPos1,&origsize,&(m_in_data.data[HEADER_BYTE_SIZE+8]),compsize))!=Z_OK){
 	    std::cerr << "Failed in uncompress: " << zret << std::endl;
-	    if (zret==Z_MEM_ERROR) std::cerr << "Z_MEM_ERROR" << std::endl;
-	    if (zret==Z_BUF_ERROR) std::cerr << "Z_BUF_ERROR" << std::endl;
 	    fatal_error_report(INPORT_ERROR);
 	  }
 	  In_TotSiz=(int)origsize;

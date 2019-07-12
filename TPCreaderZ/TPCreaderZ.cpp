@@ -155,7 +155,8 @@ int TPCreaderZ::set_data(int data_byte_size)
 
   if (OutCompress){
     compsize=Stock_MaxSiz;
-    if (compress(&(m_out_data.data[HEADER_BYTE_SIZE+4]),&compsize,m_data1,data_byte_size)!=Z_OK){
+    origsize=(unsigned long)data_byte_size;
+    if (compress(&(m_out_data.data[HEADER_BYTE_SIZE+8]),&compsize,m_data1,origsize)!=Z_OK){
       printf("error in compress()\n");
     }
     if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);

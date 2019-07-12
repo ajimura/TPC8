@@ -97,7 +97,6 @@ int TPClogger::daq_configure()
     Cur_MaxDataSiz=10240; // 10k (tempolary)
     try{
       DataPos1=new unsigned char[Cur_MaxDataSiz];
-      DataPos4=(unsigned int *)DataPos1;
     }
     catch(std::bad_alloc){
       std::cerr << "Bad allocation..." << std::endl;
@@ -302,7 +301,10 @@ unsigned int TPClogger::read_InPort()
     int *decompsize;
     bool ret;
     int GlobSiz;
+    int BufSiz;
     int preSiz;
+    unsigned long compsize,origsize;
+    int zret;
 
     //    std::cerr << "Entering read_InPort: Tot=" << In_TotSiz << ", Remain=" << In_RemainSiz << std::endl;
 
@@ -325,24 +327,33 @@ unsigned int TPClogger::read_InPort()
 	m_in_timeout_counter = 0;
         m_in_status = BUF_SUCCESS;
 	GlobSiz=m_in_data.data.length();
-	decompsize=(int *)&(m_in_data.data[HEADER_BYTE_SIZE+4]);
-	if (*decompsize>Cur_MaxDataSiz){
-	  DataPos1=renew_buf(DataPos1,(size_t)Cur_MaxDataSiz,(size_t)decompsize);
-	  Cur_MaxDataSiz=decompsize;
-	}
-	if (GlobSiz&0xf0000000){ // compressed data
-	  In_TotSiz=(GlobSiz&0x0fffffff)-8;
-	  if (uncompress(DataPos1,&In_TotSiz,&(m_in_data.data[HEADER_BYTE_SIZE+8]),In_TotSiz)!=Z_OK){
-	    std::cerr << "Failed in uncompress" << std::endl;
+	std::cerr << "GlobSiz=" << GlobSiz << std::endl;
+	memcpy(&BufSiz,&(m_in_data.data[HEADER_BYTE_SIZE]),4);
+	std::cerr << "BufSiz=" << BufSiz << "(" << std::hex << BufSiz << ")" << std::endl << std::dec;
+	if (BufSiz&0xf0000000){ // compressed data
+	  decompsize=(int *)&(m_in_data.data[HEADER_BYTE_SIZE+4]);
+	  if (*decompsize>Cur_MaxDataSiz){
+	    DataPos1=renew_buf(DataPos1,(size_t)Cur_MaxDataSiz,(size_t)*decompsize);
+	    Cur_MaxDataSiz=*decompsize;
+	  }
+	  origsize=(unsigned long)*decompsize;
+	  compsize=(unsigned long)(GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE-8);
+	  std::cerr << "uncompressing: datasize=" << compsize << ", bufsize=" << origsize << std::endl;
+	  if ((zret=uncompress(DataPos1,&origsize,&(m_in_data.data[HEADER_BYTE_SIZE+8]),compsize))!=Z_OK){
+	    std::cerr << "Failed in uncompress: " << zret << std::endl;
+	    if (zret==Z_MEM_ERROR) std::cerr << "Z_MEM_ERROR" << std::endl;
+	    if (zret==Z_BUF_ERROR) std::cerr << "Z_BUF_ERROR" << std::endl;
 	    fatal_error_report(INPORT_ERROR);
 	  }
+	  In_TotSiz=(int)origsize;
 	  if (*decompsize!=In_TotSiz){
-	    std::cerr << "Failted in uncompress, size mismatch..." << std::endl;
+	    std::cerr << "Failed in uncompress, size mismatch..." << std::endl;
 	    fatal_error_report(INPORT_ERROR);
 	  }
+	  if (m_debug) std::cerr << " uncomopress: " << compsize << "-> " << In_TotSiz << std::endl;
 	  In_CurPos=(unsigned int *)DataPos1;
 	}else{
-	  In_TotSiz=(GlobSiz&0x0fffffff)-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
+	  In_TotSiz=GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
 	  In_CurPos=(unsigned int *)&(m_in_data.data[HEADER_BYTE_SIZE]);
 	}
 	recv_byte_size=(int)*In_CurPos;

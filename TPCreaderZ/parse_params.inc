@@ -18,7 +18,7 @@
     ReadTimeout=10000;
     Stock_MaxNum=1;
     Stock_MaxSiz=2097044;
-    OutCompress=false;
+    OutCompress=0;
 
     int len = (*list).length();
     for (i = 0; i < len; i+=2) {
@@ -98,8 +98,8 @@
       if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
       if (sname == "StockMaxSize") Stock_MaxSiz=atoi(svalue.c_str());
       if (sname == "OutCompress"){
-	toLower(svalue);
-      	if (svalue == "yes") OutCompress=true;
+      	if (svalue == "ZLIB") OutCompress=1;
+      	if (svalue == "LZ4") OutCompress=2;
       }
 
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());

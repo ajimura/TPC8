@@ -24,7 +24,7 @@ NEED_BOOST_SYSTEM_LIB_SINCE=103500
 ifeq ($(shell echo "$(BOOST_VERSION) >= $(NEED_BOOST_SYSTEM_LIB_SINCE)" | bc), 1)
 LDLIBS += -lboost_system
 endif
-LDLIBS += -lz
+LDLIBS += -lz -llz4
 
 # sample install target
 #

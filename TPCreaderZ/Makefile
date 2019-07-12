@@ -19,7 +19,7 @@ CPPFLAGS += -I/usr/share/swsoc8/include/ -g
 endif
 OBJS += ../lib/rmap_lib.o
 CPPFLAGS += -I../lib/
-LDLIBS += -lz
+LDLIBS += -lz -llz4
 
 # for TPC readout
 OBJS += ../lib/tpclib.o ../lib/trigio_lib.o

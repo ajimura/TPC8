@@ -99,7 +99,7 @@ private:
   int Stock_MaxSiz;
   int Stock_CurNum;
   int Stock_Offset;
-  bool OutCompress;
+  int OutCompress;
 
   int SwitchAB;
   int Resv_In, Resv_Size;

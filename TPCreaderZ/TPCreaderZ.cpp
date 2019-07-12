@@ -10,6 +10,7 @@
 #include <iomanip>
 #include <ctime>
 #include <zlib.h>
+#include <lz4.h>
 #include "TPCreaderZ.h"
 #include "daqmwlib.h"
 #include "tpclib.h"
@@ -156,16 +157,29 @@ int TPCreaderZ::set_data(int data_byte_size)
   if (m_debug)
     std::cerr << "Outdata address=" << reinterpret_cast<void *>(&(m_out_data.data[0])) << std::endl;
 
-  if (OutCompress){
+  if (OutCompress==1){ //ZLIB
     compsize=Stock_MaxSiz;
     origsize=(unsigned long)data_byte_size;
-    if (compress(&(m_out_data.data[HEADER_BYTE_SIZE+8]),&compsize,m_data1,origsize)!=Z_OK){
-      std::cerr << "Error in compress()" << std::endl;
+    if (compress2(&(m_out_data.data[HEADER_BYTE_SIZE+8]),&compsize,m_data1,origsize,1)!=Z_OK){
+      std::cerr << "Error in compress2()" << std::endl;
       fatal_error_report(OUTPORT_ERROR);
     }
     if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
     outsize=(unsigned int)(compsize+8);
     bufsize=outsize|0xf0000000;
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &bufsize, 4); // 4+4+compressed size
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE+4]), &data_byte_size, 4); //original size
+  }else if (OutCompress==2){ //LZ4
+    compsize=Stock_MaxSiz;
+    origsize=(unsigned long)data_byte_size;
+    if ((compsize=LZ4_compress_default(m_data1, &(m_out_data.data[HEADER_BYTE_SIZE+8]),
+				       origsize,Stock_MaxSiz))==0){
+      std::cerr << "Error in LZ4_compress_default()" << std::endl;
+      fatal_error_report(OUTPORT_ERROR);
+    }
+    if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
+    outsize=(unsigned int)(compsize+8);
+    bufsize=outsize|0xe0000000;
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &bufsize, 4); // 4+4+compressed size
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE+4]), &data_byte_size, 4); //original size
   }else{

@@ -14,6 +14,7 @@
  */
 
 #include <zlib.h>
+#include <lz4.h>
 #include "TPClogger.h"
 #include "daqmwlib.h"
 
@@ -338,6 +339,28 @@ unsigned int TPClogger::read_InPort()
 	    fatal_error_report(INPORT_ERROR);
 	  }
 	  In_TotSiz=(int)origsize;
+	  if (*decompsize!=In_TotSiz){
+	    std::cerr << "Failed in uncompress, size mismatch..." << std::endl;
+	    fatal_error_report(INPORT_ERROR);
+	  }
+	  if (m_debug) std::cerr << " uncomopress: " << compsize << "-> " << In_TotSiz << std::endl;
+	  In_CurPos=(unsigned int *)DataPos1;
+	}else if(BufSiz&0xe0000000){ //LZ4
+	  // LZ4_decompress_safe (const char* src, char* dst, int compressedSize, int dstCapacity);
+	  decompsize=(int *)&(m_in_data.data[HEADER_BYTE_SIZE+4]); // original size
+	  if (*decompsize>Cur_MaxDataSiz){
+	    DataPos1=renew_buf(DataPos1,(size_t)Cur_MaxDataSiz,(size_t)*decompsize);
+	    Cur_MaxDataSiz=*decompsize;
+	  }
+	  origsize=(unsigned long)*decompsize;
+	  compsize=(unsigned long)(GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE-8);
+	  if (m_debug) std::cerr << "uncompressing: datasize=" << compsize << ", bufsize=" << origsize << std::endl;
+	  if ((zret=LZ4_decompress_safe(&(m_in_data.data[HEADER_BYTE_SIZE+8]),DataPos1,
+					    (int)compsize,(int)origsize))<0){
+	    std::cerr << "Failed in uncompress: " << zret << std::endl;
+	    fatal_error_report(INPORT_ERROR);
+	  }
+	  In_TotSiz=zret;
 	  if (*decompsize!=In_TotSiz){
 	    std::cerr << "Failed in uncompress, size mismatch..." << std::endl;
 	    fatal_error_report(INPORT_ERROR);

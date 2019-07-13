@@ -14,7 +14,7 @@
  */
 
 #include <zlib.h>
-#include <lz4.h>
+#include "../../local/include/lz4.h"
 #include "TPClogger.h"
 #include "daqmwlib.h"
 
@@ -306,6 +306,7 @@ unsigned int TPClogger::read_InPort()
     int preSiz;
     unsigned long compsize,origsize;
     int zret;
+    int flag;
 
     //    std::cerr << "Entering read_InPort: Tot=" << In_TotSiz << ", Remain=" << In_RemainSiz << std::endl;
 
@@ -325,7 +326,7 @@ unsigned int TPClogger::read_InPort()
 	GlobSiz=m_in_data.data.length(); // size of DAQ-MW packet
 	if (m_debug) std::cerr << "Received Size=" << GlobSiz << std::endl;
 	memcpy(&BufSiz,&(m_in_data.data[HEADER_BYTE_SIZE]),4); // size of 
-	if (BufSiz&0xf0000000){ // compressed data
+	if ((BufSiz&0xf0000000)==0xf0000000){ // compressed data
 	  decompsize=(int *)&(m_in_data.data[HEADER_BYTE_SIZE+4]); // original size
 	  if (*decompsize>Cur_MaxDataSiz){
 	    DataPos1=renew_buf(DataPos1,(size_t)Cur_MaxDataSiz,(size_t)*decompsize);
@@ -345,7 +346,7 @@ unsigned int TPClogger::read_InPort()
 	  }
 	  if (m_debug) std::cerr << " uncomopress: " << compsize << "-> " << In_TotSiz << std::endl;
 	  In_CurPos=(unsigned int *)DataPos1;
-	}else if(BufSiz&0xe0000000){ //LZ4
+	}else if ((BufSiz&0xe0000000)==0xe0000000){ //LZ4
 	  // LZ4_decompress_safe (const char* src, char* dst, int compressedSize, int dstCapacity);
 	  decompsize=(int *)&(m_in_data.data[HEADER_BYTE_SIZE+4]); // original size
 	  if (*decompsize>Cur_MaxDataSiz){
@@ -355,7 +356,7 @@ unsigned int TPClogger::read_InPort()
 	  origsize=(unsigned long)*decompsize;
 	  compsize=(unsigned long)(GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE-8);
 	  if (m_debug) std::cerr << "uncompressing: datasize=" << compsize << ", bufsize=" << origsize << std::endl;
-	  if ((zret=LZ4_decompress_safe(&(m_in_data.data[HEADER_BYTE_SIZE+8]),DataPos1,
+	  if ((zret=LZ4_decompress_safe((char *)&(m_in_data.data[HEADER_BYTE_SIZE+8]),(char *)DataPos1,
 					    (int)compsize,(int)origsize))<0){
 	    std::cerr << "Failed in uncompress: " << zret << std::endl;
 	    fatal_error_report(INPORT_ERROR);

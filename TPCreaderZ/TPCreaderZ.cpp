@@ -10,7 +10,7 @@
 #include <iomanip>
 #include <ctime>
 #include <zlib.h>
-#include <lz4.h>
+#include "../../local/include/lz4.h"
 #include "TPCreaderZ.h"
 #include "daqmwlib.h"
 #include "tpclib.h"
@@ -172,8 +172,8 @@ int TPCreaderZ::set_data(int data_byte_size)
   }else if (OutCompress==2){ //LZ4
     compsize=Stock_MaxSiz;
     origsize=(unsigned long)data_byte_size;
-    if ((compsize=LZ4_compress_default(m_data1, &(m_out_data.data[HEADER_BYTE_SIZE+8]),
-				       origsize,Stock_MaxSiz))==0){
+    if ((compsize=LZ4_compress_default((char *)m_data1, (char *)&(m_out_data.data[HEADER_BYTE_SIZE+8]),
+				       (int)origsize,Stock_MaxSiz))==0){
       std::cerr << "Error in LZ4_compress_default()" << std::endl;
       fatal_error_report(OUTPORT_ERROR);
     }
@@ -203,6 +203,7 @@ int TPCreaderZ::set_data(int data_byte_size)
     t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
     std::cout << "setdata time: " << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
   }
+
   return 0;
 }
 

@@ -33,6 +33,7 @@ INCS += $(PARENT)daq_stop.inc
 INCS += $(PARENT)daq_run.inc
 INCS += $(PARENT)parse_params.inc
 INCS += $(PARENT)read_data_from_detectors.inc
+INCS += $(PARENT)set_data.inc
 
 $(COMP_NAME).o : $(COMP_NAME).cpp $(INCS)
 

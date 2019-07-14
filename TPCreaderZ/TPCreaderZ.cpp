@@ -142,7 +142,7 @@ int TPCreaderZ::set_data(int data_byte_size)
 int TPCreaderZ::write_OutPort()
 {
   struct timespec ts;
-  double t0,t1;
+  double t0=0.,t1;
 
   if (m_debug) {
     std::cerr << "write: StockNum=" << Stock_CurNum << " SockSize=" << Stock_Offset << std::endl;

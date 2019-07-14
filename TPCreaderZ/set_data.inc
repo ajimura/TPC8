@@ -1,10 +1,10 @@
   struct timespec ts;
-  double t0,t1;
+  double t0=0.,t1;
 
   unsigned char header[8];
   unsigned char footer[8];
 
-  unsigned long origsize,compsize;
+  unsigned long compsize;
   unsigned int outsize, bufsize;
 
   if (m_debug) {

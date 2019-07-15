@@ -35,6 +35,9 @@ cd ..
 cd TXer
 make clean
 cd ..
+cd CMPRer
+make clean
+cd ..
 if [ -e /usr/share/swsoc8 -o -e /usr/share/swpci ]; then
     cd TPCreader
     make clean

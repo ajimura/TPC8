@@ -95,7 +95,7 @@ int CMPRer::daq_unconfigure()
 {
     std::cerr << "*** CMPRer::unconfigure" << std::endl;
 
-    delete [] m_data1; std::cout << "Delete data buffer" << std::endl;
+    //    delete [] m_data1; std::cout << "Delete data buffer" << std::endl;
 
     return 0;
 }
@@ -170,11 +170,6 @@ int CMPRer::write_OutPort()
 int CMPRer::read_InPort()
 {
 #include "read_InPort.inc"
-}
-
-void CMPRer::Stock_data(int data_byte_size)
-{
-#include "Stock_data.inc"
 }
 
 int CMPRer::set_data(int data_byte_size)

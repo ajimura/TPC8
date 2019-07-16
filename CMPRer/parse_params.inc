@@ -2,8 +2,8 @@
     //set default value
     m_debug=false;
     ReadTimeout=10000;
-    Stock_MaxNum=1;
-    Stock_MaxSiz=2097044;
+//    Stock_MaxNum=1;
+//    Stock_MaxSiz=2097044;
     OutCompress=0;
 
     int len = (*list).length();

@@ -12,7 +12,7 @@
         m_inport_recv_data_size = read_InPort();
       }
       if ((m_inport_recv_data_size > 0)){				// if data on inport
-	set_data(m_inport_recv_datea_size);
+	set_data(m_inport_recv_data_size);
 	m_inport_recv_data_size=0;
 	if (write_OutPort()==0){
 	  inc_total_data_size((unsigned int)(In_TotSiz&0x0fffffff));

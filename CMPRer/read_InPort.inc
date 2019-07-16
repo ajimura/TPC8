@@ -1,7 +1,6 @@
     int recv_byte_size = 0;
     bool ret;
     int GlobSiz;
-    int preSiz;
 
 //    std::cerr << "Entering read_InPort: Tot=" << In_TotSiz << ", Remain=" << In_RemainSiz << std::endl;
 

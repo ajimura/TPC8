@@ -8,6 +8,7 @@ SRCS += $(COMP_NAME)Comp.cpp
 # LEPS2 DAQ common
 OBJS += ../lib/daqmwlib.o
 CPPFLAGS += -I../lib/ -g
+LDLIBS += -lz ../../local/lib/liblz4.a
 
 INCS = daq_configure.inc
 INCS += parse_params.inc

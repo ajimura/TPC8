@@ -70,6 +70,7 @@ private:
   int ReadTimeout;
 
   int OutCompress;
+  int CompressLevel;
   int In_TotSiz;
 
 };

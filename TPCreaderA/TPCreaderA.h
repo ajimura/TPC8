@@ -59,6 +59,7 @@ private:
   unsigned char *m_data1;
 
     unsigned int m_recv_byte_size;
+  int m_recv_timeout_counter;
 
     BufferStatus m_out_status;
     bool m_debug;

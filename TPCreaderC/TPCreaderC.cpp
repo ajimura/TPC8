@@ -41,6 +41,7 @@ TPCreaderC::TPCreaderC(RTC::Manager* manager)
     : DAQMW::DaqComponentBase(manager),
       m_OutPort("tpcreaderc_out", m_out_data),
       m_recv_byte_size(0),
+      m_recv_timeout_counter(0),
       m_out_status(BUF_SUCCESS),
 
       m_debug(false)

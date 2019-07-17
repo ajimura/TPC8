@@ -739,6 +739,63 @@ int fadc_wait_data_ready_sel(){
   }
 }
 
+int fadc_check_data_ready_all(){ // error: -1, not ready: 0, ready: fadc_tot
+  unsigned int add;
+  int st;
+  int i,j;
+  int wait;
+  struct fadc_info *adc;
+  int count;
+
+  add=ROC_Ready;
+
+  count=DevsNum;j=0;
+  while(count>0){
+    count=0;
+    for(i=0;i<DevsNum;i++){
+      adc=fadcinfo[i];
+      if (j<fadc_num[i]){
+	count++;
+	st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&((adc+j)->roc),4);
+	if (st<0) return -1;
+      }
+    }
+    j++;
+  }
+  wait=0;
+  for(i=0;i<DevsNum;i++){
+    adc=fadcinfo[i];
+    for(j=0;j<fadc_num[i];j++)
+      if ((adc+j)->roc>>(adc+j)->next&1) wait++;
+  }
+  if (wait==fadc_tot) return wait;
+  return 0;
+}
+
+int fadc_check_data_ready_sel(){ // error: -1, not ready: 0, ready: readynum
+  unsigned int add;
+  int st;
+  int i;
+  unsigned int regready;
+  int count;
+
+  add=TGC_IOstat;
+
+  st=0; count=0;
+  for(i=0;i<readynum;i++){
+    st=rmap_get_data(sw_fd[readychk_port[i]],readychk_port[i],
+		     &((fadcinfo[readychk_port[i]]+readychk_node[i])->node),
+		     add,&(regready),4);
+      //      printf("ROC#%d-%d: %08x\n",readychk_port[i],readychk_node[i],regready);
+    if (st<0) return -1;
+    if ((regready&0x000000f0)>0) count++;
+  }
+
+  if (count==readynum) return count;
+
+  return 0;
+}
+
 int fadc_show_buf_stat(int t){
   int st;
   unsigned int add0, add1, add2, add3;

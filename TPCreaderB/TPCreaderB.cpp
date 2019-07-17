@@ -178,6 +178,7 @@ int TPCreaderB::daq_run()
     }
 
     if (check_trans_lock()) {  // check if stop command has come
+        std::cout << "Stop command has come." << std::endl;
         set_trans_unlock();    // transit to CONFIGURED state
         return 0;
     }

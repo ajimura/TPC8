@@ -9,6 +9,8 @@
 
 #include <iomanip>
 #include <ctime>
+#include <zlib.h>
+#include "../../local/include/lz4.h"
 #include "Merger2to1Z.h"
 #include "daqmwlib.h"
 
@@ -109,6 +111,8 @@ int Merger2to1Z::daq_configure()
     Stock_Offset=0;
     //    Cur_MaxDataSiz=67108864; // 64M (tempolary)
     Cur_MaxDataSiz=10240; // 10k (tempolary)
+    Cur_MaxDataSiz1=10240; // 10k (tempolary)
+    Cur_MaxDataSiz2=10240; // 10k (tempolary)
 
     try{
       m_data1=new unsigned char[Cur_MaxDataSiz];
@@ -127,6 +131,12 @@ int Merger2to1Z::daq_configure()
     std::cout << "Stock Max Num: " << Stock_MaxNum << std::endl;
     std::cout << "Stock Max Size: " << Stock_MaxSiz << std::endl;
     //
+    std::cout << "Compress Method on OutPort: ";
+    switch(OutCompress){
+    case 1: std::cout << "ZLIB" << std::endl; break;
+    case 2: std::cout << "LZ4" << std::endl; break;
+    default: std::cout << "NONE" << std::endl; break;
+    }
     std::cout << std::hex;
     std::cout << "Component Type: 0x" << 
       std::setfill('0') << std::setw(8) << std::hex << ComponentType << std::endl;
@@ -149,6 +159,7 @@ int Merger2to1Z::parse_params(::NVList* list)
     ReadTimeout=10000;
     Stock_MaxNum=1;
     Stock_MaxSiz=2097044;
+    OutCompress=0;
 
     int len = (*list).length();
     for (int i = 0; i < len; i+=2) {
@@ -165,6 +176,10 @@ int Merger2to1Z::parse_params(::NVList* list)
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
       if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
       if (sname == "StockMaxSize") Stock_MaxSiz=atoi(svalue.c_str());
+      if (sname == "OutCompress"){
+      	if (svalue == "ZLIB") OutCompress=1;
+      	if (svalue == "LZ4") OutCompress=2;
+      }
     }
 
     return 0;
@@ -295,20 +310,7 @@ void Merger2to1Z::Stock_data(int data1_byte_size, int data2_byte_size)
 
 int Merger2to1Z::set_data(int data_byte_size)
 {
-    unsigned char header[8];
-    unsigned char footer[8];
-
-    set_header(&header[0], (unsigned int)data_byte_size);
-    set_footer(&footer[0]);
-
-    ///set OutPort buffer length
-    m_out_data.data.length((unsigned int)data_byte_size + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
-    memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], (size_t)data_byte_size);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + (unsigned int)data_byte_size]), &footer[0],
-           FOOTER_BYTE_SIZE);
-
-    return 0;
+#include "set_data.inc"
 }
 
 int Merger2to1Z::daq_run()

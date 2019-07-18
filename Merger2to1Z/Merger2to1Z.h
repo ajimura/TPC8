@@ -59,7 +59,7 @@ private:
   int write_OutPort();
   unsigned char * renew_buf(unsigned char *orig_buf, size_t cursize, size_t newsize);
 
-  static const unsigned int ComponentType = 420; // <- should be modified
+  static const unsigned int ComponentType = 420;
 
     BufferStatus m_in1_status;
     BufferStatus m_in2_status;
@@ -94,7 +94,15 @@ private:
   unsigned char * m_data1;
   unsigned int * m_data4;
 
+  unsigned char *DataPos1; //Data pointer ready to use
+  unsigned char *DataPos2; //Data pointer ready to use
+  int Cur_MaxDataSiz1;
+  int Cur_MaxDataSiz2;
+
   int Cur_MaxDataSiz;
+
+  int OutCompress;
+
 };
 
 

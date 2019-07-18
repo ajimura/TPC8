@@ -101,6 +101,7 @@ private:
   int Stock_Offset;
 
   int OutCompress;
+  int CompressLevel;
 
   int SwitchAB;
   int Resv_In, Resv_Size;

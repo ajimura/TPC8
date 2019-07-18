@@ -20,7 +20,7 @@
   switch(OutCompress){
   case 1: // ZLIB
     compsize=Stock_MaxSiz;
-    if (compress2(&(m_out_data.data[HEADER_BYTE_SIZE+8]),&compsize,m_data1,(unsigned long)data_byte_size,1)!=Z_OK){
+    if (compress2(&(m_out_data.data[HEADER_BYTE_SIZE+8]),&compsize,m_data1,(unsigned long)data_byte_size,CompressLevel)!=Z_OK){
       std::cerr << "Error in compress2()" << std::endl;
       fatal_error_report(OUTPORT_ERROR);
     }
@@ -31,8 +31,8 @@
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE+4]), &data_byte_size, 4); //original size
     break;
   case 2: // LZ4
-    if ((compsize=LZ4_compress_default((char *)m_data1, (char *)&(m_out_data.data[HEADER_BYTE_SIZE+8]),
-				       data_byte_size,Stock_MaxSiz))==0){
+    if ((compsize=LZ4_compress_fast((char *)m_data1, (char *)&(m_out_data.data[HEADER_BYTE_SIZE+8]),
+				       data_byte_size,Stock_MaxSiz,CompressLevel))==0){
       std::cerr << "Error in LZ4_compress_default()" << std::endl;
       fatal_error_report(OUTPORT_ERROR);
     }

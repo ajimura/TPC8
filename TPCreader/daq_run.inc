@@ -16,15 +16,7 @@
       if (Resv_In==1){
         //switch
         if (m_debug) std::cerr << "Switching buffer ..." << std::endl;
-        if (SwitchAB==0){
-          m_data1=m_dataB;          m_data4=(unsigned int *)m_dataB;
-          m_resv1=m_dataA;          m_resv4=(unsigned int *)m_dataA;
-          SwitchAB=1;
-        }else{
-          m_data1=m_dataA;          m_data4=(unsigned int *)m_dataA;
-          m_resv1=m_dataB;          m_resv4=(unsigned int *)m_dataB;
-          SwitchAB=0;
-        }
+	switch_buffer();
         Stock_CurNum=1;
         Stock_Offset=Resv_Size;
         Resv_In=0;
@@ -47,15 +39,7 @@
       }else{
         //switch
         if (m_debug) std::cerr << "Switching buffer ..." << std::endl;
-        if (SwitchAB==0){
-          m_data1=m_dataB;          m_data4=(unsigned int *)m_dataB;
-          m_resv1=m_dataA;          m_resv4=(unsigned int *)m_dataA;
-          SwitchAB=1;
-        }else{
-          m_data1=m_dataA;          m_data4=(unsigned int *)m_dataA;
-          m_resv1=m_dataB;          m_resv4=(unsigned int *)m_dataB;
-          SwitchAB=0;
-        }
+	switch_buffer();
         Stock_CurNum=1;
         Stock_Offset=Resv_Size;
         Resv_In=0;

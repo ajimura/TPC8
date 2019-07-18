@@ -19,6 +19,8 @@ CPPFLAGS += -I/usr/share/swsoc8/include/ -g
 endif
 OBJS += ../lib/rmap_lib.o
 CPPFLAGS += -I../lib/
+#LDLIBS += -lz -llz4
+LDLIBS += -lz ../../local/lib/liblz4.a
 
 # for TPC readout
 OBJS += ../lib/tpclib.o ../lib/trigio_lib.o
@@ -31,8 +33,9 @@ INCS += daq_stop.inc
 INCS += daq_run.inc
 INCS += parse_params.inc
 INCS += read_data_from_detectors.inc
+INCS += set_data.inc
 
-$(COMP_NAME).o : $(INCS)
+$(COMP_NAME).o : $(COMP_NAME).cpp $(INCS)
 
 # sample install target
 #

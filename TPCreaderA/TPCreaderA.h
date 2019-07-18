@@ -14,63 +14,65 @@
 
 using namespace RTC;
 
-static const int CompHeaderSize = 80; // unit in byte
+//size: unit in byte
+static const int CompHeaderSize = 80;
+static const int FADCHeaderSize = 28;
+static const int MaxFADCSize = 16384;
 
 class TPCreaderA
-    : public DAQMW::DaqComponentBase
+  : public DAQMW::DaqComponentBase
 {
 public:
-    TPCreaderA(RTC::Manager* manager);
-    ~TPCreaderA();
+  TPCreaderA(RTC::Manager* manager);
+  ~TPCreaderA();
 
-    // The initialize action (on CREATED->ALIVE transition)
-    // former rtc_init_entry()
-    virtual RTC::ReturnCode_t onInitialize();
+  // The initialize action (on CREATED->ALIVE transition)
+  // former rtc_init_entry()
+  virtual RTC::ReturnCode_t onInitialize();
 
-    // The execution action that is invoked periodically
-    // former rtc_active_do()
-    virtual RTC::ReturnCode_t onExecute(RTC::UniqueId ec_id);
-
-private:
-    TimedOctetSeq          m_out_data;
-    OutPort<TimedOctetSeq> m_OutPort;
+  // The execution action that is invoked periodically
+  // former rtc_active_do()
+  virtual RTC::ReturnCode_t onExecute(RTC::UniqueId ec_id);
 
 private:
-    int daq_dummy();
-    int daq_configure();
-    int daq_unconfigure();
-    int daq_start();
-    int daq_run();
-    int daq_stop();
-    int daq_pause();
-    int daq_resume();
+  TimedOctetSeq          m_out_data;
+  OutPort<TimedOctetSeq> m_OutPort;
 
-    int parse_params(::NVList* list);
-    int read_data_from_detectors();
-    int set_data(int data_byte_size);
-    int write_OutPort();
-    void toLower(std::basic_string<char>& s);
+private:
+  int daq_dummy();
+  int daq_configure();
+  int daq_unconfigure();
+  int daq_start();
+  int daq_run();
+  int daq_stop();
+  int daq_pause();
+  int daq_resume();
 
-  static const unsigned int ComponentType = 410; // <- should be modified
+  int parse_params(::NVList* list);
+  int read_data_from_detectors();
+  int set_data(int data_byte_size);
+  int write_OutPort();
+  void toLower(std::basic_string<char>& s){
+    for(std::basic_string<char>::iterator p=s.begin();p!=s.end();++p){*p=tolower(*p);}
+  }
+  void switch_buffer();
 
-  //    static const int SEND_BUFFER_SIZE = 4096;
-  //    unsigned char m_data[SEND_BUFFER_SIZE];
-  unsigned char *m_dataA, *m_dataB;
+  static const unsigned int ComponentType = 410;
+
+  //data buffer
+  unsigned char *m_dataA, *m_dataB;	// double buffer
+  unsigned char *m_data1;		// main buffer
   unsigned int *m_data4;
-  unsigned char *m_data1;
+  unsigned char *m_resv1;		// reserver buffer
   unsigned int *m_resv4;
-  unsigned char *m_resv1;
 
   int m_recv_byte_size;
   int m_recv_timeout_counter;
 
   BufferStatus m_out_status;
   int m_out_timeout_counter;
-  bool m_debug;
 
-  //size: unit in byte
-  static const int FADCHeaderSize = 28;
-  static const int MaxFADCSize = 16384;
+  bool m_debug;
 
   //parameter for TPC readout from DAQ op.
   int totNumFADC;
@@ -98,12 +100,14 @@ private:
   int Stock_CurNum;
   int Stock_Offset;
 
+  int OutCompress;
+
   int SwitchAB;
   int Resv_In, Resv_Size;
 
   unsigned int eventnum;
-};
 
+};
 
 extern "C"
 {

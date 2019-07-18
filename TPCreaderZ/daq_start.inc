@@ -5,8 +5,8 @@
     }else{
       std::cout << "fadc_reset_trigcount ... Done" << std::endl;
     }
-    //RPV-260 trigger count reset
 
+    //RPV-260 trigger count reset
     if (trigio_reset_count()<0){
       std::cerr << "Error in trigio_reset_count !!" << std::endl;
       fatal_error_report(USER_DEFINED_ERROR3,"Error in trigio_reset_count");

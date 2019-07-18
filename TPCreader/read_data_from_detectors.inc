@@ -24,18 +24,18 @@
       ret=fadc_check_data_ready_all();
 
     if (ret<0){
-      std::cerr << "Error in check data ready...(" << ret << ")" << std::endl;
+      std::cerr << "Error in checking data-ready...(" << ret << ")" << std::endl;
       fatal_error_report(USER_DEFINED_ERROR2,"Error in check_data_ready");
     }else if (ret==0){
-    //      usleep(10);
+      usleep(10);
       m_recv_timeout_counter++;
       return 0; // not ready
     }
 
-  if (m_debug) {
-    clock_gettime(CLOCK_MONOTONIC,&ts);
-    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
-  }
+    if (m_debug) {
+      clock_gettime(CLOCK_MONOTONIC,&ts);
+      t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+    }
 
     m_recv_timeout_counter=0;
     seq_num=(unsigned int)get_sequence_num();
@@ -69,19 +69,16 @@
 
     // get&write data
     if ((totsize=fadc_get_event_dataM2(curpos,(int)seq_num))<0){
-    //    if ((totsize=fadc_get_event_dataM(curpos,seq_num))<0){
+    //    if ((totsize=fadc_get_event_dataM(curpos,(int)seq_num))<0){
       std::cerr << "Error in fadc_get_eventdataM2" << std::endl;
       fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_get_event_dataM2");
     }
     curpos+=(totsize/4);
 
-    //    std::cout << "end event data" << std::endl;
-
-    //footer start  -> should be modified to fit DAQ-system (20181004: SA)
+    //footer start
     *(curpos++)=comp_footer;
 
-    // prepare for next event
-    //ROC
+    // prepare for next event (comment out if fadc_get_event_dataM2 used above)
     //    if (fadc_release_buffer()<0){
     //      fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_release_buffer");
     //    }

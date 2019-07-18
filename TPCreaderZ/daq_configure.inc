@@ -1,4 +1,3 @@
-
     ::NVList* paramList;
     paramList = m_daq_service0.getCompParams();
     parse_params(paramList);
@@ -10,26 +9,32 @@
     Resv_Size=0;
 
     // show obtained parameter
-    std::cout << "NumFADC: " << NumFADC[0] << " " << NumFADC[1] << " " << NumFADC[2] << " " << NumFADC[3] <<  " " <<
-      NumFADC[4] << " " << NumFADC[5] << " " << NumFADC[6] << " " << NumFADC[7] << std::endl;
+    std::cout << "NumFADC: " <<
+          NumFADC[0] << " " << NumFADC[1] << " " << NumFADC[2] << " " << NumFADC[3] <<  " " <<
+          NumFADC[4] << " " << NumFADC[5] << " " << NumFADC[6] << " " << NumFADC[7] << std::endl;
     std::cout << std::hex;
     std::cout << 
       "NumFADC: 0x" << std::setfill('0') << std::setw(8) << totNumFADCforHeader1 << 
-      ", 0x" << std::setfill('0') << std::setw(8) << totNumFADCforHeader2 << 
-      std::endl;
+             ", 0x" << std::setfill('0') << std::setw(8) << totNumFADCforHeader2 << std::endl;
     std::cout << std::dec;
-    std::cout << "Pedestal Data: " << pedestal_exist << std::endl;
-    std::cout << "Pedestal File: " << pedestal_file << std::endl;
-    std::cout << "Threshold Margin: " << ThresMargin << std::endl;
-    std::cout << "TrigIO Data: " << trigio_exist << std::endl;
-    std::cout << "TrigIO File: " << trigio_file << std::endl;
-    std::cout << "RdyChk Data: " << rdychk_exist << std::endl;
-    std::cout << "RdyChk File: " << rdychk_file << std::endl;
+    if (pedestal_exist){
+      std::cout << "Pedestal Set: yes,  File: " << pedestal_file << std::endl;
+      std::cout << "           Thres. Margin: " << ThresMargin << std::endl;
+    }else
+      std::cout << "Pedestal Data: no" << std::endl;
+    if (trigio_exist)
+      std::cout << "TrigIO Set: yes, File: " << trigio_file << std::endl;
+    else
+      std::cout << "TrigIO Set: no" << std::endl;
+    if (rdychk_exist)
+      std::cout << "RdyChk Set: yes, File: " << rdychk_file << std::endl;
+    else
+      std::cout << "RdyChk Set: no" << std::endl;
     std::cout << std::hex;
     std::cout << "Compression Type: 0x" << 
-      std::setfill('0') << std::setw(4) << std::hex << ComprType << std::endl;
+      std::setfill('0') << std::setw(2) << std::hex << (ComprType & 0xff) << std::endl;
     std::cout << "Trigger Type: 0x" << 
-      std::setfill('0') << std::setw(4) << std::hex << TrigEnab << std::endl;
+      std::setfill('0') << std::setw(2) << std::hex << (TrigEnab & 0xff) << std::endl;
     std::cout << std::dec;
     // TrigIO param.
     std::cout << "TrigIO IP Addr: " << TrigIOIP << std::endl;
@@ -39,6 +44,13 @@
     //
     std::cout << "Stock Max Num: " << Stock_MaxNum << std::endl;
     std::cout << "Stock Max Size: " << Stock_MaxSiz << std::endl;
+    //
+    std::cout << "Compress Method on OutPort: ";
+    switch(OutCompress){
+    case 1: std::cout << "ZLIB" << std::endl; break;
+    case 2: std::cout << "LZ4" << std::endl; break;
+    default: std::cout << "NONE" << std::endl; break;
+    }
     //
     std::cout << std::hex;
     std::cout << "Component Type: 0x" << 
@@ -68,12 +80,8 @@
     m_out_data.data.length((unsigned int)Stock_MaxSiz);
 
     try{
-      m_dataA=new unsigned char[
-               (CompHeaderSize + MaxFADCSize*totNumFADC) * Stock_MaxNum
-	     ];
-      m_dataB=new unsigned char[
-               (CompHeaderSize + MaxFADCSize*totNumFADC) * Stock_MaxNum
-	     ];
+      m_dataA=new unsigned char[(CompHeaderSize + MaxFADCSize*totNumFADC) * Stock_MaxNum];
+      m_dataB=new unsigned char[(CompHeaderSize + MaxFADCSize*totNumFADC) * Stock_MaxNum];
     }
     catch(std::bad_alloc){
       std::cerr << "Bad allocation..." << std::endl;
@@ -151,7 +159,6 @@
       std::cout << "trigini ... Done" << std::endl;
     }
     //RPV-260 trigger count reset
-
     if (TrigIO_done==true){
       if (trigio_reset_count()<0){
         std::cerr << "Error in trigio_reset_count !!" << std::endl;
@@ -160,7 +167,6 @@
         std::cout << "trigio_reset_count ... Done" << std::endl;
       }
     }
-
     std::cout << "--- Now ready to start !!" << std::endl;
 
     return 0;

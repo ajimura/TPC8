@@ -3,7 +3,7 @@
     std::cout << "--- param list (length:" << (*list).length() << ")" << std::endl;
 
     //set default value
-    m_debug=0;
+    m_debug=false;
     for(i=0;i<8;i++) NumFADC[i]=0;
     pedestal_exist=false;
     ThresMargin=10;
@@ -18,6 +18,7 @@
     ReadTimeout=10000;
     Stock_MaxNum=1;
     Stock_MaxSiz=2097044;
+    OutCompress=0;
 
     int len = (*list).length();
     for (i = 0; i < len; i+=2) {
@@ -96,6 +97,10 @@
       if (sname == "TrigIO_WaitTime") TrigIO_waittime=atoi(svalue.c_str());
       if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
       if (sname == "StockMaxSize") Stock_MaxSiz=atoi(svalue.c_str());
+      if (sname == "OutCompress"){
+      	if (svalue == "ZLIB") OutCompress=1;
+      	if (svalue == "LZ4") OutCompress=2;
+      }
 
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
     }

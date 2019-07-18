@@ -9,6 +9,8 @@
 
 #include <iomanip>
 #include <ctime>
+#include <zlib.h>
+#include "../../local/include/lz4.h"
 #include "TPCreaderA.h"
 #include "daqmwlib.h"
 #include "tpclib.h"
@@ -134,49 +136,40 @@ int TPCreaderA::read_data_from_detectors()
 
 int TPCreaderA::set_data(int data_byte_size)
 {
-    unsigned char header[8];
-    unsigned char footer[8];
-
-    set_header(&header[0], (unsigned int)data_byte_size);
-    set_footer(&footer[0]);
-
-    ///set OutPort buffer length
-    m_out_data.data.length((unsigned int)data_byte_size + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
-    memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], (size_t)data_byte_size);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + (unsigned int)data_byte_size]), &footer[0],
-           FOOTER_BYTE_SIZE);
-
-    return 0;
+#include "set_data.inc"
 }
 
 int TPCreaderA::write_OutPort()
 {
+  bool ret;
+  struct timespec ts;
+  double t0=0.,t1;
+
   if (m_debug) {
     std::cerr << "write: StockNum=" << Stock_CurNum << " SockSize=" << Stock_Offset << std::endl;
   }
  
-    ////////////////// send data from OutPort  //////////////////
-    bool ret = m_OutPort.write();
+  if (m_debug) {
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+  }
 
-    //////////////////// check write status /////////////////////
-    if (ret == false) {  // TIMEOUT or FATAL
-        m_out_status  = check_outPort_status(m_OutPort);
-        if (m_out_status == BUF_FATAL) {   // Fatal error
-            fatal_error_report(OUTPORT_ERROR);
-        }
-        if (m_out_status == BUF_TIMEOUT) { // Timeout
-            return -1;
-        }
-        if (m_out_status == BUF_NOBUF) { // No Buffer on Downstream
-            return -1;
-        }
-    }
-    else {
-        m_out_status = BUF_SUCCESS; // successfully done
-    }
+  if ((ret=m_OutPort.write()) == false) {  // TIMEOUT or FATAL
+    m_out_status  = check_outPort_status(m_OutPort);
+    if (m_out_status == BUF_FATAL) fatal_error_report(OUTPORT_ERROR);    // Fatal error
+    if (m_out_status == BUF_TIMEOUT) return -1;    // Timeout
+    if (m_out_status == BUF_NOBUF) return -1;    // No Buffer on Downstream
+  } else {
+    m_out_status = BUF_SUCCESS; // successfully done
+  }
 
-    return 0;
+  if (m_debug) {
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+    std::cout << "write time: " << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
+  }
+
+  return 0;
 }
 
 int TPCreaderA::daq_run()
@@ -195,10 +188,14 @@ extern "C"
     }
 };
 
-void TPCreaderA::toLower(std::basic_string<char>& s)
-{
-    for (std::basic_string<char>::iterator p = s.begin(); p != s.end(); ++p) {
-        *p = tolower(*p);
-    }
+void TPCreaderA::switch_buffer(){
+  if (SwitchAB==0){
+    m_data1=m_dataB;          m_data4=(unsigned int *)m_dataB;
+    m_resv1=m_dataA;          m_resv4=(unsigned int *)m_dataA;
+    SwitchAB=1;
+  }else{
+    m_data1=m_dataA;          m_data4=(unsigned int *)m_dataA;
+    m_resv1=m_dataB;          m_resv4=(unsigned int *)m_dataB;
+    SwitchAB=0;
+  }
 }
-

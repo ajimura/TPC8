@@ -141,6 +141,7 @@ int TPCreaderZ::set_data(int data_byte_size)
 
 int TPCreaderZ::write_OutPort()
 {
+  bool ret;
   struct timespec ts;
   double t0=0.,t1;
 
@@ -153,18 +154,11 @@ int TPCreaderZ::write_OutPort()
     t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
   }
 
-  ////////////////// send data from OutPort  //////////////////
-  bool ret = m_OutPort.write();
-
-  //////////////////// check write status /////////////////////
-  if (ret == false) {  // TIMEOUT or FATAL
+  if ((ret=m_OutPort.write()) == false) {  // TIMEOUT or FATAL
     m_out_status  = check_outPort_status(m_OutPort);
-    // Fatal error
-    if (m_out_status == BUF_FATAL) fatal_error_report(OUTPORT_ERROR);
-    // Timeout
-    if (m_out_status == BUF_TIMEOUT) return -1;
-    // No Buffer on Downstream
-    if (m_out_status == BUF_NOBUF) return -1;
+    if (m_out_status == BUF_FATAL) fatal_error_report(OUTPORT_ERROR);    // Fatal error
+    if (m_out_status == BUF_TIMEOUT) return -1;    // Timeout
+    if (m_out_status == BUF_NOBUF) return -1;    // No Buffer on Downstream
   } else {
     m_out_status = BUF_SUCCESS; // successfully done
   }
@@ -194,10 +188,21 @@ extern "C"
     }
 };
 
-void TPCreaderZ::toLower(std::basic_string<char>& s)
-{
-    for (std::basic_string<char>::iterator p = s.begin(); p != s.end(); ++p) {
-        *p = tolower(*p);
-    }
-}
+//void TPCreaderZ::toLower(std::basic_string<char>& s)
+//{
+//    for (std::basic_string<char>::iterator p = s.begin(); p != s.end(); ++p) {
+//        *p = tolower(*p);
+//    }
+//}
 
+void TPCreaderZ::switch_buffer(){
+  if (SwitchAB==0){
+    m_data1=m_dataB;          m_data4=(unsigned int *)m_dataB;
+    m_resv1=m_dataA;          m_resv4=(unsigned int *)m_dataA;
+    SwitchAB=1;
+  }else{
+    m_data1=m_dataA;          m_data4=(unsigned int *)m_dataA;
+    m_resv1=m_dataB;          m_resv4=(unsigned int *)m_dataB;
+    SwitchAB=0;
+  }
+}

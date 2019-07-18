@@ -752,15 +752,22 @@ int fadc_check_data_ready_all(){ // error: -1, not ready: 0, ready: fadc_tot
   int i,j;
   int wait;
   struct fadc_info *adc;
+  int count;
 
   add=ROC_Ready;
 
-  for(i=0;i<DevsNum;i++){
-    adc=fadcinfo[i];
-    for(j=0;j<fadc_num[i];j++){
-      st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&((adc+j)->roc),4);
-      if (st<0) return -1;
+  count=DevsNum;j=0;
+  while(count>0){
+    count=0;
+    for(i=0;i<DevsNum;i++){
+      adc=fadcinfo[i];
+      if (j<fadc_num[i]){
+	count++;
+	st=rmap_get_data(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,&((adc+j)->roc),4);
+	if (st<0) return -1;
+      }
     }
+    j++;
   }
   wait=0;
   for(i=0;i<DevsNum;i++){

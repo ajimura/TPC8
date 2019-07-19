@@ -6,9 +6,11 @@
     unsigned int seq_num;
     unsigned int *toppos;
     unsigned int *curpos;
+    unsigned short *curpos2;
     int totsize;
     unsigned char eventtag=0;
     unsigned int comp_footer;
+    int i;
 
     // wait trigger
     usleep(interval_time);
@@ -35,6 +37,13 @@
 
     // get&write data
     totsize=generate_size;
+    curpos2=curpos;
+//random
+    for(i=0;i<totsize/2;i++)
+      *(curpos2++)=(short)(rand()%65536);
+    std::cerr << *curpos << " " << *(curpos+1) << " "  <<
+      *(curpos+2) << " "  << *(curpos+3) << std::endl;
+//
     curpos+=(totsize/4);
 
     //footer

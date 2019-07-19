@@ -9,6 +9,7 @@
 
 #include <iomanip>
 #include <ctime>
+#include <cstdlib>
 #include "DumGenA.h"
 #include "daqmwlib.h"
 
@@ -102,10 +103,13 @@ int DumGenA::daq_configure()
     // Initialization start
     std::cout << "--- Initialization starting..." << std::endl;
 
+    // random seed
+    std::srand(time(NULL));
+
     // allocate data buffer
     try{
-      m_data4=new unsigned int[(generate_size+1024)*Stock_MaxNum];
-      m_data1=(unsigned char *)m_data4;
+      m_data1=new unsigned char[(generate_size+1024)*Stock_MaxNum];
+      m_data4=(unsigned int *)m_data1;
     }
     catch(std::bad_alloc){
       std::cerr << "Bad allocation: size=" << (generate_size+1024)*Stock_MaxNum << " bytes" << std::endl;
@@ -130,7 +134,7 @@ int DumGenA::parse_params(::NVList* list)
     std::cout << "--- param list (length:" << (*list).length() << ")" << std::endl;
 
     //set default value
-    generate_size=0;
+    generate_size=1024;
     interval_time=1000000;
     ComponentID=0;
     ReadTimeout=0;
@@ -153,6 +157,7 @@ int DumGenA::parse_params(::NVList* list)
       }
 
       if (sname == "GenSize") generate_size=atoi(svalue.c_str());
+      generate_size=(generate_size/4)*4;
       if (sname == "IntvTime") interval_time=atoi(svalue.c_str());
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
       if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
@@ -166,7 +171,7 @@ int DumGenA::daq_unconfigure()
 {
     std::cerr << "*** DumGenA::unconfigure" << std::endl;
 
-    delete [] m_data4; std::cout << "Delete data buffer" << std::endl;
+    delete [] m_data1; std::cout << "Delete data buffer" << std::endl;
 
     return 0;
 }

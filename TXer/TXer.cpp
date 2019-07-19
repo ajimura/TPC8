@@ -9,6 +9,8 @@
 
 #include <iomanip>
 #include <ctime>
+#include <zlib.h>
+#include "../../local/include/lz4.h"
 #include "TXer.h"
 #include "daqmwlib.h"
 
@@ -95,6 +97,7 @@ int TXer::daq_unconfigure()
 {
     std::cerr << "*** TXer::unconfigure" << std::endl;
 
+    delete [] DataPos1;
     delete [] m_data1; std::cout << "Delete data buffer" << std::endl;
 
     return 0;

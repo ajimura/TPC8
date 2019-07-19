@@ -13,6 +13,7 @@
     Cur_MaxDataSiz=10240; // 10k (tempolary)
 
     try{
+      DataPos1=new unsigned char[Cur_MaxDataSiz];
       m_data1=new unsigned char[Cur_MaxDataSiz];
       m_data4=(unsigned int *)m_data1;
     }
@@ -29,6 +30,12 @@
     std::cout << "Stock Max Num: " << Stock_MaxNum << std::endl;
     std::cout << "Stock Max Size: " << Stock_MaxSiz << std::endl;
     //
+    std::cout << "Compress Method on OutPort: ";
+    switch(OutCompress){
+    case 1: std::cout << "ZLIB" << std::endl; break;
+    case 2: std::cout << "LZ4" << std::endl; break;
+    default: std::cout << "NONE" << std::endl; break;
+    }
     std::cout << "--- Now ready to start !!" << std::endl;
 
     return 0;

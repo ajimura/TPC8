@@ -17,7 +17,7 @@
   if (m_debug)
     std::cerr << "in set_data: data_byte_size=" << data_byte_size << std::endl;
 
-  m_out_data.data.length((unsigned int)data_byte_size);
+  m_out_data.data.length((unsigned int)data_byte_size+HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
 
   if ((InCompress=(*In_CurPos&0xf0000000)>0)){ //Compressed data coming
     std::cerr << "Compressed data is coming..." << std::endl;

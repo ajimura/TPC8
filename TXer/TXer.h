@@ -77,7 +77,12 @@ private:
   unsigned char * m_data1;
   unsigned int * m_data4;
 
+  unsigned char *DataPos1; //Data pointer ready to use
   int Cur_MaxDataSiz;
+
+  int OutCompress;
+  int CompressLevel;
+
 };
 
 

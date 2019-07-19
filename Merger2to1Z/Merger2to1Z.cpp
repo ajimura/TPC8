@@ -115,6 +115,8 @@ int Merger2to1Z::daq_configure()
     Cur_MaxDataSiz2=10240; // 10k (tempolary)
 
     try{
+      DataPos1=new unsigned char[Cur_MaxDataSiz1];
+      DataPos2=new unsigned char[Cur_MaxDataSiz1];
       m_data1=new unsigned char[Cur_MaxDataSiz];
       m_data4=(unsigned int *)m_data1;
     }
@@ -160,6 +162,7 @@ int Merger2to1Z::parse_params(::NVList* list)
     Stock_MaxNum=1;
     Stock_MaxSiz=2097044;
     OutCompress=0;
+    CompressLevel=1;
 
     int len = (*list).length();
     for (int i = 0; i < len; i+=2) {
@@ -180,6 +183,7 @@ int Merger2to1Z::parse_params(::NVList* list)
       	if (svalue == "ZLIB") OutCompress=1;
       	if (svalue == "LZ4") OutCompress=2;
       }
+      if (sname == "CompressLevel") CompressLevel=atoi(svalue.c_str());
     }
 
     return 0;
@@ -190,6 +194,8 @@ int Merger2to1Z::daq_unconfigure()
 {
     std::cerr << "*** Merger2to1Z::unconfigure" << std::endl;
 
+    delete [] DataPos1;
+    delete [] DataPos2;
     delete [] m_data1; std::cout << "Delete data buffer" << std::endl;
 
     return 0;
@@ -228,8 +234,6 @@ int Merger2to1Z::daq_resume()
 
 int Merger2to1Z::reset_InPort1()
 {
-//     uncomment if InPort is connected other OutPort of Component
-//
      int ret = true;
      while (ret == true) {
          ret = m_InPort1.read();
@@ -242,8 +246,6 @@ int Merger2to1Z::reset_InPort1()
 
 int Merger2to1Z::reset_InPort2()
 {
-//     uncomment if InPort is connected other OutPort of Component
-//
      int ret = true;
      while (ret == true) {
          ret = m_InPort2.read();

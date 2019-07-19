@@ -102,6 +102,7 @@ private:
   int Cur_MaxDataSiz;
 
   int OutCompress;
+  int CompressLevel;
 
 };
 

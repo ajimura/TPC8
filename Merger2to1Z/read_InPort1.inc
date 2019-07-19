@@ -26,8 +26,12 @@
 	GlobSiz=m_in1_data.data.length();
 	if (m_debug) std::cerr << "(1)Received Size=" << GlobSiz << std::endl;
 	memcpy(&BufSiz,&(m_in1_data.data[HEADER_BYTE_SIZE]),4); // size of 
+	if (m_debug) std::cerr << "(1)Buffer Size=" << BufSiz << "(" << 
+		       std::setfill('0') << std::setw(8) << std::hex << BufSiz << ")" <<
+		       std::endl << std::dec;
 	if ((flag=BufSiz&0xf0000000)>0){ // get compressed data
 	  decompsize=(int *)&(m_in1_data.data[HEADER_BYTE_SIZE+4]); // original size
+	  if (m_debug) std::cerr << "(1)Original Size=" << *decompsize << std::endl;
 	  if (*decompsize>Cur_MaxDataSiz1){
 	    DataPos1=renew_buf(DataPos1,(size_t)Cur_MaxDataSiz1,(size_t)*decompsize);
 	    Cur_MaxDataSiz1=*decompsize;

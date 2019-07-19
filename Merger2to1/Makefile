@@ -8,11 +8,14 @@ SRCS += $(COMP_NAME)Comp.cpp
 # LEPS2 DAQ common
 OBJS += ../lib/daqmwlib.o
 CPPFLAGS += -I../lib/ -g
+#LDLIBS += -lz -llz4
+LDLIBS += -lz ../../local/lib/liblz4.a
 
 INCS  = read_InPort1.inc
 INCS += read_InPort2.inc
 INCS += Stock_data.inc
 INCS += daq_run.inc
+INCS += set_data.inc
 
 Merger2to1.o: $(INCS)
 

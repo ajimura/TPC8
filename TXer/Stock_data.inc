@@ -19,6 +19,7 @@
     // check size of buf
     tot_next_size=Stock_Offset+tot_data_size;
     if (tot_next_size>Cur_MaxDataSiz){
+       DataPos1=renew_buf(DataPos1,(size_t)Stock_Offset,(size_t)tot_next_size);
        m_data1=renew_buf(m_data1,(size_t)Stock_Offset,(size_t)tot_next_size);
        Cur_MaxDataSiz=tot_next_size;
     }

@@ -116,7 +116,7 @@ int Merger2to1::daq_configure()
 
     try{
       DataPos1=new unsigned char[Cur_MaxDataSiz1];
-      DataPos2=new unsigned char[Cur_MaxDataSiz1];
+      DataPos2=new unsigned char[Cur_MaxDataSiz2];
       m_data1=new unsigned char[Cur_MaxDataSiz];
       m_data4=(unsigned int *)m_data1;
     }

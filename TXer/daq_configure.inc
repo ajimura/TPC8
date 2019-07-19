@@ -11,9 +11,10 @@
     Stock_Offset=0;
     //    Cur_MaxDataSiz=67108864; // 64M (tempolary)
     Cur_MaxDataSiz=10240; // 10k (tempolary)
+    Cur_MaxDataSiz1=10240; // 10k (tempolary)
 
     try{
-      DataPos1=new unsigned char[Cur_MaxDataSiz];
+      DataPos1=new unsigned char[Cur_MaxDataSiz1];
       m_data1=new unsigned char[Cur_MaxDataSiz];
       m_data4=(unsigned int *)m_data1;
     }

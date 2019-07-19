@@ -28,10 +28,9 @@
 	memcpy(&BufSiz,&(m_in_data.data[HEADER_BYTE_SIZE]),4); // size of 
 	if ((flag=BufSiz&0xf0000000)>0){ // get compressed data
 	  decompsize=(int *)&(m_in_data.data[HEADER_BYTE_SIZE+4]); // original size
-	  if (*decompsize>Cur_MaxDataSiz){
-	    DataPos1=renew_buf(DataPos1,(size_t)Cur_MaxDataSiz,(size_t)*decompsize);
-	    m_data1=renew_buf(m_data1,(size_t)Cur_MaxDataSiz,(size_t)*decompsize);
-	    Cur_MaxDataSiz=*decompsize;
+	  if (*decompsize>Cur_MaxDataSiz1){
+	    DataPos1=renew_buf(DataPos1,(size_t)Cur_MaxDataSiz1,(size_t)*decompsize);
+	    Cur_MaxDataSiz1=*decompsize;
 	  }
 	  origsize=(unsigned long)*decompsize;
 	  compsize=(unsigned long)(GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE-8);

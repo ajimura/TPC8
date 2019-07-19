@@ -76,9 +76,10 @@ private:
   int Stock_Offset;
   unsigned char * m_data1;
   unsigned int * m_data4;
+  int Cur_MaxDataSiz;
 
   unsigned char *DataPos1; //Data pointer ready to use
-  int Cur_MaxDataSiz;
+  int Cur_MaxDataSiz1;
 
   int OutCompress;
   int CompressLevel;

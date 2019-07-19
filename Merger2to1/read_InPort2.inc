@@ -2,33 +2,67 @@
     bool ret;
     int GlobSiz;
     int preSiz;
+    int *decompsize;
+    int BufSiz;
+    unsigned long compsize,origsize;
+    int zret;
+    unsigned int flag;
 
 //    std::cerr << "Entering read_InPort2: Tot=" << In2_TotSiz << ", Remain=" << In2_RemainSiz << std::endl;
 
     if (In2_RemainSiz==0){
       ret = m_InPort2.read();
-//      std::cerr << " m_InPort2.read(): ret=" << ret << std::endl;
       if (ret==false){ // false: TIMEOUT or FATAL
 	m_in2_status=check_inPort_status(m_InPort2);
-//	std::cerr << " check_inPort_status(2): ret=" << m_in2_status << std::endl;
 	if (m_in2_status==BUF_TIMEOUT){ // Buffer empty
           m_in2_timeout_counter++;
-//	  if (check_trans_lock()) {     // Check if stop command has come.
-//	    set_trans_unlock();       // Transit to CONFIGURE state.
-//	  }
         }else if (m_in2_status==BUF_FATAL){
 	  fatal_error_report(INPORT_ERROR);
 	}
       }else{
-        if (m_debug) std::cerr << "Get Data2. Timeout: " << m_in2_timeout_counter << " -> 0" << std::endl;
+        if (m_debug) std::cerr << "Get Data(2) Timeout: " << m_in2_timeout_counter << " -> 0" << std::endl;
         m_in2_timeout_counter = 0;
         m_in2_status = BUF_SUCCESS;
 	GlobSiz=m_in2_data.data.length();
-	In2_TotSiz=GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
-	In2_CurPos=(unsigned int *)&(m_in2_data.data[HEADER_BYTE_SIZE]);
+	if (m_debug) std::cerr << "(2)Received Size=" << GlobSiz << std::endl;
+	memcpy(&BufSiz,&(m_in2_data.data[HEADER_BYTE_SIZE]),4); // size of 
+	if ((flag=BufSiz&0xf0000000)>0){ // get compressed data
+	  decompsize=(int *)&(m_in2_data.data[HEADER_BYTE_SIZE+4]); // original size
+	  if (*decompsize>Cur_MaxDataSiz2){
+	    DataPos2=renew_buf(DataPos2,(size_t)Cur_MaxDataSiz2,(size_t)*decompsize);
+	    Cur_MaxDataSiz2=*decompsize;
+	  }
+	  origsize=(unsigned long)*decompsize;
+	  compsize=(unsigned long)(GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE-8);
+	  if (m_debug) std::cerr << "(2)uncompressing: datasize=" << compsize << ", bufsize=" << origsize << std::endl;
+	  if (flag==0xf0000000){
+	    if ((zret=uncompress(DataPos2,&origsize,&(m_in2_data.data[HEADER_BYTE_SIZE+8]),compsize))!=Z_OK){
+	      std::cerr << "(2)Failed in uncompress(ZLIB): " << zret << std::endl;
+	      fatal_error_report(INPORT_ERROR);
+	    }
+	    In2_TotSiz=(int)origsize;
+	  }else{
+	    if ((zret=LZ4_decompress_safe((char *)&(m_in2_data.data[HEADER_BYTE_SIZE+8]),(char *)DataPos2,
+					  (int)compsize,(int)origsize))<0){
+	      std::cerr << "(2)Failed in uncompress(LZ4): " << zret << std::endl;
+	      fatal_error_report(INPORT_ERROR);
+	    }
+	    In2_TotSiz=zret;
+	  }
+	  if (*decompsize!=In2_TotSiz){
+	    std::cerr << "(2)Failed in uncompress, size mismatch..." << std::endl;
+	    fatal_error_report(INPORT_ERROR);
+	  }
+	  if (m_debug) std::cerr << " uncomopress(2): " << compsize << "-> " << In2_TotSiz << std::endl;
+	  In2_CurPos=(unsigned int *)DataPos2;
+	}else{
+	  In2_TotSiz=GlobSiz-HEADER_BYTE_SIZE-FOOTER_BYTE_SIZE;
+	  In2_CurPos=(unsigned int *)&(m_in2_data.data[HEADER_BYTE_SIZE]);
+	}
         recv_byte_size=(int)*In2_CurPos;
 	In2_RemainSiz=In2_TotSiz-recv_byte_size;
-	if (m_debug) std::cerr << " reading2: Tot=" << In2_TotSiz << ", Recv=" << recv_byte_size << std::endl;
+	if (m_debug)
+	  std::cerr << " reading(2): Tot=" << In2_TotSiz << ", Remain=" << In2_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
       }
     }else{
       preSiz=(int)*In2_CurPos;
@@ -41,10 +75,5 @@
       In2_RemainSiz-=recv_byte_size;
       if (m_debug) std::cerr << " reading(2): Remain=" << In2_RemainSiz << ", Recv=" << recv_byte_size << std::endl;
     }
-
-//    if (m_debug) {
-//        std::cerr << "m_in_data.data.length():" << recv_byte_size
-//                  << std::endl;
-//    }
 
     return recv_byte_size;

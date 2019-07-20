@@ -6,6 +6,7 @@ SRCS += $(COMP_NAME).cpp
 SRCS += $(COMP_NAME)Comp.cpp
 
 # LEPS2 DAQ common
+CXXFLAGS += -I/home/online/local/include/
 OBJS += ../lib/daqmwlib.o
 CPPFLAGS += -I../lib/ -g
 #LDLIBS += -lz -llz4

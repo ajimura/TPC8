@@ -11,7 +11,8 @@
 #include <ctime>
 #include <cstdlib>
 #include <zlib.h>
-#include "../../local/include/lz4.h"
+#include <lz4.h>
+//#include "../../local/include/lz4.h"
 #include "DumGenA.h"
 #include "daqmwlib.h"
 
@@ -107,6 +108,8 @@ int DumGenA::daq_configure()
     case 2: std::cout << "LZ4" << std::endl; break;
     default: std::cout << "NONE" << std::endl; break;
     }
+    std::cerr << "ZLIB version: " << ZLIB_VERSION << std::endl;
+    std::cerr << "LZ4 version: " << LZ4_VERSION_NUMBER << std::endl;
 
     // Initialization start
     std::cout << "--- Initialization starting..." << std::endl;

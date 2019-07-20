@@ -75,6 +75,9 @@ private:
   int Stock_CurNum;
   int Stock_Offset;
 
+  int OutCompress;
+  int CompressLevel;
+
   unsigned int eventnum;
 };
 

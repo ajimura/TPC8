@@ -8,8 +8,13 @@ SRCS += $(COMP_NAME)Comp.cpp
 # LEPS2 DAQ common
 OBJS += ../lib/daqmwlib.o
 CPPFLAGS += -I../lib/ -g
+#LDLIBS += -lz -llz4
+LDLIBS += -lz ../../local/lib/liblz4.a
 
-$(COMP_NAME).o : read_data_from_detectors.inc
+INCS  = read_data_from_detectors.inc
+INCS += set_data.inc
+
+$(COMP_NAME).o : $(INCS)
 
 # sample install target
 #

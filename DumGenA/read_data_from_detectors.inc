@@ -6,7 +6,7 @@
     unsigned int seq_num;
     unsigned int *toppos;
     unsigned int *curpos;
-    unsigned short *curpos2;
+    unsigned char *curpos1;
     int totsize;
     unsigned char eventtag=0;
     unsigned int comp_footer;
@@ -37,12 +37,16 @@
 
     // get&write data
     totsize=generate_size;
-    curpos2=curpos;
+    curpos1=(unsigned char *)curpos;
 //random
-    for(i=0;i<totsize/2;i++)
-      *(curpos2++)=(short)(rand()%65536);
-    std::cerr << *curpos << " " << *(curpos+1) << " "  <<
-      *(curpos+2) << " "  << *(curpos+3) << std::endl;
+    for(i=0;i<totsize;i++)
+      *(curpos1++)=(short)(rand()%64); // restricted random
+//      *(curpos1++)=(short)(rand()%256); // perfect random
+//    std::cerr << *curpos << " " << *(curpos+1) << " ";
+//    std::cerr << *(curpos+2) << " "  << *(curpos+3) << " ";
+//    std::cerr << *(curpos+4) << " "  << *(curpos+5) << " ";
+//    std::cerr << *(curpos+6) << " "  << *(curpos+7) << " ";
+//    std::cerr << std::endl;
 //
     curpos+=(totsize/4);
 

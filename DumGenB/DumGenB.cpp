@@ -9,6 +9,10 @@
 
 #include <iomanip>
 #include <ctime>
+#include <cstdlib>
+#include <zlib.h>
+#include <lz4.h>
+#include <zstd.h>
 #include "DumGenB.h"
 #include "daqmwlib.h"
 
@@ -98,14 +102,27 @@ int DumGenB::daq_configure()
       std::setfill('0') << std::setw(8) << std::hex << ComponentID << std::endl;
     std::cout << std::dec;
     std::cout << "Stock Max Num: " << Stock_MaxNum << std::endl;
+    std::cout << "Compress Method on OutPort: ";
+    switch(OutCompress){
+    case 1: std::cout << "ZLIB" << std::endl; break;
+    case 2: std::cout << "LZ4" << std::endl; break;
+    case 3: std::cout << "Zstd" << std::endl; break;
+    default: std::cout << "NONE" << std::endl; break;
+    }
+    std::cerr << "ZLIB version: " << ZLIB_VERSION << std::endl;
+    std::cerr << "LZ4 version: " << LZ4_VERSION_NUMBER << std::endl;
+    std::cerr << "Zstd version: " << ZSTD_VERSION_NUMBER << std::endl;
 
     // Initialization start
     std::cout << "--- Initialization starting..." << std::endl;
 
+    // random seed
+    std::srand(time(NULL));
+
     // allocate data buffer
     try{
-      m_data4=new unsigned int[(generate_size+1024)*Stock_MaxNum];
-      m_data1=(unsigned char *)m_data4;
+      m_data1=new unsigned char[(generate_size+1024)*Stock_MaxNum];
+      m_data4=(unsigned int *)m_data1;
     }
     catch(std::bad_alloc){
       std::cerr << "Bad allocation: size=" << (generate_size+1024)*Stock_MaxNum << " bytes" << std::endl;
@@ -138,6 +155,8 @@ int DumGenB::parse_params(::NVList* list)
     Stock_MaxSiz=2097044;
     Stock_CurNum=0;
     Stock_Offset=0;
+    OutCompress=0;
+    CompressLevel=1;
 
     int len = (*list).length();
     for (i = 0; i < len; i+=2) {
@@ -153,10 +172,17 @@ int DumGenB::parse_params(::NVList* list)
       }
 
       if (sname == "GenSize") generate_size=atoi(svalue.c_str());
+      generate_size=(generate_size/4)*4;
       if (sname == "IntvTime") interval_time=atoi(svalue.c_str());
       if (sname == "ComponentID") ComponentID=atoi(svalue.c_str());
       if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
       if (sname == "StockMaxSize") Stock_MaxSiz=atoi(svalue.c_str());
+      if (sname == "OutCompress"){
+      	if (svalue == "ZLIB") OutCompress=1;
+      	if (svalue == "LZ4") OutCompress=2;
+      	if (svalue == "ZSTD") OutCompress=3;
+      }
+      if (sname == "CompressLevel") CompressLevel=atoi(svalue.c_str());
     }
 
     return 0;
@@ -166,7 +192,7 @@ int DumGenB::daq_unconfigure()
 {
     std::cerr << "*** DumGenB::unconfigure" << std::endl;
 
-    delete [] m_data4; std::cout << "Delete data buffer" << std::endl;
+    delete [] m_data1; std::cout << "Delete data buffer" << std::endl;
 
     return 0;
 }
@@ -205,20 +231,7 @@ int DumGenB::read_data_from_detectors()
 
 int DumGenB::set_data(int data_byte_size)
 {
-    unsigned char header[8];
-    unsigned char footer[8];
-
-    set_header(&header[0], (unsigned int)data_byte_size);
-    set_footer(&footer[0]);
-
-    ///set OutPort buffer length
-    m_out_data.data.length((unsigned int)data_byte_size + HEADER_BYTE_SIZE + FOOTER_BYTE_SIZE);
-    memcpy(&(m_out_data.data[0]), &header[0], HEADER_BYTE_SIZE);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &m_data1[0], (size_t)data_byte_size);
-    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE + (unsigned int)data_byte_size]), &footer[0],
-           FOOTER_BYTE_SIZE);
-
-    return 0;
+#include "set_data.inc"
 }
 
 int DumGenB::write_OutPort()

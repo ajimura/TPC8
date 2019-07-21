@@ -12,7 +12,6 @@
 #include <cstdlib>
 #include <zlib.h>
 #include <lz4.h>
-//#include "../../local/include/lz4.h"
 #include <zstd.h>
 #include "DumGenA.h"
 #include "daqmwlib.h"

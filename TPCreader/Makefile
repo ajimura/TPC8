@@ -6,6 +6,7 @@ SRCS += $(COMP_NAME).cpp
 SRCS += $(COMP_NAME)Comp.cpp
 
 # LEPS2 DAQ common
+CXXFLAGS += -I/home/online/local/include/
 OBJS += ../lib/daqmwlib.o
 
 # for space-wire/rmap
@@ -20,7 +21,7 @@ endif
 OBJS += ../lib/rmap_lib.o
 CPPFLAGS += -I../lib/
 #LDLIBS += -lz -llz4
-LDLIBS += -lz ../../local/lib/liblz4.a
+LDLIBS += -lz ../../local/lib/liblz4.a ../../local/lib/libzstd.a
 
 # for TPC readout
 OBJS += ../lib/tpclib.o ../lib/trigio_lib.o

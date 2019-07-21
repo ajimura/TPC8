@@ -6,10 +6,16 @@ SRCS += $(COMP_NAME).cpp
 SRCS += $(COMP_NAME)Comp.cpp
 
 # LEPS2 DAQ common
+CXXFLAGS += -I/home/online/local/include/
 OBJS += ../lib/daqmwlib.o
 CPPFLAGS += -I../lib/ -I../DumGenA/ -g
+#LDLIBS += -lz -llz4
+LDLIBS += -lz ../../local/lib/liblz4.a ../../local/lib/libzstd.a
 
-$(COMP_NAME).o : ../DumGenA/read_data_from_detectors.inc
+INCS  = ../DumGenA/read_data_from_detectors.inc
+INCS += ../DumGenA/set_data.inc
+
+$(COMP_NAME).o : $(INCS)
 
 # sample install target
 #

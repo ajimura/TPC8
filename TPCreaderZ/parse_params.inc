@@ -101,6 +101,7 @@
       if (sname == "OutCompress"){
       	if (svalue == "ZLIB") OutCompress=1;
       	if (svalue == "LZ4") OutCompress=2;
+      	if (svalue == "ZSTD") OutCompress=3;
       }
       if (sname == "CompressLevel") CompressLevel=atoi(svalue.c_str());
 

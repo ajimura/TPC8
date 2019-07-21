@@ -51,7 +51,7 @@ private:
     int write_OutPort();
     void toLower(std::basic_string<char>& s);
 
-  static const unsigned int ComponentType = 440; // <- should be modified
+  static const unsigned int ComponentType = 440;
 
   //    static const int SEND_BUFFER_SIZE = 4096;
   //    unsigned char m_data[SEND_BUFFER_SIZE];

@@ -39,7 +39,19 @@
   }else if (OutCompress==2){ //LZ4
     if ((compsize=LZ4_compress_fast((char *)In_CurPos, (char *)&(m_out_data.data[HEADER_BYTE_SIZE+8]),
 				       data_byte_size,data_byte_size,CompressLevel))==0){
-      std::cerr << "Error in LZ4_compress_default()" << std::endl;
+      std::cerr << "Error in LZ4_compress_fast()" << std::endl;
+      fatal_error_report(OUTPORT_ERROR);
+    }
+    if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
+    outsize=(unsigned int)(compsize+8);
+    bufsize=outsize|0xe0000000;
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &bufsize, 4); // 4+4+compressed size
+    memcpy(&(m_out_data.data[HEADER_BYTE_SIZE+4]), &data_byte_size, 4); //original size
+  }else if (OutCompress==3){ //ZSTD
+    if ((compsize=ZSTD_compress(&(m_out_data.data[HEADER_BYTE_SIZE+8]),(size_t)data_byte_size,
+				In_CurPos,(size_t)data_byte_size,
+				CompressLevel))<=0){
+      std::cerr << "Error in ZSTD_compress()" << std::endl;
       fatal_error_report(OUTPORT_ERROR);
     }
     if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
@@ -51,7 +63,6 @@
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), (unsigned char *)In_CurPos, (size_t)data_byte_size);
     outsize=(unsigned int)data_byte_size;
   }
-
 
   set_header(&header[0], outsize);
   set_footer(&footer[0]);

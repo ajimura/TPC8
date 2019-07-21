@@ -10,7 +10,7 @@ CXXFLAGS += -I/home/online/local/include/
 OBJS += ../lib/daqmwlib.o
 CPPFLAGS += -I../lib/ -g
 #LDLIBS += -lz -llz4
-LDLIBS += -lz ../../local/lib/liblz4.a
+LDLIBS += -lz ../../local/lib/liblz4.a ../../local/lib/libzstd.a
 
 INCS  = read_data_from_detectors.inc
 INCS += set_data.inc

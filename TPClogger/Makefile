@@ -6,6 +6,7 @@ SRCS += $(COMP_NAME).cpp
 SRCS += $(COMP_NAME)Comp.cpp
 SRCS += FileUtils.cpp
 
+CXXFLAGS += -I/home/online/local/include/
 OBJS += ../lib/daqmwlib.o
 CPPFLAGS += -I../lib/ -g
 
@@ -25,7 +26,7 @@ ifeq ($(shell echo "$(BOOST_VERSION) >= $(NEED_BOOST_SYSTEM_LIB_SINCE)" | bc), 1
 LDLIBS += -lboost_system
 endif
 #LDLIBS += -lz -llz4
-LDLIBS += -lz ../../local/lib/liblz4.a
+LDLIBS += -lz ../../local/lib/liblz4.a ../../local/lib/libzstd.a
 
 # sample install target
 #

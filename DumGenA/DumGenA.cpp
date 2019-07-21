@@ -13,6 +13,7 @@
 #include <zlib.h>
 #include <lz4.h>
 //#include "../../local/include/lz4.h"
+#include <zstd.h>
 #include "DumGenA.h"
 #include "daqmwlib.h"
 
@@ -106,10 +107,12 @@ int DumGenA::daq_configure()
     switch(OutCompress){
     case 1: std::cout << "ZLIB" << std::endl; break;
     case 2: std::cout << "LZ4" << std::endl; break;
+    case 3: std::cout << "Zstd" << std::endl; break;
     default: std::cout << "NONE" << std::endl; break;
     }
     std::cerr << "ZLIB version: " << ZLIB_VERSION << std::endl;
     std::cerr << "LZ4 version: " << LZ4_VERSION_NUMBER << std::endl;
+    std::cerr << "Zstd version: " << ZSTD_VERSION_NUMBER << std::endl;
 
     // Initialization start
     std::cout << "--- Initialization starting..." << std::endl;
@@ -178,6 +181,7 @@ int DumGenA::parse_params(::NVList* list)
       if (sname == "OutCompress"){
       	if (svalue == "ZLIB") OutCompress=1;
       	if (svalue == "LZ4") OutCompress=2;
+      	if (svalue == "ZSTD") OutCompress=3;
       }
       if (sname == "CompressLevel") CompressLevel=atoi(svalue.c_str());
     }

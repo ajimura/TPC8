@@ -35,6 +35,7 @@
     switch(OutCompress){
     case 1: std::cout << "ZLIB" << std::endl; break;
     case 2: std::cout << "LZ4" << std::endl; break;
+    case 3: std::cout << "ZSTD" << std::endl; break;
     default: std::cout << "NONE" << std::endl; break;
     }
     std::cout << "--- Now ready to start !!" << std::endl;

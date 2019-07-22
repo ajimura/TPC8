@@ -164,6 +164,9 @@ int TPCreader::write_OutPort()
         if (m_out_status == BUF_TIMEOUT) { // Timeout
             return -1;
         }
+        if (m_out_status == BUF_NOBUF) { // Timeout
+            return -1;
+        }
     }
     else {
         m_out_status = BUF_SUCCESS; // successfully done
@@ -185,20 +188,37 @@ int TPCreader::daq_run()
         return 0;
     }
 
+    if (m_out_status == BUF_TIMEOUT || m_out_status == BUF_NOBUF){
+      if (write_OutPort() < 0) {
+          ;     // Timeout. do nothing.
+      }
+      else {    // OutPort write successfully done
+        inc_sequence_num();                     // increase sequence num.
+        inc_total_data_size(m_recv_byte_size);  // increase total data byte size
+      }
+    }
+
     if (m_out_status == BUF_SUCCESS) {   // previous OutPort.write() successfully done
         m_recv_byte_size = read_data_from_detectors();
         if (m_recv_byte_size > 0) {
             set_data(m_recv_byte_size); // set data to OutPort Buffer
+	    if (write_OutPort() < 0) {
+	      ;     // Timeout. do nothing.
+	    }
+	    else {    // OutPort write successfully done
+	      inc_sequence_num();                     // increase sequence num.
+	      inc_total_data_size(m_recv_byte_size);  // increase total data byte size
+	    }
         }
     }
 
-    if (write_OutPort() < 0) {
-        ;     // Timeout. do nothing.
-    }
-    else {    // OutPort write successfully done
-      inc_sequence_num();                     // increase sequence num.
-      inc_total_data_size(m_recv_byte_size);  // increase total data byte size
-    }
+    //    if (write_OutPort() < 0) {
+    //        ;     // Timeout. do nothing.
+    //    }
+    //    else {    // OutPort write successfully done
+    //      inc_sequence_num();                     // increase sequence num.
+    //      inc_total_data_size(m_recv_byte_size);  // increase total data byte size
+    //    }
 
     return 0;
 }

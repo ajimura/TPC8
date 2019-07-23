@@ -56,7 +56,7 @@
     }
     if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
     outsize=(unsigned int)(compsize+8);
-    bufsize=outsize|0xe0000000;
+    bufsize=outsize|0xd0000000;
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE]), &bufsize, 4); // 4+4+compressed size
     memcpy(&(m_out_data.data[HEADER_BYTE_SIZE+4]), &data_byte_size, 4); //original size
   }else{

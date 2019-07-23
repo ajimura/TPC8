@@ -98,6 +98,7 @@ int TPCreaderZ::daq_unconfigure()
 {
     std::cerr << "*** TPCreaderZ::unconfigure" << std::endl;
 
+    ZSTD_freeCCtx(cctx);
     delete [] m_dataA; std::cout << "Delete data bufferA" << std::endl;
     delete [] m_dataB; std::cout << "Delete data bufferB" << std::endl;
     fadc_close(); std::cout << "Close Spacewire ports" << std::endl;

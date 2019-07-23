@@ -102,6 +102,7 @@ private:
 
   int OutCompress;
   int CompressLevel;
+  struct ZSTD_CCtx_s *cctx;
 
   int SwitchAB;
   int Resv_In, Resv_Size;

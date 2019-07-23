@@ -52,6 +52,9 @@
     case 3: std::cout << "ZSTD" << std::endl; break;
     default: std::cout << "NONE" << std::endl; break;
     }
+    std::cerr << "ZLIB version: " << ZLIB_VERSION << std::endl;
+    std::cerr << "LZ4 version: " << LZ4_VERSION_NUMBER << std::endl;
+    std::cerr << "Zstd version: " << ZSTD_VERSION_NUMBER << std::endl;
     //
     std::cout << std::hex;
     std::cout << "Component Type: 0x" << 
@@ -76,6 +79,9 @@
     std::cout << "fadc_set_adc_info ... ";
     fadc_set_adc_info();
     std::cout << "Done" << std::endl;
+
+    // init compression API
+    cctx=ZSTD_createCCtx();
 
     // allocate data buffer
     m_out_data.data.length((unsigned int)Stock_MaxSiz);

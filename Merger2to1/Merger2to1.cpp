@@ -137,6 +137,7 @@ int Merger2to1::daq_configure()
     switch(OutCompress){
     case 1: std::cout << "ZLIB" << std::endl; break;
     case 2: std::cout << "LZ4" << std::endl; break;
+    case 3: std::cout << "ZSTD" << std::endl; break;
     default: std::cout << "NONE" << std::endl; break;
     }
     std::cout << std::hex;
@@ -182,6 +183,7 @@ int Merger2to1::parse_params(::NVList* list)
       if (sname == "OutCompress"){
       	if (svalue == "ZLIB") OutCompress=1;
       	if (svalue == "LZ4") OutCompress=2;
+      	if (svalue == "ZSTD") OutCompress=3;
       }
       if (sname == "CompressLevel") CompressLevel=atoi(svalue.c_str());
     }

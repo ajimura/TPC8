@@ -14,7 +14,7 @@
     t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
   }
 
-//  if (m_debug) std::cerr << "in set_data: data_byte_size=" << data_byte_size << std::endl;
+  if (m_debug) std::cerr << "in set_data: data_byte_size=" << data_byte_size << std::endl;
 
   m_out_data.data.length((unsigned int)Stock_MaxSiz);
   toppos=(unsigned int *)&(m_out_data.data[HEADER_BYTE_SIZE]);
@@ -26,7 +26,7 @@
       std::cerr << "Error in compress2()" << std::endl;
       fatal_error_report(OUTPORT_ERROR);
     }
-//    if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
+    if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
     outsize=(unsigned int)(compsize+8);
     bufsize=outsize|0xf0000000;
     *toppos=bufsize;
@@ -40,7 +40,7 @@
       std::cerr << "Error in LZ4_compress_default()" << std::endl;
       fatal_error_report(OUTPORT_ERROR);
     }
-//    if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
+    if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
     outsize=(unsigned int)(compsize+8);
     bufsize=outsize|0xe0000000;
     *toppos=bufsize;
@@ -55,7 +55,7 @@
       std::cerr << "Error in ZSTD_compress_default()" << std::endl;
       fatal_error_report(OUTPORT_ERROR);
     }
-//    if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
+    if (m_debug) printf("Compressed: size=%d -> %lu\n",data_byte_size,compsize);
     outsize=(unsigned int)(compsize+8);
     bufsize=outsize|0xd0000000;
     *toppos=bufsize;

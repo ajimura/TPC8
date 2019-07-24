@@ -10,7 +10,8 @@
 #include <iomanip>
 #include <ctime>
 #include <zlib.h>
-#include "../../local/include/lz4.h"
+#include <lz4.h>
+#include <zstd.h>
 #include "Merger2to1Z.h"
 #include "daqmwlib.h"
 

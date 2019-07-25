@@ -45,10 +45,18 @@
 	      fatal_error_report(INPORT_ERROR);
 	    }
 	    In1_TotSiz=(int)origsize;
-	  }else{
+	  }else if (flag==0xe0000000){
 	    if ((zret=LZ4_decompress_safe((char *)&(m_in1_data.data[HEADER_BYTE_SIZE+8]),(char *)DataPos1,
 					  (int)compsize,(int)origsize))<0){
 	      std::cerr << "(1)Failed in uncompress(LZ4): " << zret << std::endl;
+	      fatal_error_report(INPORT_ERROR);
+	    }
+	    In1_TotSiz=zret;
+	  }else{
+	    if ((zret=ZSTD_decompress(DataPos1,(size_t)origsize,
+				      &(m_in1_data.data[HEADER_BYTE_SIZE+8]),(size_t)compsize
+				      ))<0){
+	      std::cerr << "(1)Failed in uncompress(ZSTD): " << zret << std::endl;
 	      fatal_error_report(INPORT_ERROR);
 	    }
 	    In1_TotSiz=zret;

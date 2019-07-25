@@ -26,8 +26,12 @@
 	GlobSiz=m_in4_data.data.length();
 	if (m_debug) std::cerr << "(4)Received Size=" << GlobSiz << std::endl;
 	memcpy(&BufSiz,&(m_in4_data.data[HEADER_BYTE_SIZE]),4); // size of 
+	if (m_debug) std::cerr << "(4)Buffer Size=" << BufSiz << "(" << 
+		       std::setfill('0') << std::setw(8) << std::hex << BufSiz << ")" <<
+		       std::endl << std::dec;
 	if ((flag=BufSiz&0xf0000000)>0){ // get compressed data
 	  decompsize=(int *)&(m_in4_data.data[HEADER_BYTE_SIZE+4]); // original size
+	  if (m_debug) std::cerr << "(4)Original Size=" << *decompsize << std::endl;
 	  if (*decompsize>Cur_MaxDataSiz4){
 	    DataPos4=renew_buf(DataPos4,(size_t)Cur_MaxDataSiz4,(size_t)*decompsize);
 	    Cur_MaxDataSiz4=*decompsize;
@@ -41,9 +45,17 @@
 	      fatal_error_report(INPORT_ERROR);
 	    }
 	    In4_TotSiz=(int)origsize;
-	  }else{
+	  }else if (flag==0xe0000000){
 	    if ((zret=LZ4_decompress_safe((char *)&(m_in4_data.data[HEADER_BYTE_SIZE+8]),(char *)DataPos4,
 					  (int)compsize,(int)origsize))<0){
+	      std::cerr << "(4)Failed in uncompress(LZ4): " << zret << std::endl;
+	      fatal_error_report(INPORT_ERROR);
+	    }
+	    In4_TotSiz=zret;
+	  }else{
+	    if ((zret=ZSTD_decompress(DataPos4,(size_t)origsize,
+				      &(m_in4_data.data[HEADER_BYTE_SIZE+8]),(size_t)compsize
+				      ))<0){
 	      std::cerr << "(4)Failed in uncompress(LZ4): " << zret << std::endl;
 	      fatal_error_report(INPORT_ERROR);
 	    }

@@ -1,4 +1,5 @@
 <!-- default value -->
+<!-- filenames do not have their default value -->
                 <component cid="TPCreader0">
                     <hostAddr>127.0.0.1</hostAddr>
                     <hostPort>50000</hostPort>
@@ -31,13 +32,11 @@
 		      <param pid="CompressionType">Simple</param>
 		      <param pid="TrigType">Clock</param>
 		      <param pid="ExtReset">no</param>
-		      <param pid="UseTrigIO">yes</param>
-		      <param pid="TrigIOIP">0.0.0.0</param>
-		      <param pid="TrigIOPort">4660</param>
-		      <param pid="TrigIO_Done">no</param>
-		      <param pid="TrigIO_WaitTime">10</param>
-		      <param pid="UseSWIO">no</param>
-		      <param pid="SWIO_Done">no</param>
+		      <param pid="GetETag">SWIO</param>
+		      <param pid="RPV260IP">0.0.0.0</param>
+		      <param pid="RPV260Port">4660</param>
+		      <param pid="ETagDone">no</param>
+		      <param pid="ETagWaitTime">10</param>
 		      <param pid="StockNum">1</param>
 		      <param pid="StockMaxSize">2097044</param>
 		      <param pid="OutCompress">no</param>
@@ -52,5 +51,6 @@
 <!-- RdyChkFile is valid if SetRdyChk is "sel" -->
 <!-- CompressionType: Simple, P,Q,R,D,M,Z and their combination as PZ -->
 <!-- TrigType: Clock or Ext -->
-<!-- even UseTrigIO is yes, do not read TrigIO if TrigIOIP is 0.0.0.0 -->
-<!-- OutCompress: no, ZLIB, LZ4, ZSTD -->
+<!-- RPV260IP and RPV260Port are valid if GetETag is RPV260 -->
+<!-- even GetETag is RPV260, do not read RPV260 if RPV260IP is 0.0.0.0 -->
+<!-- OutCompress: ZLIB, LZ4, ZSTD and other -->

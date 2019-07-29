@@ -184,7 +184,7 @@
         std::cerr << "Error in swio_open !!" << std::endl;
         fatal_error_report(USER_DEFINED_ERROR3,"Error in swio_open");
       }
-      if (EtagDone==true){
+      if (ETagDone==true){
         if (swio_reset()){
           std::cerr << "Error in swio_reset !!" << std::endl;
           fatal_error_report(USER_DEFINED_ERROR3,"Error in swio_reset");

@@ -88,11 +88,13 @@ private:
   std::string rdychk_file;
   int ComprType;
   int TrigEnab;
-  std::string TrigIOIP;
-  int TrigIOPort;
-  bool TrigIO_done;
-  int TrigIO_waittime;
-  int ComponentID;
+
+  int GetETag;
+  std::string RPV260IP;
+  int RPV260Port;
+  bool ETagDone;
+  int ETagWaitTime;
+
   int ReadTimeout;
 
   int Stock_MaxNum;

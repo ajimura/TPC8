@@ -92,10 +92,19 @@
       std::cout << "read time: " << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
     }
 
-    //get event tag from RPC-260 TPC_TrigIO
-    if (trigio_read_eventtag(&eventtag)<0){
-      std::cerr << "Error in trigio_read_eventtag !!" << std::endl;
-      fatal_error_report(USER_DEFINED_ERROR2,"Error in trigio_read_eventtag");
+    //get event tag from RPC-260 TPC_TrigIO or SWIOREG
+    if (GetETag==1){
+      if (trigio_read_eventtag(&eventtag)<0){
+        std::cerr << "Error in trigio_read_eventtag !!" << std::endl;
+        fatal_error_report(USER_DEFINED_ERROR2,"Error in trigio_read_eventtag");
+      }
+    }else if (GetETag==2){
+      if (swio_read(&eventtag)<0){
+        std::cerr << "Error in swio_read !!" << std::endl;
+        fatal_error_report(USER_DEFINED_ERROR2,"Error in swio_read");
+      }
+    }else{
+      eventtag=255;
     }
 
     //set return value
@@ -112,9 +121,13 @@
     *(toppos+4)=(int)eventtag;
 
     //increment ring buffer read pointer for TrigIO
-    if (TrigIO_done){
-      usleep(TrigIO_waittime);
-      trigio_read_done();
+    if (ETagDone){
+      usleep(ETagWaitTime);
+      if (GetETag==1){
+        trigio_read_done();
+      }else if (GetETag==2){
+        swio_done();
+      }
     }
 
     if (seq_num%message_freq == 0){

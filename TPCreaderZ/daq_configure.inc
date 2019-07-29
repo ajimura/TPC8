@@ -36,11 +36,19 @@
     std::cout << "Trigger Type: 0x" << 
       std::setfill('0') << std::setw(2) << std::hex << (TrigEnab & 0xff) << std::endl;
     std::cout << std::dec;
-    // TrigIO param.
-    std::cout << "TrigIO IP Addr: " << TrigIOIP << std::endl;
-    std::cout << "TrigIO UDP Port: " << TrigIOPort << std::endl;
-    std::cout << "TrigIO Done: " << TrigIO_done << std::endl;
-    std::cout << "TrigIO Wait: " << TrigIO_waittime << std::endl;
+    // Event Tag
+    if (GetETag==0){
+      std::cout << "Event Tag: None" << std::endl;
+    }else{
+      if (GetETag==1){
+        std::cout << "Event Tag from RPV260: IP=" << RPV260IP << ", Port=" << RPV260Port << std::endl;
+      }else{
+        std::cout << "Event Tag from SWIO" << std::endl;
+      }
+      if (ETagDone){
+        std::cout << "  Issue Done: WaitTime=" << ETagWaitTime << std::endl;
+      }
+    }
     //
     std::cout << "Stock Max Num: " << Stock_MaxNum << std::endl;
     std::cout << "Stock Max Size: " << Stock_MaxSiz << std::endl;
@@ -52,9 +60,6 @@
     case 3: std::cout << "ZSTD" << std::endl; break;
     default: std::cout << "NONE" << std::endl; break;
     }
-    std::cerr << "ZLIB version: " << ZLIB_VERSION << std::endl;
-    std::cerr << "LZ4 version: " << LZ4_VERSION_NUMBER << std::endl;
-    std::cerr << "Zstd version: " << ZSTD_VERSION_NUMBER << std::endl;
     //
     std::cout << std::hex;
     std::cout << "Component Type: 0x" << 
@@ -79,9 +84,6 @@
     std::cout << "fadc_set_adc_info ... ";
     fadc_set_adc_info();
     std::cout << "Done" << std::endl;
-
-    // init compression API
-    cctx=ZSTD_createCCtx();
 
     // allocate data buffer
     m_out_data.data.length((unsigned int)Stock_MaxSiz);
@@ -148,7 +150,7 @@
       }
     }
     //set ready chk
-    if (trigio_exist==true){
+    if (rdychk_exist==true){
       fadc_read_readychk(rdychk_file.c_str());
     }
     // set compression type
@@ -158,22 +160,40 @@
     }else{
       std::cout << "fadc_set_comp_all ... Done" << std::endl;
     }
-    // TrigIO
-    if (trigio_ini(TrigIOIP.c_str(), TrigIOPort)<0){
-      std::cerr << "Error in trigio_ini !!" << std::endl;
-      fatal_error_report(USER_DEFINED_ERROR3,"Error in trigio_ini");
-    }else{
-      std::cout << "trigini ... Done" << std::endl;
-    }
-    //RPV-260 trigger count reset
-    if (TrigIO_done==true){
-      if (trigio_reset_count()<0){
-        std::cerr << "Error in trigio_reset_count !!" << std::endl;
-        fatal_error_report(USER_DEFINED_ERROR3,"Error in trigio_reset_count");
+    // RPV260
+    if (GetETag==1){
+      if (trigio_ini(RPV260IP.c_str(), RPV260Port)<0){
+        std::cerr << "Error in trigio_ini !!" << std::endl;
+        fatal_error_report(USER_DEFINED_ERROR3,"Error in trigio_ini");
       }else{
-        std::cout << "trigio_reset_count ... Done" << std::endl;
+        std::cout << "trigini ... Done" << std::endl;
+      }
+      //RPV-260 trigger count reset
+      if (ETagDone==true){
+        if (trigio_reset_count()<0){
+          std::cerr << "Error in trigio_reset_count !!" << std::endl;
+          fatal_error_report(USER_DEFINED_ERROR3,"Error in trigio_reset_count");
+        }else{
+          std::cout << "trigio_reset_count ... Done" << std::endl;
+        }
       }
     }
+#ifdef DE10
+    if (GetETag==2){
+      if (swio_open()<0){
+        std::cerr << "Error in swio_open !!" << std::endl;
+        fatal_error_report(USER_DEFINED_ERROR3,"Error in swio_open");
+      }
+      if (ETagDone==true){
+        if (swio_reset()){
+          std::cerr << "Error in swio_reset !!" << std::endl;
+          fatal_error_report(USER_DEFINED_ERROR3,"Error in swio_reset");
+        }else{
+          std::cout << "swio_reset ... Done" << std::endl;
+        }
+      }
+    }
+#endif
     std::cout << "--- Now ready to start !!" << std::endl;
 
     return 0;

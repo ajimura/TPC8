@@ -100,7 +100,7 @@ private:
   //  int TrigIOPort;
   //  bool TrigIO_done;
   //  int TrigIO_waittime;
-  //  int ReadTimeout;
+  int ReadTimeout;
 
   //  bool UseSWIO;
   //  bool SWIO_done;

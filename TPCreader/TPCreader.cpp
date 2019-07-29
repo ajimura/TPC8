@@ -16,6 +16,7 @@
 #include "daqmwlib.h"
 #include "tpclib.h"
 #include "trigio_lib.h"
+#include "swioreg.h"
 
 using DAQMW::FatalType::DATAPATH_DISCONNECTED;
 using DAQMW::FatalType::OUTPORT_ERROR;

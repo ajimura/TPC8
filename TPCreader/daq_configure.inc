@@ -162,14 +162,14 @@
     }
     // RPV260
     if (GetETag==1){
-      if (trigio_ini(TrigIOIP.c_str(), TrigIOPort)<0){
+      if (trigio_ini(RPV260IP.c_str(), RPV260Port)<0){
         std::cerr << "Error in trigio_ini !!" << std::endl;
         fatal_error_report(USER_DEFINED_ERROR3,"Error in trigio_ini");
       }else{
         std::cout << "trigini ... Done" << std::endl;
       }
       //RPV-260 trigger count reset
-      if (EtagDone==true){
+      if (ETagDone==true){
         if (trigio_reset_count()<0){
           std::cerr << "Error in trigio_reset_count !!" << std::endl;
           fatal_error_report(USER_DEFINED_ERROR3,"Error in trigio_reset_count");

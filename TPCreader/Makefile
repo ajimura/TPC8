@@ -15,8 +15,8 @@ OBJS += /usr/share/swpci/lib/swpci_lib.o
 CPPFLAGS += -I/usr/share/swpci/include/ -g
 endif
 ifeq ($(shell uname -m),armv7l)
-OBJS += /usr/share/swsoc8/lib/swsoc_lib.o
-CPPFLAGS += -I/usr/share/swsoc8/include/ -g
+OBJS += /usr/share/swsoc8/lib/swsoc_lib.o /usr/share/swioreg/lib/swio_lib.o
+CPPFLAGS += -I/usr/share/swsoc8/include/ -I/usr/share/swioreg/include/ -g -DDE10
 endif
 OBJS += ../lib/rmap_lib.o
 CPPFLAGS += -I../lib/

@@ -88,12 +88,22 @@ private:
   std::string rdychk_file;
   int ComprType;
   int TrigEnab;
-  std::string TrigIOIP;
-  int TrigIOPort;
-  bool TrigIO_done;
-  int TrigIO_waittime;
-  int ComponentID;
-  int ReadTimeout;
+
+  int GetETag;
+  std::string RPV260IP;
+  int RPV260Port;
+  bool ETagDone;
+  int ETagWaitTime;
+
+  //  bool UseTrigIO;
+  //  std::string TrigIOIP;
+  //  int TrigIOPort;
+  //  bool TrigIO_done;
+  //  int TrigIO_waittime;
+  //  int ReadTimeout;
+
+  //  bool UseSWIO;
+  //  bool SWIO_done;
 
   int Stock_MaxNum;
   int Stock_MaxSiz;
@@ -102,6 +112,8 @@ private:
 
   int OutCompress;
   int CompressLevel;
+
+  int ComponentID;
 
   int SwitchAB;
   int Resv_In, Resv_Size;

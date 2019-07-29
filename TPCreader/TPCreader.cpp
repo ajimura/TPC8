@@ -101,7 +101,8 @@ int TPCreader::daq_unconfigure()
     delete [] m_dataA; std::cout << "Delete data bufferA" << std::endl;
     delete [] m_dataB; std::cout << "Delete data bufferB" << std::endl;
     fadc_close(); std::cout << "Close Spacewire ports" << std::endl;
-    trigio_fin();
+    if (GetETag==1) trigio_fin();
+    if (GetETag==2) swio_close();
 
     return 0;
 }

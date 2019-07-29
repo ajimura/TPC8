@@ -1,4 +1,4 @@
-  int i;
+    int i;
 
     std::cout << "--- param list (length:" << (*list).length() << ")" << std::endl;
 
@@ -11,9 +11,21 @@
     rdychk_exist=false;
     ComprType=FADC_Sup;
     TrigEnab=FADC_ClkTrig;
-    TrigIOIP="0.0.0.0";
-    TrigIO_done=false;
-    TrigIO_waittime=10;
+
+    GetETag=0;
+    RPV260IP="0.0.0.0";
+    RPV260Port=4660;
+    ETagDone=false;
+    ETagWaitTime=10;
+
+//    UseTrigIO=true;
+//    TrigIOIP="0.0.0.0";
+//    TrigIOOirt=4660;
+//    TrigIO_done=false;
+//    TrigIO_waittime=10;
+//    UseSWIO=false;
+//    SWIO_done=false;
+
     ComponentID=0;
     ReadTimeout=10000;
     Stock_MaxNum=1;
@@ -83,19 +95,28 @@
       	toLower(svalue);
 	if (svalue=="ext") TrigEnab=FADC_ExtTrig;
 	if (svalue=="clock") TrigEnab=FADC_ClkTrig;
-	if (svalue=="local") TrigEnab=FADC_IntTrig;
+//	if (svalue=="local") TrigEnab=FADC_IntTrig;
       }
       if (sname == "ExtReset"){
 	toLower(svalue);
 	if (svalue=="yes") TrigEnab+=FADC_ExtRst;
       }
-      if (sname == "TrigIOIP") TrigIOIP=svalue;
-      if (sname == "TrigIOPort") TrigIOPort=atoi(svalue.c_str());
-      if (sname == "TrigIO_Done"){
+
+      if (sname == "GetETag"){
 	toLower(svalue);
-      	if (svalue == "yes") TrigIO_done=true;
+	if (svalue=="rpv260") GetETag=1;
+#ifdef DE10
+	if (svalue=="swio")   GetETag=2;
+#endif
       }
-      if (sname == "TrigIO_WaitTime") TrigIO_waittime=atoi(svalue.c_str());
+      if (sname == "RPV260IP") RPV260IP=svalue;
+      if (sname == "RPV260Port") RPV260Port=atoi(svalue.c_str());
+      if (sname == "ETagDone"){
+	toLower(svalue);
+      	if (svalue == "yes") ETagDone=true;
+      }
+      if (sname == "ETagWaitTime") ETagWaitTime=atoi(svalue.c_str());
+
       if (sname == "StockNum") Stock_MaxNum=atoi(svalue.c_str());
       if (sname == "StockMaxSize") Stock_MaxSiz=atoi(svalue.c_str());
       if (sname == "OutCompress"){

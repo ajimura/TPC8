@@ -85,6 +85,9 @@
     fadc_set_adc_info();
     std::cout << "Done" << std::endl;
 
+    // init compression API
+    cctx=ZSTD_createCCtx();
+
     // allocate data buffer
     m_out_data.data.length((unsigned int)Stock_MaxSiz);
 

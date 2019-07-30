@@ -104,6 +104,8 @@ private:
   int OutCompress;
   int CompressLevel;
 
+  int ComponentID;
+
   int SwitchAB;
   int Resv_In, Resv_Size;
 

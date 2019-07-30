@@ -106,6 +106,8 @@ private:
   int CompressLevel;
   struct ZSTD_CCtx_s *cctx;
 
+  int ComponentID;
+
   int SwitchAB;
   int Resv_In, Resv_Size;
 

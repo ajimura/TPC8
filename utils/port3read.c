@@ -141,7 +141,11 @@ int main(int argc, char *argv[]) {
     printf("%04X ",data);
   }printf("\n");
   add=EBM_CmpType; st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
-  printf("CmpType: %04X\n", data);
+  printf("CmpType: %04X  ", data);
+  add=EBM_PExcess; st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
+  printf("PExcess: %d  ", data);
+  add=EBM_DExcess; st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
+  printf("PExcess: %d\n", data);
   //CMN
   printf("CMN-------------\n");
   add=CMN_Version;

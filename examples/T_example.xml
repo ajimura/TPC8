@@ -1,0 +1,23 @@
+<!-- default value -->
+                <component cid="TXer0">
+                    <hostAddr>127.0.0.1</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>TXer0.rtc</instName>
+                    <execPath>/home/online/TPC8/TXer/TXerComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>2</startOrd>
+                    <inPorts>
+                        <inPort from="TPCreaderZ0:tpcreaderc_out">txer_in</inPort>
+                    </inPorts>
+                    <outPorts>
+                        <outPort>txer_out</outPort>
+                    </outPorts>
+                    <params>
+		      <param pid="DEBUG">no</param>
+		      <param pid="StockNum">1</param>
+		      <param pid="StockMaxSize">2097044</param>
+		      <param pid="OutCompress">no</param>
+		      <param pid="CompressLevel">1</param>
+                    </params>
+                </component>
+<!-- OutCompress: ZLIB, LZ4, ZSTD and other -->

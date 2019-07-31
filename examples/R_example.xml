@@ -30,6 +30,8 @@
 		      <param pid="SetRdyChk">ALL</param>
 		      <param pid="RdyChkFile"></param>
 		      <param pid="CompressionType">Simple</param>
+		      <param pid="PeakExcess">0</param>
+		      <param pid="DipExcess">0</param>
 		      <param pid="TrigType">Clock</param>
 		      <param pid="ExtReset">no</param>
 		      <param pid="GetETag">SWIO</param>
@@ -49,8 +51,9 @@
 <!-- TrigIOFile is valid if SetTrigIO is "yes" -->
 <!-- SetRdyChk: All or Sel -->
 <!-- RdyChkFile is valid if SetRdyChk is "sel" -->
-<!-- CompressionType: Simple, P,Q,R,D,M,Z and their combination as PZ -->
+<!-- CompressionType: Simple, P,Q,R,D,E,F,M,Z and their combination as PZ -->
 <!-- TrigType: Clock or Ext -->
+<!-- GetETag: RPV260, SWIO, and other -->
 <!-- RPV260IP and RPV260Port are valid if GetETag is RPV260 -->
 <!-- even GetETag is RPV260, do not read RPV260 if RPV260IP is 0.0.0.0 -->
 <!-- OutCompress: ZLIB, LZ4, ZSTD and other -->

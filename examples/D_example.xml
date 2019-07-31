@@ -1,0 +1,25 @@
+<!-- default value -->
+                <component cid="DumGenA0">
+                    <hostAddr>127.0.0.1</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>DumGenA0.rtc</instName>
+                    <execPath>/home/online/TPC8/DumGenA/DumGenAComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>2</startOrd>
+                    <inPorts>
+                    </inPorts>
+                    <outPorts>
+                        <outPort>dumgena_out</outPort>
+                    </outPorts>
+                    <params>
+		      <param pid="DEBUG">no</param>
+		      <param pid="GenSize">1024</param>
+		      <param pid="IntvTime">1000000</param>
+		      <param pid="StockNum">1</param>
+		      <param pid="StockMaxSize">2097044</param>
+		      <param pid="OutCompress">no</param>
+		      <param pid="CompressLevel">1</param>
+		      <param pid="ComponentID">0</param>
+                    </params>
+                </component>
+<!-- OutCompress: ZLIB, LZ4, ZSTD and other -->

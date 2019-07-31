@@ -1,0 +1,21 @@
+<!-- default value -->
+                <component cid="CMPRer0">
+                    <hostAddr>127.0.0.1</hostAddr>
+                    <hostPort>50000</hostPort>
+                    <instName>CMPRer0.rtc</instName>
+                    <execPath>/home/online/TPC8/CMPRer/CMPRerComp</execPath>
+                    <confFile>/tmp/daqmw/rtc.conf</confFile>
+                    <startOrd>2</startOrd>
+                    <inPorts>
+                        <inPort from="TPCreaderZ0:tpcreaderz_out">txer_in</inPort>
+                    </inPorts>
+                    <outPorts>
+                        <outPort>cmprer_out</outPort>
+                    </outPorts>
+                    <params>
+		      <param pid="DEBUG">no</param>
+		      <param pid="OutCompress">no</param>
+		      <param pid="CompressLevel">1</param>
+                    </params>
+                </component>
+<!-- OutCompress: ZLIB, LZ4, ZSTD and other -->

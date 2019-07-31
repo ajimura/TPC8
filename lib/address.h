@@ -49,6 +49,8 @@
 #define EBM_Range 0x40080
 #define EBM_Thres 0x40084
 #define EBM_CmpType 0x40088
+#define EBM_PExcess 0x4008C
+#define EBM_DExcess 0x40090
 
 #define TMP_Tmp 0x60000
 #define TMP_Conf 0x60004

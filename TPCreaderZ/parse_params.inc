@@ -10,6 +10,8 @@
     trigio_exist=false;
     rdychk_exist=false;
     ComprType=FADC_Sup;
+    PExcess=0;
+    DExcess=0;
     TrigEnab=FADC_ClkTrig;
 
     GetETag=0;
@@ -87,10 +89,14 @@
 	  if ((int)svalue.find("q")>=0) ComprType+=FADC_Peak2;
 	  if ((int)svalue.find("r")>=0) ComprType+=FADC_Peak3;
 	  if ((int)svalue.find("d")>=0) ComprType+=FADC_Dip;
+	  if ((int)svalue.find("e")>=0) ComprType+=FADC_Dip2;
+	  if ((int)svalue.find("f")>=0) ComprType+=FADC_Dip3;
 	  if ((int)svalue.find("m")>=0) ComprType+=FADC_Mark;
 	  if ((int)svalue.find("z")>=0) ComprType+=FADC_Zero;
 	}
       }
+      if (sname == "PeakExcess") PExcess=atoi(svalue.c_str());
+      if (sname == "DipExcess") DExcess=atoi(svalue.c_str());
       if (sname == "TrigType"){
       	toLower(svalue);
 	if (svalue=="ext") TrigEnab=FADC_ExtTrig;

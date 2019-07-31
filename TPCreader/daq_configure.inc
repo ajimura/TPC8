@@ -33,6 +33,8 @@
     std::cout << std::hex;
     std::cout << "Compression Type: 0x" << 
       std::setfill('0') << std::setw(2) << std::hex << (ComprType & 0xff) << std::endl;
+    std::cout << "  Peak Excess=" << PExcess << std::endl;
+    std::cout << "  Dip Excess=" << DExcess << std::endl;
     std::cout << "Trigger Type: 0x" << 
       std::setfill('0') << std::setw(2) << std::hex << (TrigEnab & 0xff) << std::endl;
     std::cout << std::dec;
@@ -159,6 +161,18 @@
       fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_set_comp_all");
     }else{
       std::cout << "fadc_set_comp_all ... Done" << std::endl;
+    }
+    if (ComprType&0x00000060){
+      if (fadc_set_peakexcess_all(PExcess)<0){
+	std::cerr << "Error in fadc_set_peakexcess_all !!" << std::endl;
+	fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_set_peakexcess_all");
+      }
+    }
+    if (ComprType&0x00000180){
+      if (fadc_set_dipexcess_all(DExcess)<0){
+	std::cerr << "Error in fadc_set_dipexcess_all !!" << std::endl;
+	fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_set_dipexcess_all");
+      }
     }
     // RPV260
     if (GetETag==1){

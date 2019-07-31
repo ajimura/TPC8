@@ -4,13 +4,15 @@
 //#include "rmap_lib.h"
 //#endif
 
-#define FADC_Zero 0x00000101
-#define FADC_Mark 0x00000202
-#define FADC_Dip 0x00000404
-#define FADC_Peak 0x00000808
-#define FADC_Sup  0x00001010
-#define FADC_Peak2 0x00002020
-#define FADC_Peak3 0x00004040
+#define FADC_Zero  0x00000001
+#define FADC_Mark  0x00000002
+#define FADC_Dip   0x00000004
+#define FADC_Peak  0x00000008
+#define FADC_Sup   0x00000010
+#define FADC_Peak2 0x00000020
+#define FADC_Peak3 0x00000040
+#define FADC_Dip2  0x00000080
+#define FADC_Dip3  0x00000100
 
 #define FADC_ExtGTrigIn 0x00000010
 #define FADC_ExtRstIn 0x00000020
@@ -42,6 +44,8 @@ void fadc_set_thres_zero(void);
 int fadc_read_thres(const char *, int);
 int fadc_reset_trigcount(void);
 int fadc_set_comp_all(int);
+int fadc_set_peakexcess_all(int);
+int fadc_set_dipexcess_all(int);
 int fadc_disable_localtrig_all(void);
 int fadc_enable_localtrig_all(void);
 int fadc_read_set_trigio(const char *);

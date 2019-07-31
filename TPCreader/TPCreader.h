@@ -87,6 +87,7 @@ private:
   bool rdychk_exist;
   std::string rdychk_file;
   int ComprType;
+  int PExcess,DExcess;
   int TrigEnab;
 
   int GetETag;

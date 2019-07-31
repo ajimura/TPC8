@@ -63,11 +63,11 @@ int main(int argc, char *argv[]) {
 
   printf("Comp type: Simple Zero Sup.(0), PDMZ(1), P(2), Q(3), R(4): ");
   scanf("%d",&input);
-  if (input==0) cmptype=0x1010;
-  else if (input==1) cmptype=0x0f0f;
-  else if (input==2) cmptype=0x0808;
-  else if (input==3) cmptype=0x2020;
-  else if (input==4) cmptype=0x4040;
+  if (input==0) cmptype=0x0010;
+  else if (input==1) cmptype=0x000f;
+  else if (input==2) cmptype=0x0008;
+  else if (input==3) cmptype=0x0020;
+  else if (input==4) cmptype=0x0040;
   else cmptype=0x0808;
 
   printf("Read pedestal.txt for threshold? (yes=1): ");

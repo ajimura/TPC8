@@ -20,13 +20,15 @@
 #define SW_Port2 0x04000000
 #define SW_Port3 0x08000000
 
-#define FADC_Zero 0x00000101
-#define FADC_Mark 0x00000202
-#define FADC_Dip 0x00000404
-#define FADC_Peak 0x00000808
-#define FADC_Sup 0x00001010
-#define FADC_Peak2 0x00002020
-#define FADC_Peak3 0x00004040
+#define FADC_Zero  0x00000001
+#define FADC_Mark  0x00000002
+#define FADC_Dip   0x00000004
+#define FADC_Peak  0x00000008
+#define FADC_Sup   0x00000010
+#define FADC_Peak2 0x00000020
+#define FADC_Peak3 0x00000040
+#define FADC_Dip2  0x00000080
+#define FADC_Dip3  0x00000100
 
 #define FADC_ExtGTrigIn 0x00000010
 #define FADC_ExtRstIn 0x00000020
@@ -69,6 +71,8 @@ int fadc_init_each_adc(struct fadc_info *);
 int fadc_setup_each(struct fadc_info *);
 int fadc_reset_trigcount_each(struct fadc_info *);
 int fadc_set_comp_each(struct fadc_info *, int);
+int fadc_set_peakexcess_each(struct fadc_info *, int);
+int fadc_set_dipexcess_each(struct fadc_info *, int);
 int fadc_disable_localtrig_each(struct fadc_info *);
 int fadc_enable_localtrig_each(struct fadc_info *);
 int fadc_trig_enable_each(struct fadc_info *, int);
@@ -486,6 +490,54 @@ int fadc_set_comp_each(struct fadc_info *adc, int cmptype){
     st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   }
   add=EBM_CmpType; data=cmptype;
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  return st;
+}
+
+int fadc_set_peakexcess_all(int excess){
+  int i,j;
+  int st;
+  struct fadc_info *adc;
+  st=0;
+  for(i=0;i<DevsNum;i++){
+    adc=fadcinfo[i];
+    for(j=0;j<fadc_num[i];j++){
+      st+=fadc_set_peakexcess_each(adc+j,excess);
+    }
+  }
+  if (st<0) return -1; else return 0;
+}
+
+int fadc_set_peakexcess_each(struct fadc_info *adc, int excess){
+  unsigned int add,data;
+  int st;
+
+  st=0;
+  add=EBM_PExcess; data=excess;
+  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  return st;
+}
+
+int fadc_set_dipexcess_all(int excess){
+  int i,j;
+  int st;
+  struct fadc_info *adc;
+  st=0;
+  for(i=0;i<DevsNum;i++){
+    adc=fadcinfo[i];
+    for(j=0;j<fadc_num[i];j++){
+      st+=fadc_set_dipexcess_each(adc+j,excess);
+    }
+  }
+  if (st<0) return -1; else return 0;
+}
+
+int fadc_set_dipexcess_each(struct fadc_info *adc, int excess){
+  unsigned int add,data;
+  int st;
+
+  st=0;
+  add=EBM_DExcess; data=excess;
   st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
   return st;
 }

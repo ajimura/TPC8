@@ -16,7 +16,9 @@
 #include "daqmwlib.h"
 #include "tpclib.h"
 #include "trigio_lib.h"
+#ifdef DE10
 #include "swioreg.h"
+#endif
 
 using DAQMW::FatalType::DATAPATH_DISCONNECTED;
 using DAQMW::FatalType::OUTPORT_ERROR;
@@ -103,7 +105,9 @@ int TPCreaderA::daq_unconfigure()
     delete [] m_dataB; std::cout << "Delete data bufferB" << std::endl;
     fadc_close(); std::cout << "Close Spacewire ports" << std::endl;
     if (GetETag==1) trigio_fin();
+#ifdef DE10
     if (GetETag==2) swio_close();
+#endif
 
     return 0;
 }

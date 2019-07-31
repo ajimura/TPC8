@@ -99,10 +99,12 @@
         fatal_error_report(USER_DEFINED_ERROR2,"Error in trigio_read_eventtag");
       }
     }else if (GetETag==2){
+#ifdef DE10
       if (swio_read(&eventtag)<0){
         std::cerr << "Error in swio_read !!" << std::endl;
         fatal_error_report(USER_DEFINED_ERROR2,"Error in swio_read");
       }
+#endif
     }else{
       eventtag=255;
     }
@@ -126,7 +128,9 @@
       if (GetETag==1){
         trigio_read_done();
       }else if (GetETag==2){
+#ifdef DE10
         swio_done();
+#endif
       }
     }
 

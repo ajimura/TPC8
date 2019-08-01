@@ -33,6 +33,7 @@
     std::cout << std::hex;
     std::cout << "Compression Type: 0x" << 
       std::setfill('0') << std::setw(2) << std::hex << (ComprType & 0xff) << std::endl;
+    std::cout << std::dec;
     std::cout << "  Peak Excess=" << PExcess << std::endl;
     std::cout << "  Dip Excess=" << DExcess << std::endl;
     std::cout << "Trigger Type: 0x" << 

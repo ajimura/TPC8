@@ -147,6 +147,14 @@ int TXer::reset_InPort()
 
 int TXer::write_OutPort()
 {
+  struct timespec ts;
+  double t0=0.,t1;
+
+  if (m_debug) {
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t0=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+  }
+
     ////////////////// send data from OutPort  //////////////////
     bool ret = m_OutPort.write();
 
@@ -168,6 +176,13 @@ int TXer::write_OutPort()
       m_out_timeout_counter = 0;
       m_out_status = BUF_SUCCESS; // successfully done
     }
+
+  if (m_debug) {
+    clock_gettime(CLOCK_MONOTONIC,&ts);
+    t1=(ts.tv_sec*1.)+(ts.tv_nsec/1000000000.);
+    std::cout << "write time: " << std::fixed << std::setprecision(9) << t1-t0 << std::endl;
+  }
+
     return 0; // successfully done
 }
 

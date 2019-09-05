@@ -34,8 +34,13 @@
     std::cout << "Compression Type: 0x" << 
       std::setfill('0') << std::setw(2) << std::hex << (ComprType & 0xff) << std::endl;
     std::cout << std::dec;
-    std::cout << "  Peak Excess=" << PExcess << std::endl;
-    std::cout << "  Dip Excess=" << DExcess << std::endl;
+    if (excess_exist)
+      std::cout << "Excess Set from " << excess_file << std::endl;
+    else
+      std::cout << "  Peak Excess=" << PExcess << ", Dip Excess=" << DExcess << std::endl;
+    std::cout << "Trigger Type: 0x" << 
+      std::setfill('0') << std::setw(2) << std::hex << (TrigEnab & 0xff) << std::endl;
+    std::cout << std::dec;
     std::cout << "Trigger Type: 0x" << 
       std::setfill('0') << std::setw(2) << std::hex << (TrigEnab & 0xff) << std::endl;
     std::cout << std::dec;
@@ -163,13 +168,20 @@
     }else{
       std::cout << "fadc_set_comp_all ... Done" << std::endl;
     }
-    if (ComprType&0x00000060){
+    // excess
+    if (excess_exist==true){
+      fadc_read_excess(excess_file.c_str());
+      if (fadc_set_excess_all()<0){
+	std::cerr << "Error in setting excess !!" << std::endl;
+	fatal_error_report(USER_DEFINED_ERROR2,"Error in setting excess");
+      }else{
+	std::cout << "fadc_set_excess_all ... Done" << std::endl;
+      }
+    }else{
       if (fadc_set_peakexcess_all(PExcess)<0){
 	std::cerr << "Error in fadc_set_peakexcess_all !!" << std::endl;
 	fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_set_peakexcess_all");
       }
-    }
-    if (ComprType&0x00000180){
       if (fadc_set_dipexcess_all(DExcess)<0){
 	std::cerr << "Error in fadc_set_dipexcess_all !!" << std::endl;
 	fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_set_dipexcess_all");

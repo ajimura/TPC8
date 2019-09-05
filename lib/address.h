@@ -51,6 +51,8 @@
 #define EBM_CmpType 0x40088
 #define EBM_PExcess 0x4008C
 #define EBM_DExcess 0x40090
+#define EBM_PExcess16 0x40094
+#define EBM_DExcess16 0x40098
 
 #define TMP_Tmp 0x60000
 #define TMP_Conf 0x60004

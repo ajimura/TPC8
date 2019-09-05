@@ -145,7 +145,17 @@ int main(int argc, char *argv[]) {
   add=EBM_PExcess; st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
   printf("PExcess: %d  ", data);
   add=EBM_DExcess; st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
-  printf("PExcess: %d\n", data);
+  printf("DExcess: %d\n", data);
+  printf("PExcess16: ");
+  for(i=0;i<16;i++){
+    add=EBM_PExcess16+ChBase*i; st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
+    printf("%2d ",data);
+  }printf("\n");
+  printf("DExcess16: ");
+  for(i=0;i<16;i++){
+    add=EBM_DExcess16+ChBase*i; st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
+    printf("%2d ",data);
+  }printf("\n");
   //CMN
   printf("CMN-------------\n");
   add=CMN_Version;

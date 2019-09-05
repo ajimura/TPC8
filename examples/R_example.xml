@@ -30,6 +30,8 @@
 		      <param pid="SetRdyChk">ALL</param>
 		      <param pid="RdyChkFile"></param>
 		      <param pid="CompressionType">Simple</param>
+		      <param pid="ExcessFromFile">no</param>
+		      <param pid="ExcessFile"></param>
 		      <param pid="PeakExcess">0</param>
 		      <param pid="DipExcess">0</param>
 		      <param pid="TrigType">Clock</param>
@@ -52,6 +54,9 @@
 <!-- SetRdyChk: All or Sel -->
 <!-- RdyChkFile is valid if SetRdyChk is "sel" -->
 <!-- CompressionType: Simple, P,Q,R,D,E,F,M,Z and their combination as PZ -->
+<!-- ExcessFile is valid if ExcessFromFile is "yes" -->
+<!-- PeakExcess is valid if ExcessFromFile is "no" -->
+<!-- DipExcess is valid if ExcessFromFile is "no" -->
 <!-- TrigType: Clock or Ext -->
 <!-- GetETag: RPV260, SWIO, and other -->
 <!-- RPV260IP and RPV260Port are valid if GetETag is RPV260 -->

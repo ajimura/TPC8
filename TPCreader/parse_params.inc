@@ -10,6 +10,7 @@
     trigio_exist=false;
     rdychk_exist=false;
     ComprType=FADC_Sup;
+    excess_exist=false;
     PExcess=0;
     DExcess=0;
     TrigEnab=FADC_ClkTrig;
@@ -94,6 +95,13 @@
 	  if ((int)svalue.find("m")>=0) ComprType+=FADC_Mark;
 	  if ((int)svalue.find("z")>=0) ComprType+=FADC_Zero;
 	}
+      }
+      if (sname == "ExcessFromFile"){
+      	 toLower(svalue);
+	 if (svalue=="yes") excess_exist=true;
+      }
+      if (sname == "ExcessFile"){
+	excess_file=svalue;
       }
       if (sname == "PeakExcess") PExcess=atoi(svalue.c_str());
       if (sname == "DipExcess") DExcess=atoi(svalue.c_str());

@@ -44,6 +44,8 @@ void fadc_set_thres_zero(void);
 int fadc_read_thres(const char *, int);
 int fadc_reset_trigcount(void);
 int fadc_set_comp_all(int);
+int fadc_read_excess(const char *);
+int fadc_set_excess_all(void);
 int fadc_set_peakexcess_all(int);
 int fadc_set_dipexcess_all(int);
 int fadc_disable_localtrig_all(void);

@@ -53,7 +53,9 @@ struct fadc_info {
   int port;
   int nodeid;
   struct rmap_node_info node;
-  unsigned short thres[16];
+  unsigned int thres[16];
+  unsigned int excessp[16];
+  unsigned int excessd[16];
   unsigned int size[16];
   unsigned int totsize;
   unsigned int tgcreg[3];
@@ -71,6 +73,7 @@ int fadc_init_each_adc(struct fadc_info *);
 int fadc_setup_each(struct fadc_info *);
 int fadc_reset_trigcount_each(struct fadc_info *);
 int fadc_set_comp_each(struct fadc_info *, int);
+int fadc_set_excess_each(struct fadc_info *, unsigned int *, unsigned int *);
 int fadc_set_peakexcess_each(struct fadc_info *, int);
 int fadc_set_dipexcess_each(struct fadc_info *, int);
 int fadc_disable_localtrig_each(struct fadc_info *);
@@ -491,6 +494,69 @@ int fadc_set_comp_each(struct fadc_info *adc, int cmptype){
   }
   add=EBM_CmpType; data=cmptype;
   st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  return st;
+}
+
+int fadc_read_excess(const char *filename){
+  FILE *infile;
+  char line[100];
+  int i,j,k;
+  int port, node, ch;
+  int excessp, excessd;
+
+  if ((infile=fopen(filename,"r"))==NULL){
+    printf("file not find...\n");
+    return -1;
+  }
+
+  while(fgets(line,100,infile)!=NULL){
+    sscanf(line,"%d %d %d %d %d",&port,&node,&ch,&excessp,&excessd);
+    for(i=0;i<DevsNum;i++){
+      for(j=0;j<fadc_num[i];j++){
+	if ((fadcinfo[i]+j)->port==port && (fadcinfo[i]+j)->nodeid==node){
+	  if (ch==16){
+	    for(k=0;k<16;k++){
+	      (fadcinfo[i]+j)->excessp[k]=excessp;
+	      (fadcinfo[i]+j)->excessd[k]=excessd;
+	    }
+	  }else{
+	    (fadcinfo[i]+j)->excessp[ch]=excessp;
+	    (fadcinfo[i]+j)->excessd[ch]=excessd;
+	  }
+	}
+      }
+    }
+  }
+  fclose(infile);
+  return 0;
+}
+
+int fadc_set_excess_all(){
+  int i,j;
+  int st;
+  struct fadc_info *adc;
+  st=0;
+  for(i=0;i<DevsNum;i++){
+    adc=fadcinfo[i];
+    for(j=0;j<fadc_num[i];j++){
+      st+=fadc_set_excess_each(adc+j,(adc+j)->excessp,(adc+j)->excessd);
+    }
+  }
+  if (st<0) return -1; else return 0;
+}
+
+int fadc_set_excess_each(struct fadc_info *adc, unsigned int *excessp, unsigned int *excessd){
+  int i;
+  unsigned int add,data;
+  int st;
+
+  st=0;
+  for(i=0;i<16;i++){
+    add=EBM_PExcess16+ChBase*i; data=*(excessp+i);
+    st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+    add=EBM_DExcess16+ChBase*i; data=*(excessd+i);
+    st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  }
   return st;
 }
 

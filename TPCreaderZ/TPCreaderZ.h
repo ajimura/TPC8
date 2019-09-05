@@ -87,6 +87,8 @@ private:
   bool rdychk_exist;
   std::string rdychk_file;
   int ComprType;
+  bool excess_exist;
+  std::string excess_file;
   int PExcess,DExcess;
   int TrigEnab;
 

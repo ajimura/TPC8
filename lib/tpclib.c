@@ -575,12 +575,17 @@ int fadc_set_peakexcess_all(int excess){
 }
 
 int fadc_set_peakexcess_each(struct fadc_info *adc, int excess){
+  int i;
   unsigned int add,data;
   int st;
 
   st=0;
-  add=EBM_PExcess; data=excess;
-  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  //  add=EBM_PExcess; data=excess;
+  //  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  for(i=0;i<16;i++){
+    add=EBM_PExcess16+ChBase*i; data=excess;
+    st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  }
   return st;
 }
 
@@ -599,12 +604,17 @@ int fadc_set_dipexcess_all(int excess){
 }
 
 int fadc_set_dipexcess_each(struct fadc_info *adc, int excess){
+  int i;
   unsigned int add,data;
   int st;
 
   st=0;
-  add=EBM_DExcess; data=excess;
-  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  //  add=EBM_DExcess; data=excess;
+  //  st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  for(i=0;i<16;i++){
+    add=EBM_DExcess16+ChBase*i; data=excess;
+    st+=rmap_put_word(sw_fd[adc->port],adc->port,&(adc->node),add,data);
+  }
   return st;
 }
 

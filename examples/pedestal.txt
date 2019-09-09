@@ -1,3 +1,4 @@
+# port node ch pedestal rms
 0 0 0 1200. 3.
 0 0 1  1200. 3.
 0 0 2  1200. 3.

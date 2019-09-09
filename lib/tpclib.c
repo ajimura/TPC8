@@ -431,11 +431,13 @@ int fadc_read_thres(const char *filename, int factor){
 
   //  printf("***** pedestal ******\n");
   while(fgets(line,100,infile)!=NULL){
-    sscanf(line,"%d %d %d %lf %lf",&port,&node,&ch,&thres,&rms);
-    for(i=0;i<DevsNum;i++){
-      for(j=0;j<fadc_num[i];j++){
-	if ((fadcinfo[i]+j)->port==port && (fadcinfo[i]+j)->nodeid==node){
-	  (fadcinfo[i]+j)->thres[ch]=(int)(thres+rms*factor);
+    if (line[0]!='#'){
+      sscanf(line,"%d %d %d %lf %lf",&port,&node,&ch,&thres,&rms);
+      for(i=0;i<DevsNum;i++){
+	for(j=0;j<fadc_num[i];j++){
+	  if ((fadcinfo[i]+j)->port==port && (fadcinfo[i]+j)->nodeid==node){
+	    (fadcinfo[i]+j)->thres[ch]=(int)(thres+rms*factor);
+	  }
 	}
       }
     }
@@ -510,18 +512,20 @@ int fadc_read_excess(const char *filename){
   }
 
   while(fgets(line,100,infile)!=NULL){
-    sscanf(line,"%d %d %d %d %d",&port,&node,&ch,&excessp,&excessd);
-    for(i=0;i<DevsNum;i++){
-      for(j=0;j<fadc_num[i];j++){
-	if ((fadcinfo[i]+j)->port==port && (fadcinfo[i]+j)->nodeid==node){
-	  if (ch==16){
-	    for(k=0;k<16;k++){
-	      (fadcinfo[i]+j)->excessp[k]=excessp;
-	      (fadcinfo[i]+j)->excessd[k]=excessd;
+    if (line[0]!='#'){
+      sscanf(line,"%d %d %d %d %d",&port,&node,&ch,&excessp,&excessd);
+      for(i=0;i<DevsNum;i++){
+	for(j=0;j<fadc_num[i];j++){
+	  if ((fadcinfo[i]+j)->port==port && (fadcinfo[i]+j)->nodeid==node){
+	    if (ch==16){
+	      for(k=0;k<16;k++){
+		(fadcinfo[i]+j)->excessp[k]=excessp;
+		(fadcinfo[i]+j)->excessd[k]=excessd;
+	      }
+	    }else{
+	      (fadcinfo[i]+j)->excessp[ch]=excessp;
+	      (fadcinfo[i]+j)->excessd[ch]=excessd;
 	    }
-	  }else{
-	    (fadcinfo[i]+j)->excessp[ch]=excessp;
-	    (fadcinfo[i]+j)->excessd[ch]=excessd;
 	  }
 	}
       }

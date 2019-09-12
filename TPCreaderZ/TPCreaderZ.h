@@ -90,6 +90,7 @@ private:
   bool excess_exist;
   std::string excess_file;
   int PExcess,DExcess;
+  int MarkLevel;
   int TrigEnab;
 
   int GetETag;

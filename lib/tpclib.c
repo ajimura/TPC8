@@ -1613,6 +1613,23 @@ void fadc_set_full_range(unsigned int range){
   if (st<0) printf("Error on RMAP transfer.\n");
 }
 
+void fadc_set_mark_level(unsigned int range){
+  int i,j;
+  unsigned int add,data;
+  int st;
+  struct fadc_info *adc;
+
+  st=0;
+  for(i=0;i<DevsNum;i++){
+    adc=fadcinfo[i];
+    for(j=0;j<fadc_num[i];j++){
+      add=EBM_MarkLevel; data=(range&0x3fff);
+      st+=rmap_put_word(sw_fd[(adc+j)->port],(adc+j)->port,&((adc+j)->node),add,data);
+    }
+  }
+  if (st<0) printf("Error on RMAP transfer.\n");
+}
+
 void fadc_set_clk_hz(unsigned int clkhz){
   int i,j;
   unsigned int add,data;

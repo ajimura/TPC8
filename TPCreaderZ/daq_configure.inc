@@ -187,6 +187,7 @@
 	fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_set_dipexcess_all");
       }
     }
+    fadc_set_mark_level(MarkLevel);
     // RPV260
     if (GetETag==1){
       if (trigio_ini(RPV260IP.c_str(), RPV260Port)<0){

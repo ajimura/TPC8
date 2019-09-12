@@ -14,6 +14,7 @@
     PExcess=0;
     DExcess=0;
     TrigEnab=FADC_ClkTrig;
+    MarkLevel=0x3ffe;
 
     GetETag=0;
     RPV260IP="0.0.0.0";
@@ -105,6 +106,7 @@
       }
       if (sname == "PeakExcess") PExcess=atoi(svalue.c_str());
       if (sname == "DipExcess") DExcess=atoi(svalue.c_str());
+      if (sname == "MarkLevel") MarkLevel=atoi(svalue.c_str());
       if (sname == "TrigType"){
       	toLower(svalue);
 	if (svalue=="ext") TrigEnab=FADC_ExtTrig;

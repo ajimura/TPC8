@@ -34,6 +34,7 @@
 		      <param pid="ExcessFile"></param>
 		      <param pid="PeakExcess">0</param>
 		      <param pid="DipExcess">0</param>
+		      <param pid="MarkLevel">16382</param>
 		      <param pid="TrigType">Clock</param>
 		      <param pid="ExtReset">no</param>
 		      <param pid="GetETag">SWIO</param>

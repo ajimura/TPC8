@@ -156,6 +156,8 @@ int main(int argc, char *argv[]) {
     add=EBM_DExcess16+ChBase*i; st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
     printf("%2d ",data);
   }printf("\n");
+  add=EBM_MarkLevel; st+=rmap_get_data(sw_fd,port,&n,add,&data,4);
+  printf("Mark Level: %04X\n", data);
   //CMN
   printf("CMN-------------\n");
   add=CMN_Version;

@@ -124,7 +124,7 @@ int DumGenB::daq_configure()
       m_data1=new unsigned char[(generate_size+1024)*Stock_MaxNum];
       m_data4=(unsigned int *)m_data1;
     }
-    catch(std::bad_alloc){
+    catch(const std::bad_alloc&){
       std::cerr << "Bad allocation: size=" << (generate_size+1024)*Stock_MaxNum << " bytes" << std::endl;
       fatal_error_report(USER_DEFINED_ERROR3);
     }

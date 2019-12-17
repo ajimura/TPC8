@@ -100,7 +100,7 @@
       m_dataA=new unsigned char[(CompHeaderSize + MaxFADCSize*totNumFADC) * Stock_MaxNum];
       m_dataB=new unsigned char[(CompHeaderSize + MaxFADCSize*totNumFADC) * Stock_MaxNum];
     }
-    catch(std::bad_alloc){
+    catch(const std::bad_alloc&){
       std::cerr << "Bad allocation..." << std::endl;
       fatal_error_report(USER_DEFINED_ERROR3);
     }

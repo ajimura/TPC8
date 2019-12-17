@@ -18,7 +18,7 @@
       m_data1=new unsigned char[Cur_MaxDataSiz];
       m_data4=(unsigned int *)m_data1;
     }
-    catch(std::bad_alloc){
+    catch(const std::bad_alloc&){
       std::cerr << "Bad allocation..." << std::endl;
       fatal_error_report(USER_DEFINED_ERROR1);
     }

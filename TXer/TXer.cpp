@@ -214,7 +214,7 @@ unsigned char * TXer::renew_buf(unsigned char * orig_buf,
   try{
     new_buf = new unsigned char[newsize];
   }
-  catch(std::bad_alloc){
+  catch(const std::bad_alloc&){
     std::cerr << "Bad allocation..." << std::endl;
     fatal_error_report(USER_DEFINED_ERROR1);
   }

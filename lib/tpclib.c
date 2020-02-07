@@ -83,6 +83,7 @@ int fadc_trig_disable_each(struct fadc_info *);
 int fadc_show_buf_stat(int);
 int fadc_get_data_size_each(struct fadc_info *);
 int fadc_get_totsize_each(struct fadc_info *);
+int fadc_get_totsize0_each(struct fadc_info *);
 int fadc_get_data_each(struct fadc_info *, unsigned int *);
 int fadc_release_buffer_each(struct fadc_info *);
 void fadc_prepare_next_each(struct fadc_info *);
@@ -988,6 +989,32 @@ int fadc_get_data_size_each(struct fadc_info *adc){
     add=EBM_DataSize+ChBase*j+BufBase*(adc->next);
     st+=rmap_get_data(sw_fd[adc->port],adc->port,&(adc->node),add,&(adc->size[j]),4);
   }
+  return st;
+}
+
+int fadc_get_totsize0(){
+  int i,j;
+  int st;
+  int TotSize;
+
+  TotSize=0;
+  for(i=0;i<DevsNum;i++){
+    for(j=0;j<fadc_num[i];j++){
+      st=fadc_get_totsize0_each(fadcinfo[i]+j);
+      if (st<0) return -1;
+      TotSize+=((((fadcinfo[i]+j)->totsize+1)/2)*4+FADCHeaderSize);
+    }
+  }
+  if (st<0) return -1; else return 0;
+}
+
+int fadc_get_totsize0_each(struct fadc_info *adc){
+  unsigned int add;
+  int st;
+
+  add=EBM_TotSize+BufBase*(adc->next);
+  st=rmap_get_data0(sw_fd[adc->port],adc->port,&(adc->node),add,&(adc->totsize),4);
+  //  printf("TotSize: %3d(%04x) %d\n",adc->totsize,adc->totsize,st);
   return st;
 }
 

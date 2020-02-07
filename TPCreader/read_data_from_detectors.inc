@@ -43,8 +43,8 @@
     if (m_debug) std::cout << "Get data ready(" << seq_num << ") Stock=" << Stock_CurNum << "," << Stock_Offset << std::endl;
 
     //get data size
-    if ((pre_totsize=fadc_get_totsizeM2())<0){
-      //    if (fadc_get_totsizeM()<0){
+//    if ((pre_totsize=fadc_get_totsizeM2())<0){
+    if ((pre_totsize=fadc_get_totsize0())<0){
       std::cerr << "Error in fadc_get_data_sizeM2" << std::endl;
       fatal_error_report(USER_DEFINED_ERROR2,"Error in fadc_get_data_sizeM2");
     }

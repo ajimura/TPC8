@@ -103,7 +103,8 @@ int main(int argc, char *argv[]) {
     t0=(ts0.tv_sec*1.)+(ts0.tv_nsec/1000000000.);
 
     //get data size
-    if (fadc_get_totsizeM2()<0){
+    if (fadc_get_totsize0()<0){
+      //    if (fadc_get_totsizeM2()<0){
       printf("Error in fadc_get_totsizeM2()\n");
     }
 

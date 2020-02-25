@@ -24,7 +24,7 @@ int main(int argc, char *argv[]) {
   // open
   if (sw_open_check(NumFADC)<0) exit(0);
 
-  if ((st=fadc_node_init(port, node))<0)
+  if ((st=fadc_node_init(port, node, 1))<0)
     printf("Error...\n");
 
   fadc_close();

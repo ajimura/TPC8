@@ -7,6 +7,7 @@ int main(int argc, char *argv[]) {
   int NumFADC[8];
   int st;
   int i,j;
+  int end;
 
   for(i=0;i<8;i++) NumFADC[i]=0;
   if (argc<2){
@@ -23,7 +24,9 @@ int main(int argc, char *argv[]) {
   for(i=0;i<8;i++)
     if (NumFADC[i]>0)
       for(j=0;j<NumFADC[i];j++){
-	if ((st=fadc_node_init(i,j))<0){
+	if (j==(NumFADC[i]-1)) end=-1;
+	else end=1;
+	if ((st=fadc_node_init(i,j,end))<0){
 	  printf("Errora at %d-%d\n",i,j);
 	  exit(-1);
 	}

@@ -19,6 +19,8 @@
 #define SW_Port1 0x02000000
 #define SW_Port2 0x04000000
 #define SW_Port3 0x08000000
+#define SW_LinkUP 0x00000500
+#define SW_LinkDN 0x00000800
 
 #define FADC_Zero  0x00000001
 #define FADC_Mark  0x00000002
@@ -256,7 +258,7 @@ int fadc_init_each_adc(struct fadc_info *adc){
   return st;
 }
 
-int fadc_node_init(int port, int nodeid){
+int fadc_node_init(int port, int nodeid, int port2on){
   int key0=0x02;
   //int key3=0xcc;
   int logaddr;
@@ -302,6 +304,12 @@ int fadc_node_init(int port, int nodeid){
   // set routing for 0x80
   add=0x80*4; data=SW_Port1;
   st+=rmap_put_word(sw_fd[port],port,&n,add,data);
+
+  /* set port2 link */
+  add=0x2200;
+  printf("port2on: %d\n",port2on);
+  if (port2on<0)
+    st+=rmap_put_word(sw_fd[port],port,&n,add,data);
 
   /* show port2 status */
   add=0x2200;

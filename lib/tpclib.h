@@ -37,7 +37,7 @@ void fadc_set_adc_info(void);
 int fadc_hardreset_all(void);
 int fadc_softreset_all(void);
 int fadc_init_all_adc(void);
-int fadc_node_init(int, int);
+int fadc_node_init(int, int, int);
 int fadc_node_def(int, int);
 int fadc_setup_all(void);
 void fadc_set_thres_zero(void);

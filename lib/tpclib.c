@@ -307,7 +307,6 @@ int fadc_node_init(int port, int nodeid, int port2on){
 
   /* set port2 link */
   add=0x2200;
-  printf("port2on: %d\n",port2on);
   if (port2on<0)
     st+=rmap_put_word(sw_fd[port],port,&n,add,data);
 

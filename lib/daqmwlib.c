@@ -36,7 +36,7 @@ unsigned int *Create_Header(unsigned int *header,
   *(curptr++)=eventtag;
   *(curptr++)=ComponentID;
   *(curptr++)=ComponentType;
-  *(curptr++)=0; // Version: data structure(?)
+  *(curptr++)=1; // Version: data structure(?)
   // reserved area
   *(curptr++)=0;  *(curptr++)=0;  *(curptr++)=0;  *(curptr++)=0;
   *(curptr++)=0;  *(curptr++)=0;  *(curptr++)=0;  *(curptr++)=0;

@@ -61,13 +61,13 @@ int main(int argc, char *argv[]) {
   else if (input==1) trigenab=FADC_ClkTrig;
   //  else trigenab=FADC_IntTrig;
 
-  printf("Comp type: Simple Zero Sup.(0), PDMZ(1), P(2), Q(3), R(4): ");
+  printf("Comp type: Simple Zero Sup.(0), PDS(1), P(2), Q(3), R(4): ");
   scanf("%d",&input);
-  if (input==0) cmptype=0x0010;
-  else if (input==1) cmptype=0x000f;
-  else if (input==2) cmptype=0x0008;
-  else if (input==3) cmptype=0x0020;
-  else if (input==4) cmptype=0x0040;
+  if (input==0) cmptype=FADC_Sup; //0x0010;
+  else if (input==1) cmptype=FADC_Peak|FADC_Dip|FADC_Mark; //0x000f;
+  else if (input==2) cmptype=FADC_Peak; //0x0008;
+  else if (input==3) cmptype=FADC_Peak2; //0x0020;
+  else if (input==4) cmptype=FADC_Peak3; //0x0040;
   else cmptype=0x0808;
 
   printf("Read pedestal.txt for threshold? (yes=1): ");

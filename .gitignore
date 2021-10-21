@@ -39,6 +39,7 @@ utils/set_clkdiv
 utils/set_def
 utils/set_clkhz
 utils/set_fullrange
+utils/set_l1delay
 utils/softreset
 utils/spwreset
 utils/status
